@@ -1,0 +1,54 @@
+{
+    "name": "thenpingme/laravel",
+    "description": "Zero config scheduled task monitoring for Laravel",
+    "keywords": [
+        "thenpingme",
+        "laravel"
+    ],
+    "homepage": "https://github.com/thenpingme/laravel",
+    "license": "GPL-2.0-or-later",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Michael Dyrynda",
+            "email": "michael@dyrynda.com.au",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "laravel/framework": "^5.5 || 6.*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.5 || 4.*",
+        "phpunit/phpunit": "^6.0 || 7.0 || 8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Thenpingme\\Laravel\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Thenpingme\\Laravel\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Thenpingme\\Laravel\\LaravelServiceProvider"
+            ],
+            "aliases": {
+                "Laravel": "Thenpingme\\Laravel\\LaravelFacade"
+            }
+        }
+    }
+}
