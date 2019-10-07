@@ -21,7 +21,8 @@
     },
     "require-dev": {
         "orchestra/testbench": "^3.5 || 4.*",
-        "phpunit/phpunit": "^6.0 || 7.0 || 8.0"
+        "phpunit/phpunit": "^6.0 || 7.0 || 8.0",
+        "sempro/phpunit-pretty-print": "^1.1"
     },
     "autoload": {
         "psr-4": {
@@ -34,9 +35,8 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit",
+        "test": "vendor/bin/phpunit --color=always",
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
-
     },
     "config": {
         "sort-packages": true
