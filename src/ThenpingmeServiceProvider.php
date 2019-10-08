@@ -3,8 +3,9 @@
 namespace Thenpingme\Laravel;
 
 use Illuminate\Support\ServiceProvider;
+use Thenpingme\Laravel\Console\Commands\ThenpingmeSetupCommand;
 
-class ThenPingMeServiceProvider extends ServiceProvider
+class ThenpingmeServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
@@ -17,7 +18,9 @@ class ThenPingMeServiceProvider extends ServiceProvider
             ], 'config');
 
             // Registering package commands.
-            // $this->commands([]);
+            $this->commands([
+                ThenpingmeSetupCommand::class,
+            ]);
         }
     }
 
