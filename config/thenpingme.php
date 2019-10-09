@@ -10,7 +10,15 @@ return [
 
     'options' => [
 
-        'collect_git_information' => true,
+        'collect_git_sha' => env('THENPINGME_COLLECT_GIT_SHA', true),
+
+        'endpoints' => [
+
+            'setup' => env('THENPINGME_ENDPOINT_SETUP', 'https://thenping.me/api/projects/:project/setup'),
+
+            'ping' => env('THENPINGME_ENDPOINT_PING', 'https://thenping.me/api/projects/:project/ping'),
+
+        ],
 
     ],
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace Thenpingme\Laravel;
+namespace Thenpingme;
 
 use Illuminate\Support\ServiceProvider;
-use Thenpingme\Laravel\Console\Commands\ThenpingmeSetupCommand;
+use Thenpingme\Console\Commands\ThenpingmeSetupCommand;
 
 class ThenpingmeServiceProvider extends ServiceProvider
 {

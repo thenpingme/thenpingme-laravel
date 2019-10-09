@@ -1,9 +1,9 @@
 <?php
 
-namespace Thenpingme\Laravel\Tests;
+namespace Thenpingme\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Thenpingme\Laravel\ThenpingmeServiceProvider;
+use Thenpingme\ThenpingmeServiceProvider;
 
 class TestCase extends BaseTestCase
 {
