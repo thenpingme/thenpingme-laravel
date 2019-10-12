@@ -30,6 +30,7 @@ class ThenpingmeServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/thenpingme.php', 'thenpingme');
+        $this->mergeConfigFrom(__DIR__.'/../config/webhook-server.php', 'webhook-server');
 
         // Register the main class to use with the facade
         $this->app->singleton('thenpingme', function () {
