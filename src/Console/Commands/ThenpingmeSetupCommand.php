@@ -17,12 +17,12 @@ class ThenpingmeSetupCommand extends Command
         parent::__construct();
     }
 
-    public function handle()
+    public function handle(): void
     {
         $this->updateEnv();
     }
 
-    protected function updateEnv()
+    protected function updateEnv(): void
     {
         tap(new Filesystem, function ($filesystem) {
             $path = base_path('.example.env');

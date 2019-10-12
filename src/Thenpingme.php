@@ -13,31 +13,31 @@ class Thenpingme
 
     const ENDPOINT_PING = 'ping';
 
-    public static function make()
+    public static function make(): self
     {
         return new static;
     }
 
-    public function generateSigningKey()
+    public function generateSigningKey(): string
     {
         return Str::random(512);
     }
 
-    public function setup()
+    public function setup(): WebhookCall
     {
         return $this->baseWebhookCall()
             ->url($this->url(static::ENDPOINT_SETUP))
             ->useSecret(config('thenpingme.project_id'));
     }
 
-    public function ping()
+    public function ping(): WebhookCall
     {
         return $this->baseWebhookCall()
             ->url($this->url(static::ENDPOINT_PING))
             ->useSecret(config('thenpingme.signing_key'));
     }
 
-    public function url($endpoint)
+    public function url($endpoint): string
     {
         $config = Config::get('thenpingme');
 
@@ -51,7 +51,7 @@ class Thenpingme
         }
     }
 
-    protected function baseWebhookCall()
+    protected function baseWebhookCall(): WebhookCall
     {
         return WebhookCall::create()
             ->withTags(array_unique(array_merge(['thenpingme'], config('thenpingme.tags', []))));

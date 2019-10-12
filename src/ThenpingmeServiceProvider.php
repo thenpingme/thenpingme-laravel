@@ -11,14 +11,13 @@ class ThenpingmeServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application services.
      */
-    public function boot()
+    public function boot(): void
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/thenpingme.php' => config_path('thenpingme.php'),
             ], 'config');
 
-            // Registering package commands.
             $this->commands([
                 ThenpingmeSetupCommand::class,
             ]);
@@ -30,12 +29,11 @@ class ThenpingmeServiceProvider extends ServiceProvider
     /**
      * Register the application services.
      */
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/thenpingme.php', 'thenpingme');
         $this->mergeConfigFrom(__DIR__.'/../config/webhook-server.php', 'webhook-server');
 
-        // Register the main class to use with the facade
         $this->app->singleton('thenpingme', function () {
             return new Thenpingme;
         });
