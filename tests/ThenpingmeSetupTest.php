@@ -24,7 +24,7 @@ class ThenpingmeSetupTest extends TestCase
     /** @test */
     public function it_correctly_sets_environment_variables()
     {
-        Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('abc123efg456');
+        Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
@@ -33,7 +33,7 @@ class ThenpingmeSetupTest extends TestCase
         $this->assertTrue($this->loadEnv(true)->contains('THENPINGME_QUEUE_PING=false'.PHP_EOL));
 
         $this->assertTrue($this->loadEnv()->contains('THENPINGME_PROJECT_ID=aaa-bbbb-c1c1c1-ddd-ef1'.PHP_EOL));
-        $this->assertTrue($this->loadEnv()->contains('THENPINGME_SIGNING_KEY=abc123efg456'.PHP_EOL));
+        $this->assertTrue($this->loadEnv()->contains('THENPINGME_SIGNING_KEY=this-is-the-signing-secret'.PHP_EOL));
         $this->assertTrue($this->loadEnv()->contains('THENPINGME_QUEUE_PING=false'.PHP_EOL));
     }
 
