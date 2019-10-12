@@ -2,6 +2,7 @@
 
 namespace Thenpingme;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Thenpingme\Console\Commands\ThenpingmeSetupCommand;
 
@@ -21,6 +22,8 @@ class ThenpingmeServiceProvider extends ServiceProvider
             $this->commands([
                 ThenpingmeSetupCommand::class,
             ]);
+
+            Event::subscribe(ScheduledTaskSubscriber::class);
         }
     }
 
