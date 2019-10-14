@@ -43,9 +43,15 @@ class Thenpingme
 
         switch ($endpoint) {
             case static::ENDPOINT_SETUP:
-                return str_replace(':project', $config['project_id'], $config['options']['endpoints']['setup']);
+                return vsprintf('%s/projects/%s/setup', [
+                    $config['options']['base_url'],
+                    $config['project_id'],
+                ]);
             case static::ENDPOINT_PING:
-                return str_replace(':project', $config['project_id'], $config['options']['endpoints']['ping']);
+                return vsprintf('%s/projects/%s/ping', [
+                    $config['options']['base_url'],
+                    $config['project_id'],
+                ]);
             default:
                 throw new InvalidArgumentException("Unknown client url [{$endpoint}]");
         }
