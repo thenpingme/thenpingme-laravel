@@ -2,7 +2,9 @@
 
 namespace Thenpingme\Tests;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Thenpingme\Facades\Thenpingme;
 
 class ThenpingmeSetupTest extends TestCase
@@ -35,6 +37,17 @@ class ThenpingmeSetupTest extends TestCase
         $this->assertTrue($this->loadEnv()->contains('THENPINGME_PROJECT_ID=aaa-bbbb-c1c1c1-ddd-ef1'.PHP_EOL));
         $this->assertTrue($this->loadEnv()->contains('THENPINGME_SIGNING_KEY=this-is-the-signing-secret'.PHP_EOL));
         $this->assertTrue($this->loadEnv()->contains('THENPINGME_QUEUE_PING=false'.PHP_EOL));
+    }
+
+    /** @test */
+    public function it_sets_up_initial_scheduled_tasks()
+    {
+        $schedule = $this->app->make(Schedule::class);
+        $schedule->command('test:command')->hourly();
+
+        Config::set(['thenpingme.options.base_url' => 'http://thenpingme.test/api']);
+
+        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
     }
 
     protected function loadEnv($example = false)
