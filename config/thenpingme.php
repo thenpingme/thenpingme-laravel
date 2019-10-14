@@ -12,13 +12,7 @@ return [
 
         'collect_git_sha' => env('THENPINGME_COLLECT_GIT_SHA', true),
 
-        'endpoints' => [
-
-            'setup' => env('THENPINGME_ENDPOINT_SETUP', 'https://thenping.me/api/projects/:project/setup'),
-
-            'ping' => env('THENPINGME_ENDPOINT_PING', 'https://thenping.me/api/projects/:project/ping'),
-
-        ],
+        'base_url' => env('THENPINGME_BASE_URL', 'https://thenping.me/api'),
 
     ],
 
