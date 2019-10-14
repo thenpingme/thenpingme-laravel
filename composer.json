@@ -47,10 +47,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Thenpingme\\Laravel\\LaravelServiceProvider"
+                "Thenpingme\\ThenpingmeServiceProvider"
             ],
             "aliases": {
-                "Laravel": "Thenpingme\\Laravel\\LaravelFacade"
+                "Laravel": "Thenpingme\\Facades\\Thenpingme"
             }
         }
     }
