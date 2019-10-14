@@ -40,7 +40,7 @@ class ThenpingmePayload implements Arrayable
 
         return [
             'expression' => $task->expression,
-            'command' => ltrim(Str::after($task->command, 'artisan')),
+            'command' => ltrim(Str::after($task->command, 'artisan'), "', '"),
             'timezone' => $task->timezone,
             'maintenance' => $task->evenInMaintenanceMode,
             'without_overlapping' => $task->withoutOverlapping,
