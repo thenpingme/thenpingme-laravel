@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Queue;
 use Thenpingme\Client\Client;
 use Thenpingme\Client\TestClient;
 use Thenpingme\Facades\Thenpingme;
+use Thenpingme\ThenpingmePingJob;
 
 class ThenpingmeSetupTest extends TestCase
 {
@@ -53,10 +54,18 @@ class ThenpingmeSetupTest extends TestCase
         $schedule = $this->app->make(Schedule::class);
         $schedule->command('test:command')->hourly();
 
-        Thenpingme::shouldReceive('generateSigningKey')->once();
-        Thenpingme::shouldReceive('scheduledTasks')->once();
-
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+
+        Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
+            $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
+            $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
+            $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
+
+            $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
+            $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
+
+            return true;
+        });
     }
 
     protected function loadEnv($example = false)
