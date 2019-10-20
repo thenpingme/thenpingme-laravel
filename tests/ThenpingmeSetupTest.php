@@ -5,6 +5,8 @@ namespace Thenpingme\Tests;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
+use Thenpingme\Client\Client as ThenpingmeClient;
 use Thenpingme\Facades\Thenpingme;
 
 class ThenpingmeSetupTest extends TestCase
@@ -13,13 +15,17 @@ class ThenpingmeSetupTest extends TestCase
     {
         parent::setUp();
 
-        touch(base_path('.example.env'));
+        Queue::fake();
+
+        $this->app->instance(Client::class, new TestClient);
+
+        touch(base_path('.env.example'));
         touch(base_path('.env'));
     }
 
     public function tearDown(): void
     {
-        unlink(base_path('.example.env'));
+        unlink(base_path('.env.example'));
         unlink(base_path('.env'));
     }
 
@@ -27,6 +33,7 @@ class ThenpingmeSetupTest extends TestCase
     public function it_correctly_sets_environment_variables()
     {
         Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
+        Thenpingme::shouldReceive('scheduledTasks')->once()->andReturn([]);
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
@@ -45,7 +52,8 @@ class ThenpingmeSetupTest extends TestCase
         $schedule = $this->app->make(Schedule::class);
         $schedule->command('test:command')->hourly();
 
-        Config::set(['thenpingme.options.base_url' => 'http://thenpingme.test/api']);
+        Thenpingme::shouldReceive('generateSigningKey')->once();
+        Thenpingme::shouldReceive('scheduledTasks')->once();
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
     }

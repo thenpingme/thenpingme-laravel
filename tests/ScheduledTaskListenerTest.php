@@ -10,6 +10,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use Spatie\WebhookServer\CallWebhookJob;
+use Thenpingme\ThenpingmePingJob;
 
 class ScheduledTaskListenerTest extends TestCase
 {
@@ -37,8 +38,8 @@ class ScheduledTaskListenerTest extends TestCase
             $dispatcher->dispatch(new ScheduledTaskStarting($event));
         });
 
-        Queue::assertPushed(CallWebhookJob::class, function ($job) use ($event) {
-            $this->assertEquals('https://thenping.me/api/projects/abc123/ping', $job->webhookUrl);
+        Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
+            $this->assertEquals('https://thenping.me/api/projects/abc123/ping', $job->url);
 
             return true;
         });
@@ -56,8 +57,8 @@ class ScheduledTaskListenerTest extends TestCase
             $dispatcher->dispatch(new ScheduledTaskFinished($event, 1));
         });
 
-        Queue::assertPushed(CallWebhookJob::class, function ($job) use ($event) {
-            $this->assertEquals('https://thenping.me/api/projects/abc123/ping', $job->webhookUrl);
+        Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
+            $this->assertEquals('https://thenping.me/api/projects/abc123/ping', $job->url);
 
             return true;
         });

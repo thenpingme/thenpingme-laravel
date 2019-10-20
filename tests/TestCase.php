@@ -13,4 +13,10 @@ class TestCase extends BaseTestCase
             ThenpingmeServiceProvider::class,
         ];
     }
+
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('thenpingme.project_id', 'abc123');
+        $app['config']->set('thenpingme.signing_key', 'def456');
+    }
 }

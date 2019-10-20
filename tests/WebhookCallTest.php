@@ -27,7 +27,7 @@ class WebhookCallTest extends TestCase
     /** @test */
     public function it_gets_a_setup_client()
     {
-        Thenpingme::make()->setup()->dispatch();
+        Thenpingme::client()->setup()->dispatch();
 
         Queue::assertPushed(CallWebhookJob::class, function (CallWebhookJob $job) {
             $this->assertEquals('https://thenping.me/api/projects/abc123/setup', $job->webhookUrl);

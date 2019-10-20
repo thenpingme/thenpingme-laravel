@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
+use Thenpingme\Client\Client;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\ThenpingmeSetupPayload;
 
@@ -67,16 +68,11 @@ class ThenpingmeSetupCommand extends Command
 
     protected function setupInitialTasks(): void
     {
-        Thenpingme::setup()->payload(
-            ThenpingmeSetupPayload::make($this->scheduledTasks())->toArray()
-        )->dispatch();
-    }
-
-    protected function scheduledTasks(): array
-    {
-        return collect($this->schedule->events())->filter(function ($event) {
-            return App::environment($event->environments)
-                || empty($event->environments);
-        })->toArray();
+        app(Client::class)
+            ->setup()
+            ->useSecret($this->argument('project_id'))
+            ->payload(
+                ThenpingmeSetupPayload::make(Thenpingme::scheduledTasks())->toArray()
+            )->dispatch();
     }
 }

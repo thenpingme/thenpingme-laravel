@@ -4,7 +4,11 @@ namespace Thenpingme;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Thenpingme\Client\Client;
+use Thenpingme\Client\ThenpingmeClient;
 use Thenpingme\Console\Commands\ThenpingmeSetupCommand;
+use Thenpingme\Signer\Signer;
+use Thenpingme\Signer\ThenpingmeSigner;
 
 class ThenpingmeServiceProvider extends ServiceProvider
 {
@@ -32,10 +36,17 @@ class ThenpingmeServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/thenpingme.php', 'thenpingme');
-        $this->mergeConfigFrom(__DIR__.'/../config/webhook-server.php', 'webhook-server');
 
         $this->app->singleton('thenpingme', function () {
             return new Thenpingme;
+        });
+
+        $this->app->singleton(Signer::class, function ($app) {
+            return $app->make(ThenpingmeSigner::class);
+        });
+
+        $this->app->singleton(Client::class, function ($app) {
+            return $app->make(ThenpingmeClient::class);
         });
     }
 }

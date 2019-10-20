@@ -4,6 +4,7 @@ namespace Thenpingme;
 
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
+use Thenpingme\Client\Client;
 use Thenpingme\Payload\ThenpingmePayload;
 
 class ScheduledTaskSubscriber
@@ -13,7 +14,7 @@ class ScheduledTaskSubscriber
      */
     private $thenpingme;
 
-    public function __construct(Thenpingme $thenpingme)
+    public function __construct(Client $thenpingme)
     {
         $this->thenpingme = $thenpingme;
     }
