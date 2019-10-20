@@ -8,12 +8,6 @@ return [
 
     'queue_ping' => env('THENPINGME_QUEUE_PING', false),
 
-    'options' => [
-
-        'collect_git_sha' => env('THENPINGME_COLLECT_GIT_SHA', true),
-
-        'base_url' => env('THENPINGME_BASE_URL', 'https://thenping.me/api'),
-
-    ],
+    'collect_git_sha' => env('THENPINGME_COLLECT_GIT_SHA', true),
 
 ];
