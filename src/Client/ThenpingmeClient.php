@@ -61,6 +61,8 @@ class ThenpingmeClient implements Client
             throw CouldNotSendPing::missingSigningSecret();
         }
 
+        $this->pingJob->headers = $this->headers();
+
         dispatch($this->pingJob);
     }
 
