@@ -2,9 +2,11 @@
 
 namespace Thenpingme;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Thenpingme\Client\Client;
+use Thenpingme\Client\TestClient;
 use Thenpingme\Client\ThenpingmeClient;
 use Thenpingme\Console\Commands\ThenpingmeSetupCommand;
 use Thenpingme\Signer\Signer;
@@ -46,7 +48,9 @@ class ThenpingmeServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(Client::class, function ($app) {
-            return $app->make(ThenpingmeClient::class);
+            return Config::get('thenpingme.test_mode')
+                ? $app->make(TestClient::class)
+                : $app->make(ThenpingmeClient::class);
         });
     }
 }

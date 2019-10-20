@@ -6,7 +6,8 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
-use Thenpingme\Client\Client as ThenpingmeClient;
+use Thenpingme\Client\Client;
+use Thenpingme\Client\TestClient;
 use Thenpingme\Facades\Thenpingme;
 
 class ThenpingmeSetupTest extends TestCase

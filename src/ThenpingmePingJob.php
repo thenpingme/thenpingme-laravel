@@ -34,6 +34,8 @@ class ThenpingmePingJob implements ShouldQueue
             ->post($this->url, $this->payload);
 
         if (! Str::startsWith($response->status(), '2')) {
+            dd($this->url, $this->payload);
+
             throw new Exception('Could not send ping to Thenpingme');
         }
     }
