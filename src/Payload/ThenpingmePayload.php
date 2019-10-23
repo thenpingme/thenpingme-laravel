@@ -6,6 +6,7 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
+use Thenpingme\TaskIdentifier;
 
 class ThenpingmePayload implements Arrayable
 {
@@ -39,6 +40,7 @@ class ThenpingmePayload implements Arrayable
         $task = $this->event->task;
 
         return [
+            'type' => (new TaskIdentifier)($task),
             'expression' => $task->expression,
             'command' => ltrim(Str::after($task->command, 'artisan'), "', '"),
             'timezone' => $task->timezone,
