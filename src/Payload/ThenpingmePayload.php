@@ -46,6 +46,7 @@ class ThenpingmePayload implements Arrayable
             'without_overlapping' => $task->withoutOverlapping,
             'on_one_server' => $task->onOneServer,
             'description' => $task->description,
+            'mutex' => $task->mutexName(),
         ];
     }
 }

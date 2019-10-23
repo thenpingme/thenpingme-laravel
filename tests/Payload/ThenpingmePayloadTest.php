@@ -33,7 +33,7 @@ class ThenpingmePayloadTest extends TestCase
         $task = (new Event($this->mock(EventMutex::class), 'artisan generate:payload', 'UTC'))
             ->description('This is the description');
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
+        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             $this->assertEquals([
                 'expression' => '* * * * *',
                 'command' => 'generate:payload',
@@ -42,6 +42,7 @@ class ThenpingmePayloadTest extends TestCase
                 'without_overlapping' => false,
                 'on_one_server' => false,
                 'description' => 'This is the description',
+                'mutex' => $task->mutexName(),
             ], $payload);
         });
     }
@@ -54,7 +55,7 @@ class ThenpingmePayloadTest extends TestCase
             (new Event($this->mock(EventMutex::class), 'artisan thenpingme:second', 'UTC'))->description('This is the second task'),
         ];
 
-        tap(ThenpingmeSetupPayload::make($events)->toArray(), function ($payload) {
+        tap(ThenpingmeSetupPayload::make($events)->toArray(), function ($payload) use ($events) {
             $this->assertEquals([
                'project' => [
                    'uuid' => 'abc123',
@@ -70,6 +71,7 @@ class ThenpingmePayloadTest extends TestCase
                        'without_overlapping' => false,
                        'on_one_server' => false,
                        'description' => 'This is the first task',
+                       'mutex' => $events[0]->mutexName(),
                    ],
                    [
                        'expression' => '* * * * *',
@@ -79,6 +81,7 @@ class ThenpingmePayloadTest extends TestCase
                        'without_overlapping' => false,
                        'on_one_server' => false,
                        'description' => 'This is the second task',
+                       'mutex' => $events[1]->mutexName(),
                    ],
                ],
             ], $payload);
