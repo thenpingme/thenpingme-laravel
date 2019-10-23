@@ -4,14 +4,14 @@ namespace Thenpingme\Tests\Payload;
 
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
-use Illuminate\Console\Scheduling\Event;
-use Illuminate\Console\Scheduling\EventMutex;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Payload\ScheduledTaskFinishedPayload;
 use Thenpingme\Payload\ScheduledTaskStartingPayload;
 use Thenpingme\Payload\ThenpingmePayload;
 use Thenpingme\Payload\ThenpingmeSetupPayload;
+use Thenpingme\TaskIdentifier;
 use Thenpingme\Tests\TestCase;
 
 class ThenpingmePayloadTest extends TestCase
@@ -30,11 +30,11 @@ class ThenpingmePayloadTest extends TestCase
     /** @test */
     public function it_generates_a_task_payload()
     {
-        $task = (new Event($this->mock(EventMutex::class), 'artisan generate:payload', 'UTC'))
-            ->description('This is the description');
+        $task = app(Schedule::class)->command('generate:payload')->description('This is the description');
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             $this->assertEquals([
+                'type' => TaskIdentifier::TYPE_COMMAND,
                 'expression' => '* * * * *',
                 'command' => 'generate:payload',
                 'timezone' => 'UTC',
@@ -50,9 +50,11 @@ class ThenpingmePayloadTest extends TestCase
     /** @test */
     public function it_generates_a_setup_payload()
     {
+        $scheduler = app(Schedule::class);
+
         $events = [
-            (new Event($this->mock(EventMutex::class), 'artisan thenpingme:first', 'UTC'))->description('This is the first task'),
-            (new Event($this->mock(EventMutex::class), 'artisan thenpingme:second', 'UTC'))->description('This is the second task'),
+            $scheduler->command('thenpingme:first')->description('This is the first task'),
+            $scheduler->command('thenpingme:second')->description('This is the second task'),
         ];
 
         tap(ThenpingmeSetupPayload::make($events)->toArray(), function ($payload) use ($events) {
@@ -64,6 +66,7 @@ class ThenpingmePayloadTest extends TestCase
                ],
                'tasks' => [
                    [
+                       'type' => TaskIdentifier::TYPE_COMMAND,
                        'expression' => '* * * * *',
                        'command' => 'thenpingme:first',
                        'timezone' => 'UTC',
@@ -74,6 +77,7 @@ class ThenpingmePayloadTest extends TestCase
                        'mutex' => $events[0]->mutexName(),
                    ],
                    [
+                       'type' => TaskIdentifier::TYPE_COMMAND,
                        'expression' => '* * * * *',
                        'command' => 'thenpingme:second',
                        'timezone' => 'UTC',
@@ -94,7 +98,7 @@ class ThenpingmePayloadTest extends TestCase
         Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
 
         $event = new ScheduledTaskStarting(
-            (new Event($this->mock(EventMutex::class), 'artisan thenpingme:first', 'UTC'))
+            app(Schedule::class)->command('thenpingme:first', )
                 ->description('This is the first task')
                 ->withoutOverlapping(10)
                 ->onOneServer()
@@ -119,7 +123,7 @@ class ThenpingmePayloadTest extends TestCase
         Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
 
         $event = new ScheduledTaskFinished(
-            (new Event($this->mock(EventMutex::class), 'artisan thenpingme:first', 'UTC'))->description('This is the first task'),
+            app(Schedule::class)->command('thenpingme:first')->description('This is the first task'),
             1
         );
 

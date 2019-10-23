@@ -6,6 +6,7 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\EventMutex;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
@@ -29,10 +30,7 @@ class ScheduledTaskListenerTest extends TestCase
     /** @test */
     public function it_listens_for_a_scheduled_task_starting()
     {
-        $event = new Event(
-            $this->mock(EventMutex::class),
-            'artisan thenpingme:testing'
-        );
+        $event = app(Schedule::class)->command('thenpingme:testing');
 
         tap(app(Dispatcher::class), function ($dispatcher) use ($event) {
             $dispatcher->dispatch(new ScheduledTaskStarting($event));
@@ -48,10 +46,7 @@ class ScheduledTaskListenerTest extends TestCase
     /** @test */
     public function it_listens_for_a_scheduled_task_finishing()
     {
-        $event = new Event(
-            $this->mock(EventMutex::class),
-            'artisan thenpingme:testing'
-        );
+        $event = app(Schedule::class)->command('thenpingme:testing');
 
         tap(app(Dispatcher::class), function ($dispatcher) use ($event) {
             $dispatcher->dispatch(new ScheduledTaskFinished($event, 1));
