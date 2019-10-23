@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
+use Thenpingme\Exceptions\ThenpingmePingException;
 use Zttp\Zttp;
 
 class ThenpingmePingJob implements ShouldQueue
@@ -31,12 +32,11 @@ class ThenpingmePingJob implements ShouldQueue
     public function handle()
     {
         $response = Zttp::withHeaders($this->headers)
+            ->asJson()
             ->post($this->url, $this->payload);
 
         if (! Str::startsWith($response->status(), '2')) {
-            dd($this->url, $this->payload);
-
-            throw new Exception('Could not send ping to Thenpingme');
+            throw ThenpingmePingException::couldNotPing($response->status());
         }
     }
 }
