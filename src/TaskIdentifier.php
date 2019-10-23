@@ -36,7 +36,4 @@ class TaskIdentifier
             return static::TYPE_SHELL;
         }
     }
-
-    //Illuminate\Console\Scheduling\CallbackEvent
-        //Illuminate\Console\Scheduling\Event
 }
