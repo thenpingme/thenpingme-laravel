@@ -9,11 +9,11 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
 use Thenpingme\TaskIdentifier;
 
-class ThenpingmePayload implements Arrayable
+abstract class ThenpingmePayload implements Arrayable
 {
     protected $event;
 
-    private function __construct($event)
+    protected function __construct($event)
     {
         $this->event = $event;
     }
@@ -31,34 +31,15 @@ class ThenpingmePayload implements Arrayable
         if ($event instanceof ScheduledTaskSkipped) {
             return new ScheduledTaskSkippedPayload($event);
         }
-
-        return new static($event);
     }
 
     public static function fromTask($task): self
     {
-        return new static((object) ['task' => $task]);
+        return TaskPayload::make($task);
     }
 
     public function toArray(): array
     {
-        $task = $this->event->task;
-
-        return [
-            'project' => [
-                'uuid' => config('thenpingme.project_id'),
-            ],
-            'task' => [
-                'type' => (new TaskIdentifier)($task),
-                'expression' => $task->expression,
-                'command' => ltrim(Str::after($task->command, 'artisan'), "', '"),
-                'timezone' => $task->timezone,
-                'maintenance' => $task->evenInMaintenanceMode,
-                'without_overlapping' => $task->withoutOverlapping,
-                'on_one_server' => $task->onOneServer,
-                'description' => $task->description,
-                'mutex' => $task->mutexName(),
-            ],
-        ];
+        return [];
     }
 }

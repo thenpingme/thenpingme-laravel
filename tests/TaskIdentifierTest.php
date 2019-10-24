@@ -17,7 +17,7 @@ class TaskIdentifierTest extends TestCase
         $task = app(Schedule::class)->command('thenpingme:test');
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
-            $this->assertEquals(TaskIdentifier::TYPE_COMMAND, $payload['task']['type']);
+            $this->assertEquals(TaskIdentifier::TYPE_COMMAND, $payload['type']);
         });
     }
 
@@ -27,7 +27,7 @@ class TaskIdentifierTest extends TestCase
         $task = app(Schedule::class)->exec('echo "testing"');
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
-            $this->assertEquals(TaskIdentifier::TYPE_SHELL, $payload['task']['type']);
+            $this->assertEquals(TaskIdentifier::TYPE_SHELL, $payload['type']);
         });
     }
 
@@ -39,7 +39,7 @@ class TaskIdentifierTest extends TestCase
         });
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
-            $this->assertEquals(TaskIdentifier::TYPE_CLOSURE, $payload['task']['type']);
+            $this->assertEquals(TaskIdentifier::TYPE_CLOSURE, $payload['type']);
         });
     }
 
@@ -49,7 +49,7 @@ class TaskIdentifierTest extends TestCase
         $task = app(Schedule::class)->job('Thenpingme\Tests\SomeJob');
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
-            $this->assertEquals(TaskIdentifier::TYPE_JOB, $payload['task']['type']);
+            $this->assertEquals(TaskIdentifier::TYPE_JOB, $payload['type']);
         });
     }
 }

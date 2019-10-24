@@ -28,7 +28,7 @@ class ThenpingmeSetupPayload implements Arrayable
                 'signing_key' => Config::get('thenpingme.signing_key'),
             ],
             'tasks' => array_reduce($this->tasks, function ($tasks, $task) {
-                $tasks[] = ThenpingmePayload::fromTask($task)->toArray();
+                $tasks[] = TaskPayload::make($task)->toArray();
 
                 return $tasks;
             }, []),

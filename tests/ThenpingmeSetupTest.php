@@ -61,8 +61,8 @@ class ThenpingmeSetupTest extends TestCase
             $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
             $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
 
-            $this->assertEquals('test:command', $job->payload['tasks'][0]['task']['command']);
-            $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['task']['expression']);
+            $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
+            $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
 
             return true;
         });

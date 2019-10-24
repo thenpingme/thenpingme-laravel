@@ -37,20 +37,15 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             $this->assertEquals([
-                'project' => [
-                    'uuid' => config('thenpingme.project_id'),
-                ],
-                'task' => [
-                    'type' => TaskIdentifier::TYPE_COMMAND,
-                    'expression' => '* * * * *',
-                    'command' => 'generate:payload',
-                    'timezone' => 'UTC',
-                    'maintenance' => false,
-                    'without_overlapping' => false,
-                    'on_one_server' => false,
-                    'description' => 'This is the description',
-                    'mutex' => $task->mutexName(),
-                ],
+                'type' => TaskIdentifier::TYPE_COMMAND,
+                'expression' => '* * * * *',
+                'command' => 'generate:payload',
+                'timezone' => 'UTC',
+                'maintenance' => false,
+                'without_overlapping' => false,
+                'on_one_server' => false,
+                'description' => 'This is the description',
+                'mutex' => $task->mutexName(),
             ], $payload);
         });
     }
@@ -74,30 +69,26 @@ class ThenpingmePayloadTest extends TestCase
                 ],
                 'tasks' => [
                     [
-                        'task' => [
-                            'type' => TaskIdentifier::TYPE_COMMAND,
-                            'expression' => '* * * * *',
-                            'command' => 'thenpingme:first',
-                            'timezone' => 'UTC',
-                            'maintenance' => false,
-                            'without_overlapping' => false,
-                            'on_one_server' => false,
-                            'description' => 'This is the first task',
-                            'mutex' => $events[0]->mutexName(),
-                        ],
+                        'type' => TaskIdentifier::TYPE_COMMAND,
+                        'expression' => '* * * * *',
+                        'command' => 'thenpingme:first',
+                        'timezone' => 'UTC',
+                        'maintenance' => false,
+                        'without_overlapping' => false,
+                        'on_one_server' => false,
+                        'description' => 'This is the first task',
+                        'mutex' => $events[0]->mutexName(),
                     ],
                     [
-                        'task' => [
-                            'type' => TaskIdentifier::TYPE_COMMAND,
-                            'expression' => '* * * * *',
-                            'command' => 'thenpingme:second',
-                            'timezone' => 'UTC',
-                            'maintenance' => false,
-                            'without_overlapping' => false,
-                            'on_one_server' => false,
-                            'description' => 'This is the second task',
-                            'mutex' => $events[1]->mutexName(),
-                        ],
+                        'type' => TaskIdentifier::TYPE_COMMAND,
+                        'expression' => '* * * * *',
+                        'command' => 'thenpingme:second',
+                        'timezone' => 'UTC',
+                        'maintenance' => false,
+                        'without_overlapping' => false,
+                        'on_one_server' => false,
+                        'description' => 'This is the second task',
+                        'mutex' => $events[1]->mutexName(),
                     ],
                 ],
             ], $payload);
