@@ -3,6 +3,7 @@
 namespace Thenpingme\Payload;
 
 use Illuminate\Support\Str;
+use ReflectionClass;
 use Thenpingme\TaskIdentifier;
 
 class TaskPayload extends ThenpingmePayload
@@ -31,6 +32,17 @@ class TaskPayload extends ThenpingmePayload
             'on_one_server' => $this->task->onOneServer,
             'description' => $this->task->description,
             'mutex' => $this->task->mutexName(),
+            'filtered' => $this->isFiltered(),
         ];
+    }
+
+    private function isFiltered()
+    {
+        return with(new ReflectionClass($this->task), function ($class) {
+            $filters = $class->getProperty('filters');
+            $filters->setAccessible(true);
+
+            return ! empty($filters->getValue($this->task));
+        });
     }
 }
