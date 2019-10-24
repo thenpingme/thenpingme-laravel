@@ -45,15 +45,20 @@ class ThenpingmePayload implements Arrayable
         $task = $this->event->task;
 
         return [
-            'type' => (new TaskIdentifier)($task),
-            'expression' => $task->expression,
-            'command' => ltrim(Str::after($task->command, 'artisan'), "', '"),
-            'timezone' => $task->timezone,
-            'maintenance' => $task->evenInMaintenanceMode,
-            'without_overlapping' => $task->withoutOverlapping,
-            'on_one_server' => $task->onOneServer,
-            'description' => $task->description,
-            'mutex' => $task->mutexName(),
+            'project' => [
+                'uuid' => config('thenpingme.project_id'),
+            ],
+            'task' => [
+                'type' => (new TaskIdentifier)($task),
+                'expression' => $task->expression,
+                'command' => ltrim(Str::after($task->command, 'artisan'), "', '"),
+                'timezone' => $task->timezone,
+                'maintenance' => $task->evenInMaintenanceMode,
+                'without_overlapping' => $task->withoutOverlapping,
+                'on_one_server' => $task->onOneServer,
+                'description' => $task->description,
+                'mutex' => $task->mutexName(),
+            ],
         ];
     }
 }
