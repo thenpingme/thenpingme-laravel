@@ -27,10 +27,10 @@ class ThenpingmeSetupCommand extends Command
         parent::__construct();
     }
 
-    public function handle(Schedule $schedule, Thenpingme $thenpignme): void
+    public function handle(Schedule $schedule, Thenpingme $thenpingme): void
     {
         $this->schedule = $schedule;
-        $this->thenpignme = $thenpignme;
+        $this->thenpingme = $thenpingme;
 
         $this->updateConfig();
         $this->setupInitialTasks();
