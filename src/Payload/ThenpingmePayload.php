@@ -3,6 +3,7 @@
 namespace Thenpingme\Payload;
 
 use Illuminate\Console\Events\ScheduledTaskFinished;
+use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
@@ -25,6 +26,10 @@ class ThenpingmePayload implements Arrayable
 
         if ($event instanceof ScheduledTaskFinished) {
             return new ScheduledTaskFinishedPayload($event);
+        }
+
+        if ($event instanceof ScheduledTaskSkipped) {
+            return new ScheduledTaskSkippedPayload($event);
         }
 
         return new static($event);

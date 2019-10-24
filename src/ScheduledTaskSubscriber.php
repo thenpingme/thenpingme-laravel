@@ -3,6 +3,7 @@
 namespace Thenpingme;
 
 use Illuminate\Console\Events\ScheduledTaskFinished;
+use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Thenpingme\Client\Client;
 use Thenpingme\Payload\ThenpingmePayload;
@@ -19,15 +20,7 @@ class ScheduledTaskSubscriber
         $this->thenpingme = $thenpingme;
     }
 
-    public function handleScheduledTaskStarting(ScheduledTaskStarting $event): void
-    {
-        $this->thenpingme
-            ->ping()
-            ->payload(ThenpingmePayload::fromEvent($event)->toArray())
-            ->dispatch();
-    }
-
-    public function handleScheduledTaskFinished(ScheduledTaskFinished $event): void
+    public function handleScheduledTaskEvent($event): void
     {
         $this->thenpingme
             ->ping()
@@ -38,13 +31,12 @@ class ScheduledTaskSubscriber
     public function subscribe($events): void
     {
         $events->listen(
-            ScheduledTaskStarting::class,
-            static::class.'@handleScheduledTaskStarting'
-        );
-
-        $events->listen(
-            ScheduledTaskFinished::class,
-            static::class.'@handleScheduledTaskFinished'
+            [
+                ScheduledTaskStarting::class,
+                ScheduledTaskFinished::class,
+                ScheduledTaskSkipped::class,
+            ],
+            static::class.'@handleScheduledTaskEvent'
         );
     }
 }
