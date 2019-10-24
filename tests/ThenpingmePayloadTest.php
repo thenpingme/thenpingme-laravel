@@ -46,6 +46,33 @@ class ThenpingmePayloadTest extends TestCase
                 'on_one_server' => false,
                 'description' => 'This is the description',
                 'mutex' => $task->mutexName(),
+                'filtered' => false,
+            ], $payload);
+        });
+    }
+
+    /** @test */
+    public function it_determines_if_a_task_is_filtered()
+    {
+        $task = app(Schedule::class)
+            ->command('thenpingme:filtered')
+            ->description('This is the description')
+            ->when(function () {
+                return false;
+            });
+
+        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+            $this->assertEquals([
+                'type' => TaskIdentifier::TYPE_COMMAND,
+                'expression' => '* * * * *',
+                'command' => 'thenpingme:filtered',
+                'timezone' => 'UTC',
+                'maintenance' => false,
+                'without_overlapping' => false,
+                'on_one_server' => false,
+                'description' => 'This is the description',
+                'mutex' => $task->mutexName(),
+                'filtered' => true,
             ], $payload);
         });
     }
