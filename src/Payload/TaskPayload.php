@@ -25,7 +25,7 @@ class TaskPayload extends ThenpingmePayload
         return [
             'type' => (new TaskIdentifier)($this->task),
             'expression' => $this->task->expression,
-            'command' => ltrim(Str::after($this->task->command, 'artisan'), "', '"),
+            'command' => $this->sanitisedCommand(),
             'timezone' => $this->task->timezone,
             'maintenance' => $this->task->evenInMaintenanceMode,
             'without_overlapping' => $this->task->withoutOverlapping,
@@ -36,7 +36,7 @@ class TaskPayload extends ThenpingmePayload
         ];
     }
 
-    private function isFiltered()
+    private function isFiltered(): bool
     {
         return with(new ReflectionClass($this->task), function ($class) {
             $filters = $class->getProperty('filters');
@@ -44,5 +44,14 @@ class TaskPayload extends ThenpingmePayload
 
             return ! empty($filters->getValue($this->task));
         });
+    }
+
+    private function sanitisedCommand(): string
+    {
+        return trim(str_replace([
+            "'",
+            PHP_BINARY,
+            'artisan',
+        ], '', $this->task->command));
     }
 }
