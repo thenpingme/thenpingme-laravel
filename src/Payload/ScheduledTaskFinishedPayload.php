@@ -8,7 +8,7 @@ class ScheduledTaskFinishedPayload extends ThenpingmePayload
 {
     public function toArray(): array
     {
-        return [
+        return array_merge(parent::toArray(), [
             'type' => class_basename($this->event),
             'time' => Carbon::now()->toIso8601String(),
             'runtime' => sprintf('%.2fs', $this->event->runtime),
@@ -17,6 +17,6 @@ class ScheduledTaskFinishedPayload extends ThenpingmePayload
                 'uuid' => config('thenpingme.project_id'),
             ],
             'task' => TaskPayload::make($this->event->task)->toArray(),
-        ];
+        ]);
     }
 }

@@ -28,6 +28,8 @@ class ThenpingmePayloadTest extends TestCase
             'thenpingme.project_id' => 'abc123',
             'thenpingme.signing_key' => 'super-secret',
         ]);
+
+        request()->server->add(['SERVER_ADDR' => '127.0.0.1']);
     }
 
     /** @test */
@@ -138,6 +140,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskStartingPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) {
+                $this->assertEquals('127.0.0.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskStarting', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
                 $this->assertEquals('2019-10-11T21:08:00+00:00', $body['expires']);
@@ -161,6 +164,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskFinishedPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) {
+                $this->assertEquals('127.0.0.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskFinished', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
                 $this->assertEquals('1.00s', $body['runtime']);
@@ -183,6 +187,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskSkippedPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) {
+                $this->assertEquals('127.0.0.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskSkipped', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
             });

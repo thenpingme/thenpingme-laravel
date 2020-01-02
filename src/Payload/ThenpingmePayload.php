@@ -40,6 +40,8 @@ abstract class ThenpingmePayload implements Arrayable
 
     public function toArray(): array
     {
-        return [];
+        return [
+            'ip' => request()->server('SERVER_ADDR'),
+        ];
     }
 }
