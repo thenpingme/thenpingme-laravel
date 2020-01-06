@@ -11,7 +11,7 @@ class ScheduledTaskFinishedPayload extends ThenpingmePayload
         return array_merge(parent::toArray(), [
             'type' => class_basename($this->event),
             'time' => Carbon::now()->toIso8601String(),
-            'runtime' => sprintf('%.2fs', $this->event->runtime),
+            'runtime' => $this->event->runtime,
             'exit_code' => $this->event->task->exitCode,
             'project' => [
                 'uuid' => config('thenpingme.project_id'),
