@@ -167,7 +167,7 @@ class ThenpingmePayloadTest extends TestCase
                 $this->assertEquals('127.0.0.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskFinished', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
-                $this->assertEquals('1.00s', $body['runtime']);
+                $this->assertEquals('1', $body['runtime']);
                 $this->assertNull($body['exit_code']);
             });
         });
