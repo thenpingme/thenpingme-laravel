@@ -38,7 +38,7 @@ class ThenpingmePayloadTest extends TestCase
         $task = app(Schedule::class)->command('generate:payload')->description('This is the description');
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
-            $this->assertEquals([
+            Assert::assertArraySubset([
                 'type' => TaskIdentifier::TYPE_COMMAND,
                 'expression' => '* * * * *',
                 'command' => 'generate:payload',
@@ -64,7 +64,7 @@ class ThenpingmePayloadTest extends TestCase
             });
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
-            $this->assertEquals([
+            Assert::assertArraySubset([
                 'type' => TaskIdentifier::TYPE_COMMAND,
                 'expression' => '* * * * *',
                 'command' => 'thenpingme:filtered',
