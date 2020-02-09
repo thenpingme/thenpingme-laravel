@@ -38,9 +38,19 @@ abstract class ThenpingmePayload implements Arrayable
         return TaskPayload::make($task);
     }
 
+    public function fingerprint(): string
+    {
+        return sha1(vsprintf('%s.%s.%s', [
+            config('thenpingme.project_id'),
+            $this->event->task->mutexName(),
+            getmypid(),
+        ]));
+    }
+
     public function toArray(): array
     {
         return [
+            'fingerprint' => $this->fingerprint(),
             'ip' => request()->server('SERVER_ADDR'),
         ];
     }

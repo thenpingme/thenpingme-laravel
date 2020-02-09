@@ -139,7 +139,8 @@ class ThenpingmePayloadTest extends TestCase
         tap(ThenpingmePayload::fromEvent($event), function ($payload) {
             $this->assertInstanceOf(ScheduledTaskStartingPayload::class, $payload);
 
-            tap($payload->toArray(), function ($body) {
+            tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('127.0.0.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskStarting', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
@@ -163,7 +164,8 @@ class ThenpingmePayloadTest extends TestCase
         tap(ThenpingmePayload::fromEvent($event), function ($payload) {
             $this->assertInstanceOf(ScheduledTaskFinishedPayload::class, $payload);
 
-            tap($payload->toArray(), function ($body) {
+            tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('127.0.0.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskFinished', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
@@ -186,7 +188,8 @@ class ThenpingmePayloadTest extends TestCase
         tap(ThenpingmePayload::fromEvent($event), function ($payload) {
             $this->assertInstanceOf(ScheduledTaskSkippedPayload::class, $payload);
 
-            tap($payload->toArray(), function ($body) {
+            tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('127.0.0.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskSkipped', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
