@@ -26,6 +26,7 @@ class ThenpingmeSetupPayload implements Arrayable
                 'uuid' => Config::get('thenpingme.project_id'),
                 'name' => Config::get('app.name'),
                 'signing_key' => Config::get('thenpingme.signing_key'),
+                'timezone' => config('app.timezone'),
             ],
             'tasks' => array_reduce($this->tasks, function ($tasks, $task) {
                 $tasks[] = TaskPayload::make($task)->toArray();

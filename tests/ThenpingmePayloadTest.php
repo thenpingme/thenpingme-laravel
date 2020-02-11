@@ -95,6 +95,7 @@ class ThenpingmePayloadTest extends TestCase
                     'uuid' => 'abc123',
                     'name' => 'We changed the project name',
                     'signing_key' => 'super-secret',
+                    'timezone' => config('app.timezone'),
                 ],
                 'tasks' => [
                     [
