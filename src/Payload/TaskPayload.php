@@ -26,7 +26,6 @@ class TaskPayload extends ThenpingmePayload
             'type' => (new TaskIdentifier)($this->task),
             'expression' => $this->task->expression,
             'command' => $this->sanitisedCommand(),
-            'timezone' => $this->task->timezone,
             'maintenance' => $this->task->evenInMaintenanceMode,
             'without_overlapping' => $this->task->withoutOverlapping,
             'on_one_server' => $this->task->onOneServer,
