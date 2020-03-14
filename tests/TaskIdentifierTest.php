@@ -41,6 +41,14 @@ class TaskIdentifierTest extends TestCase
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
             $this->assertEquals(TaskIdentifier::TYPE_CLOSURE, $payload['type']);
         });
+
+        $task = app(Schedule::class)->call(function () {
+            echo 'testing';
+        })->description('some closure task');
+
+        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
+            $this->assertEquals(TaskIdentifier::TYPE_CLOSURE, $payload['type']);
+        });
     }
 
     /** @test */
