@@ -13,6 +13,7 @@ class ScheduledTaskFinishedPayload extends ThenpingmePayload
             'time' => Carbon::now()->toIso8601String(),
             'runtime' => $this->event->runtime,
             'exit_code' => $this->event->task->exitCode,
+            'memory' => memory_get_usage(true),
             'project' => [
                 'uuid' => config('thenpingme.project_id'),
             ],

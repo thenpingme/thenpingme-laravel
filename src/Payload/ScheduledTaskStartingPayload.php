@@ -15,6 +15,7 @@ class ScheduledTaskStartingPayload extends ThenpingmePayload
             'project' => [
                 'uuid' => config('thenpingme.project_id'),
             ],
+            'memory' => memory_get_usage(true),
             'task' => TaskPayload::make($this->event->task)->toArray(),
         ]);
     }
