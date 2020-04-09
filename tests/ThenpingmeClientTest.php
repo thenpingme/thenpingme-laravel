@@ -13,7 +13,7 @@ class ThenpingmeClientTest extends TestCase
     {
         parent::setUp();
 
-        $this->app->instance(Client::class, new TestClient);
+        config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
     }
 
     /** @test */

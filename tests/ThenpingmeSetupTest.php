@@ -19,7 +19,7 @@ class ThenpingmeSetupTest extends TestCase
 
         Queue::fake();
 
-        $this->app->instance(Client::class, new TestClient);
+        config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
 
         touch(base_path('.env.example'));
         touch(base_path('.env'));

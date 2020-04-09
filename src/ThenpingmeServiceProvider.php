@@ -48,9 +48,7 @@ class ThenpingmeServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(Client::class, function ($app) {
-            return Config::get('thenpingme.test_mode')
-                ? $app->make(TestClient::class)
-                : $app->make(ThenpingmeClient::class);
+            return $app->make(ThenpingmeClient::class);
         });
     }
 }

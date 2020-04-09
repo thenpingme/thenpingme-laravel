@@ -48,7 +48,7 @@ class ThenpingmeClient implements Client
 
     public function baseUrl(): string
     {
-        return 'https://thenping.me/api';
+        return config('thenpingme.api_url', 'https://thenping.me/api');
     }
 
     public function dispatch(): void
