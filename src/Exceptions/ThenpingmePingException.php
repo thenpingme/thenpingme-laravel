@@ -13,6 +13,9 @@ class ThenpingmePingException extends Exception
 
     public static function couldNotPing($status)
     {
-        return new static(sprintf('Could not send ping to thenping.me: [%s]', $status));
+        return new static(vsprintf('Could not send ping to %s: [%s]', [
+            parse_url(config('thenpingme.api_url'), PHP_URL_HOST),
+            $status,
+        ]));
     }
 }
