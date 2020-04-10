@@ -6,7 +6,7 @@ return [
 
     'signing_key' => env('THENPINGME_SIGNING_KEY'),
 
-    'queue_ping' => env('THENPINGME_QUEUE_PING', false),
+    'queue_ping' => env('THENPINGME_QUEUE_PING', true),
 
     'collect_git_sha' => env('THENPINGME_COLLECT_GIT_SHA', true),
 
