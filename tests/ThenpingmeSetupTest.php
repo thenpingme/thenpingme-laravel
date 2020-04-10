@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
+use sixlive\DotenvEditor\DotenvEditor;
 use Thenpingme\Client\Client;
 use Thenpingme\Client\TestClient;
 use Thenpingme\Facades\Thenpingme;
@@ -39,13 +40,17 @@ class ThenpingmeSetupTest extends TestCase
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
-        $this->assertTrue($this->loadEnv(true)->contains('THENPINGME_PROJECT_ID='.PHP_EOL));
-        $this->assertTrue($this->loadEnv(true)->contains('THENPINGME_SIGNING_KEY='.PHP_EOL));
-        $this->assertTrue($this->loadEnv(true)->contains('THENPINGME_QUEUE_PING=false'.PHP_EOL));
+        tap($this->loadEnv(base_path('.env')), function ($editor) {
+            $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $editor->getEnv('THENPINGME_PROJECT_ID'));
+            $this->assertEquals('this-is-the-signing-secret', $editor->getEnv('THENPINGME_SIGNING_KEY'));
+            $this->assertEquals('true', $editor->getEnv('THENPINGME_QUEUE_PING'));
+        });
 
-        $this->assertTrue($this->loadEnv()->contains('THENPINGME_PROJECT_ID=aaa-bbbb-c1c1c1-ddd-ef1'.PHP_EOL));
-        $this->assertTrue($this->loadEnv()->contains('THENPINGME_SIGNING_KEY=this-is-the-signing-secret'.PHP_EOL));
-        $this->assertTrue($this->loadEnv()->contains('THENPINGME_QUEUE_PING=false'.PHP_EOL));
+        tap($this->loadEnv(base_path('.env.example')), function ($editor) {
+            $this->assertEquals('', $editor->getEnv('THENPINGME_PROJECT_ID'));
+            $this->assertEquals('', $editor->getEnv('THENPINGME_SIGNING_KEY'));
+            $this->assertEquals('true', $editor->getEnv('THENPINGME_QUEUE_PING'));
+        });
     }
 
     /** @test */
@@ -68,8 +73,52 @@ class ThenpingmeSetupTest extends TestCase
         });
     }
 
-    protected function loadEnv($example = false)
+    /** @test */
+    public function it_handles_missing_environment_file()
     {
-        return Collection::make(file(base_path($example ? '.example.env' : '.env')));
+        Queue::fake(ThenpingmePingJob::class);
+
+        unlink(base_path('.env'));
+
+        Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
+        Thenpingme::shouldReceive('scheduledTasks')->once()->andReturn([]);
+
+        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
+            ->expectsOutput('The .env file is missing');
+
+        Queue::assertNotPushed(ThenpingmePingJob::class);
+
+        touch(base_path('.env'));
+    }
+
+    /** @test */
+    public function it_runs_setup_with_tasks_only()
+    {
+        Queue::fake(ThenpingmePingJob::class);
+
+        $schedule = $this->app->make(Schedule::class);
+        $schedule->command('test:command')->hourly();
+
+        config([
+            'thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1',
+        ]);
+
+        $this->artisan('thenpingme:setup --tasks-only');
+
+        Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
+            $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
+            $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
+            $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
+
+            $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
+            $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
+
+            return true;
+        });
+    }
+
+    protected function loadEnv($file)
+    {
+        return tap(new DotenvEditor)->load($file);
     }
 }

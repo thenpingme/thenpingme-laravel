@@ -18,7 +18,9 @@
     "require": {
         "php": ">=7.0.0|^7.2.5",
         "kitetail/zttp": "^0.4.0",
-        "laravel/framework": "^6.2|^7.0"
+        "laravel/framework": "^6.2|^7.0",
+        "nunomaduro/laravel-console-task": "^1.4",
+        "sixlive/dotenv-editor": "^1.2"
     },
     "require-dev": {
         "orchestra/testbench": "^3.5 || 4.*",

@@ -2,6 +2,7 @@
 
 namespace Thenpingme\Tests;
 
+use NunoMaduro\LaravelConsoleTask\LaravelConsoleTaskServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Thenpingme\ThenpingmeServiceProvider;
 
@@ -11,6 +12,7 @@ class TestCase extends BaseTestCase
     {
         return [
             ThenpingmeServiceProvider::class,
+            LaravelConsoleTaskServiceProvider::class,
         ];
     }
 
