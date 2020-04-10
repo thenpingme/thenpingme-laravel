@@ -16,9 +16,9 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.0.0|^7.2.5",
         "kitetail/zttp": "^0.4.0",
-        "laravel/framework": "^6.2"
+        "laravel/framework": "^6.2|^7.0"
     },
     "require-dev": {
         "orchestra/testbench": "^3.5 || 4.*",
