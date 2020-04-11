@@ -94,7 +94,7 @@ class ThenpingmeClient implements Client
         return $this;
     }
 
-    public function useSecret(string $secret): self
+    public function useSecret(?string $secret): self
     {
         $this->secret = $secret;
 

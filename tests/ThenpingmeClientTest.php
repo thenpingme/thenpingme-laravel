@@ -28,6 +28,27 @@ class ThenpingmeClientTest extends TestCase
         app(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
     }
 
+    /** @test */
+    public function it_does_not_send_a_ping_if_key_is_missing()
+    {
+        config(['thenpingme.signing_key' => null]);
+
+        $this->expectException(CouldNotSendPing::class);
+        $this->expectExceptionMessageRegExp('/signing secret is not set/');
+
+        app(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
+    }
+
+    /** @test */
+    public function it_does_not_send_a_ping_if_endpoint_is_missing()
+    {
+        $this->expectException(CouldNotSendPing::class);
+        $this->expectExceptionMessageRegExp('/endpoint URL is not set/');
+
+        app(Client::class)->payload(['thenpingme' => 'test'])->dispatch();
+    }
+
+    /** @test */
     public function it_sets_defaults_when_initialising_client()
     {
         $client = app(Client::class)->payload(['thenpingme' => 'test']);
