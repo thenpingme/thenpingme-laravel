@@ -8,7 +8,8 @@ return [
 
     'queue_ping' => env('THENPINGME_QUEUE_PING', true),
 
-    'collect_git_sha' => env('THENPINGME_COLLECT_GIT_SHA', true),
+    // Capture git sha with ping
+    // 'release' => trim(exec('git --git-dir ' . base_path('.git') . ' log --pretty="%h" -n1 HEAD')),
 
     'api_url' => env('THENPINGME_API_URL', 'https://thenping.me/api'),
 

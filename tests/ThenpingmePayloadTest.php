@@ -149,6 +149,26 @@ class ThenpingmePayloadTest extends TestCase
     }
 
     /** @test */
+    public function it_includes_the_release_if_configured_to_do_so()
+    {
+        config(['thenpingme.release' => 'this is the release']);
+
+        $event = new ScheduledTaskStarting(
+            app(Schedule::class)
+                ->command('thenpingme:first', )
+                ->description('This is the first task')
+                ->withoutOverlapping(10)
+                ->onOneServer()
+        );
+
+        tap(ThenpingmePayload::fromEvent($event), function ($payload) {
+            tap($payload->toArray(), function ($body) {
+                $this->assertEquals('this is the release', $body['release']);
+            });
+        });
+    }
+
+    /** @test */
     public function it_generates_the_correct_payload_for_a_scheduled_task_finished()
     {
         Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');

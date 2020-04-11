@@ -49,9 +49,10 @@ abstract class ThenpingmePayload implements Arrayable
 
     public function toArray(): array
     {
-        return [
+        return array_filter([
+            'release' => config('thenpingme.release'),
             'fingerprint' => $this->fingerprint(),
             'ip' => request()->server('SERVER_ADDR'),
-        ];
+        ]);
     }
 }
