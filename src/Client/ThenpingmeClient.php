@@ -68,6 +68,10 @@ class ThenpingmeClient implements Client
 
     public function endpoint($url): self
     {
+        if (! $this->baseUrl()) {
+            throw CouldNotSendPing::missingBaseUrl();
+        }
+
         $this->url = $this->pingJob->url = vsprintf('%s/%s', [
             rtrim($this->baseUrl(), '/'),
             ltrim($url, '/'),

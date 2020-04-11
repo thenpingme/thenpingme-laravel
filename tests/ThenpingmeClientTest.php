@@ -5,6 +5,7 @@ namespace Thenpingme\Tests;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Client\Client;
 use Thenpingme\Client\TestClient;
+use Thenpingme\Exceptions\CouldNotSendPing;
 use Thenpingme\Signer\ThenpingmeSigner;
 
 class ThenpingmeClientTest extends TestCase
@@ -17,6 +18,16 @@ class ThenpingmeClientTest extends TestCase
     }
 
     /** @test */
+    public function it_does_not_send_a_ping_if_base_url_is_missing()
+    {
+        config(['thenpingme.api_url' => null]);
+
+        $this->expectException(CouldNotSendPing::class);
+        $this->expectExceptionMessageRegExp('/base URL is not set/');
+
+        app(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
+    }
+
     public function it_sets_defaults_when_initialising_client()
     {
         $client = app(Client::class)->payload(['thenpingme' => 'test']);
