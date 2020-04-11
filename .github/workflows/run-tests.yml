@@ -2,14 +2,15 @@ name: Run tests
 
 on:
     push:
+    pull_request:
     schedule:
-        - cron: '0 0 * * *'
+        - cron: "0 0 * * *"
 
 jobs:
-    php-tests:
+    tests:
         runs-on: ${{ matrix.os }}
-
         strategy:
+            fail-fast: false
             matrix:
                 php: [7.4, 7.3, 7.2]
                 laravel: [7.*, 6.*]
@@ -17,7 +18,9 @@ jobs:
                 os: [ubuntu-latest, windows-latest]
                 include:
                     - laravel: ^6.2
+                      testbench: 4.*
                     - laravel: ^7.0
+                      testbench: 5.*
 
         name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
 
@@ -25,18 +28,23 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v1
 
+            - name: Cache dependencies
+              uses: actions/cache@v1
+              with:
+                  path: ~/.composer/cache/files
+                  key: dependencies-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+
             - name: Setup PHP
               uses: shivammathur/setup-php@v1
               with:
-                php-version: ${{ matrix.php }}
-                extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
-                coverage: none
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
 
             - name: Install dependencies
               run: |
-                  composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update
+                  composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                   composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
-            
+
             - name: Execute tests
               run: vendor/bin/phpunit
-
