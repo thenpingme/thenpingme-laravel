@@ -78,10 +78,9 @@ class ThenpingmeSetupTest extends TestCase
         unlink(base_path('.env'));
 
         Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
-        Thenpingme::shouldReceive('scheduledTasks')->once()->andReturn([]);
+        Thenpingme::shouldReceive('scheduledTasks')->never();
 
-        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
-            ->expectsOutput('The .env file is missing');
+        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
         Queue::assertNotPushed(ThenpingmePingJob::class);
 
