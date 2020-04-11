@@ -22,11 +22,12 @@ class ThenpingmeSetupPayload implements Arrayable
     public function toArray(): array
     {
         return [
-            'project' => [
+            'project' => array_filter([
                 'uuid' => Config::get('thenpingme.project_id'),
                 'name' => Config::get('app.name'),
                 'signing_key' => Config::get('thenpingme.signing_key'),
-            ],
+                'release' => Config::get('thenpingme.release'),
+            ]),
             'tasks' => array_reduce($this->tasks, function ($tasks, $task) {
                 $tasks[] = TaskPayload::make($task)->toArray();
 
