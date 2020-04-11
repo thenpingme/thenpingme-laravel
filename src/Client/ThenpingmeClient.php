@@ -46,9 +46,9 @@ class ThenpingmeClient implements Client
             ->useSecret(Config::get('thenpingme.signing_key'));
     }
 
-    public function baseUrl(): string
+    public function baseUrl(): ?string
     {
-        return config('thenpingme.api_url', 'https://thenping.me/api');
+        return config('thenpingme.api_url');
     }
 
     public function dispatch(): void

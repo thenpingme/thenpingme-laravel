@@ -4,7 +4,7 @@ namespace Thenpingme\Client;
 
 interface Client
 {
-    public function baseUrl(): string;
+    public function baseUrl(): ?string;
 
     public function payload(array $payload): self;
 
