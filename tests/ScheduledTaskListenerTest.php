@@ -4,13 +4,10 @@ namespace Thenpingme\Tests;
 
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
-use Illuminate\Console\Scheduling\Event;
-use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
-use Spatie\WebhookServer\CallWebhookJob;
 use Thenpingme\ThenpingmePingJob;
 
 class ScheduledTaskListenerTest extends TestCase

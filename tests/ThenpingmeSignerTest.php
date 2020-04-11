@@ -2,9 +2,7 @@
 
 namespace Thenpingme\Tests;
 
-use Illuminate\Support\Facades\Config;
 use Thenpingme\Signer\Signer;
-use Thenpingme\Signer\ThenpingmeSigner;
 
 class ThenpingmeSignerTest extends TestCase
 {

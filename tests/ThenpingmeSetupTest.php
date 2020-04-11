@@ -3,12 +3,9 @@
 namespace Thenpingme\Tests;
 
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use sixlive\DotenvEditor\DotenvEditor;
-use Thenpingme\Client\Client;
-use Thenpingme\Client\TestClient;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\ThenpingmePingJob;
 

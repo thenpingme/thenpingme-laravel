@@ -2,9 +2,6 @@
 
 namespace Thenpingme\Tests;
 
-use Illuminate\Console\Scheduling\CallbackEvent;
-use Illuminate\Console\Scheduling\Event;
-use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Console\Scheduling\Schedule;
 use Thenpingme\Payload\ThenpingmePayload;
 use Thenpingme\TaskIdentifier;
