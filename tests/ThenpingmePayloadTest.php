@@ -126,7 +126,8 @@ class ThenpingmePayloadTest extends TestCase
         Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
 
         $event = new ScheduledTaskStarting(
-            app(Schedule::class)->command('thenpingme:first', )
+            app(Schedule::class)
+                ->command('thenpingme:first', )
                 ->description('This is the first task')
                 ->withoutOverlapping(10)
                 ->onOneServer()
