@@ -33,6 +33,8 @@ class TaskIdentifier
         }
 
         if ($task instanceof Event) {
+            dump($task->command, Str::contains(str_replace("'", '', $task->command), 'php artisan'));
+
             if (Str::contains(str_replace("'", '', $task->command), 'php artisan')) {
                 return static::TYPE_COMMAND;
             }
