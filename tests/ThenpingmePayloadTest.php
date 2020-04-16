@@ -37,7 +37,7 @@ class ThenpingmePayloadTest extends TestCase
     /** @test */
     public function it_generates_a_task_payload()
     {
-        $task = app(Schedule::class)->command('generate:payload')->description('This is the description');
+        $task = $this->app->make(Schedule::class)->command('generate:payload')->description('This is the description');
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             Assert::assertArraySubset([
@@ -57,7 +57,7 @@ class ThenpingmePayloadTest extends TestCase
     /** @test */
     public function it_determines_if_a_task_is_filtered()
     {
-        $task = app(Schedule::class)
+        $task = $this->app->make(Schedule::class)
             ->command('thenpingme:filtered')
             ->description('This is the description')
             ->when(function () {
@@ -82,7 +82,7 @@ class ThenpingmePayloadTest extends TestCase
     /** @test */
     public function it_generates_a_setup_payload()
     {
-        $scheduler = app(Schedule::class);
+        $scheduler = $this->app->make(Schedule::class);
 
         $events = ScheduledTaskCollection::make([
             $scheduler->command('thenpingme:first')->description('This is the first task'),
@@ -128,7 +128,7 @@ class ThenpingmePayloadTest extends TestCase
         Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
 
         $event = new ScheduledTaskStarting(
-            app(Schedule::class)
+            $this->app->make(Schedule::class)
                 ->command('thenpingme:first')
                 ->description('This is the first task')
                 ->withoutOverlapping(10)
@@ -157,7 +157,7 @@ class ThenpingmePayloadTest extends TestCase
         config(['thenpingme.release' => 'this is the release']);
 
         $event = new ScheduledTaskStarting(
-            app(Schedule::class)
+            $this->app->make(Schedule::class)
                 ->command('thenpingme:first')
                 ->description('This is the first task')
                 ->withoutOverlapping(10)
@@ -178,7 +178,7 @@ class ThenpingmePayloadTest extends TestCase
         Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
 
         $event = new ScheduledTaskFinished(
-            app(Schedule::class)->command('thenpingme:first')->description('This is the first task'),
+            $this->app->make(Schedule::class)->command('thenpingme:first')->description('This is the first task'),
             1
         );
 
@@ -203,7 +203,7 @@ class ThenpingmePayloadTest extends TestCase
         Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
 
         $event = new ScheduledTaskSkipped(
-            app(Schedule::class)->command('thenpingme:first')->description('This is the first task'),
+            $this->app->make(Schedule::class)->command('thenpingme:first')->description('This is the first task'),
             1
         );
 

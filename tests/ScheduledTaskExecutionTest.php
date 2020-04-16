@@ -24,7 +24,7 @@ class ScheduledTaskExecutionTest extends TestCase
     /** @test */
     public function it_keeps_the_same_fingerprint_across_the_full_execution()
     {
-        $event = app(Schedule::class)->command('thenpingme:testing');
+        $this->app->make(Schedule::class)->command('thenpingme:testing');
 
         $this->artisan('schedule:run');
 

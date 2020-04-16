@@ -54,8 +54,9 @@ class ThenpingmeSetupTest extends TestCase
     /** @test */
     public function it_sets_up_initial_scheduled_tasks()
     {
-        $schedule = $this->app->make(Schedule::class);
-        $schedule->command('test:command')->hourly();
+        tap($this->app->make(Schedule::class), function ($schedule) {
+            $schedule->command('test:command')->hourly();
+        });
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
@@ -96,12 +97,11 @@ class ThenpingmeSetupTest extends TestCase
     {
         Queue::fake(ThenpingmePingJob::class);
 
-        $schedule = $this->app->make(Schedule::class);
-        $schedule->command('test:command')->hourly();
+        tap($this->app->make(Schedule::class), function ($schedule) {
+            $schedule->command('test:command')->hourly();
+        });
 
-        config([
-            'thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1',
-        ]);
+        config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
 
         $this->artisan('thenpingme:setup --tasks-only');
 

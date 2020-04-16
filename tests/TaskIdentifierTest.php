@@ -12,7 +12,7 @@ class TaskIdentifierTest extends TestCase
     /** @test */
     public function it_identifies_artisan_commands()
     {
-        $task = app(Schedule::class)->command('thenpingme:test');
+        $task = $this->app->make(Schedule::class)->command('thenpingme:test');
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
             $this->assertEquals(TaskIdentifier::TYPE_COMMAND, $payload['type']);
@@ -22,7 +22,7 @@ class TaskIdentifierTest extends TestCase
     /** @test */
     public function it_identifies_shell_commands()
     {
-        $task = app(Schedule::class)->exec('echo "testing"');
+        $task = $this->app->make(Schedule::class)->exec('echo "testing"');
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
             $this->assertEquals(TaskIdentifier::TYPE_SHELL, $payload['type']);
@@ -32,7 +32,7 @@ class TaskIdentifierTest extends TestCase
     /** @test */
     public function it_identifies_closures()
     {
-        $task = app(Schedule::class)->call(function () {
+        $task = $this->app->make(Schedule::class)->call(function () {
             echo 'testing';
         });
 
@@ -40,7 +40,7 @@ class TaskIdentifierTest extends TestCase
             $this->assertEquals(TaskIdentifier::TYPE_CLOSURE, $payload['type']);
         });
 
-        $task = app(Schedule::class)->call(function () {
+        $task = $this->app->make(Schedule::class)->call(function () {
             echo 'testing';
         })->description('some closure task');
 
@@ -52,7 +52,7 @@ class TaskIdentifierTest extends TestCase
     /** @test */
     public function it_identifies_jobs()
     {
-        $task = app(Schedule::class)->job('Thenpingme\Tests\SomeJob');
+        $task = $this->app->make(Schedule::class)->job(SomeJob::class);
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
             $this->assertEquals(TaskIdentifier::TYPE_JOB, $payload['type']);
