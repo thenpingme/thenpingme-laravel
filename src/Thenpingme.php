@@ -16,15 +16,19 @@ class Thenpingme
         return Str::random(512);
     }
 
-    public function scheduledTasks(): array
+    public function scheduledTasks(): ScheduledTaskCollection
     {
         return with(app(Schedule::class), function ($scheduler) {
-            return collect($scheduler->events())
+            return ScheduledTaskCollection::make($scheduler->events())
                 ->filter(function ($event) {
                     return App::environment($event->environments)
                         || empty($event->environments);
                 })
-                ->toArray();
+                ->transform(function ($event) {
+                    $this->fingerprintTask($event);
+
+                    return $event;
+                });
         });
     }
 
@@ -40,9 +44,9 @@ class Thenpingme
         )));
     }
 
-    public function fingerprintCallbackEvent(CallbackEvent $event): string
+    public function fingerprintCallbackEvent(CallbackEvent &$event): string
     {
-        $callbackMutex = with(new ReflectionClass($event), function (ReflectionClass $class) use ($event): string {
+        $callbackMutex = with(new ReflectionClass($event), function (ReflectionClass $class) use (&$event): string {
             $callback = $class->getProperty('callback');
             $callback->setAccessible(true);
 
@@ -55,6 +59,13 @@ class Thenpingme
             if (! is_callable($command)) {
                 return md5(serialize($command));
             }
+
+            tap(new ReflectionFunction($command), function (ReflectionFunction $function) use (&$event, $command) {
+                $event->extra = [
+                    'file' => $function->getClosureScopeClass()->getName(),
+                    'line' => "{$function->getStartLine()} to {$function->getEndLine()}",
+                ];
+            });
 
             return '';
         });

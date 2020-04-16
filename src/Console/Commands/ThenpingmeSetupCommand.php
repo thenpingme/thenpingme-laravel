@@ -4,10 +4,10 @@ namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use sixlive\DotenvEditor\DotenvEditor;
 use Thenpingme\Client\Client;
@@ -28,6 +28,9 @@ class ThenpingmeSetupCommand extends Command
     /** @var \Illuminate\Console\Scheduling\Schedule */
     protected $schedule;
 
+    /** @var array */
+    protected $scheduledTasks;
+
     /** @var string */
     protected $signingKey;
 
@@ -39,6 +42,10 @@ class ThenpingmeSetupCommand extends Command
     public function handle(Schedule $schedule): void
     {
         $this->schedule = $schedule;
+
+        if (! $this->prepareTasks()) {
+            return;
+        }
 
         if (! $this->option('tasks-only')) {
             $this->task('Generate signing key', function () {
@@ -71,6 +78,24 @@ class ThenpingmeSetupCommand extends Command
             $this->line(sprintf('THENPINGME_PROJECT_ID=%s', $this->argument('project_id')));
             $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
         }
+    }
+
+    protected function prepareTasks(): bool
+    {
+        $this->scheduledTasks = Thenpingme::scheduledTasks();
+
+        if (($nonUnique = $this->scheduledTasks->nonUnique())->isNotEmpty()) {
+            $this->table(
+                ['Type', 'Expression', 'Interval', 'Description', 'Extra'],
+                $nonUnique
+            );
+
+            $this->error('Tasks have been identified that are not uniquely distinguishable, which will cause reporting issues.');
+
+            return false;
+        }
+
+        return true;
     }
 
     protected function writeEnvFile(): bool
