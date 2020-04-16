@@ -7,6 +7,7 @@ use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
+use Thenpingme\Facades\Thenpingme;
 use Thenpingme\TaskIdentifier;
 
 abstract class ThenpingmePayload implements Arrayable
@@ -42,7 +43,7 @@ abstract class ThenpingmePayload implements Arrayable
     {
         return sha1(vsprintf('%s.%s.%s', [
             config('thenpingme.project_id'),
-            $this->event->task->mutexName(),
+            Thenpingme::fingerprintTask($this->event->task),
             getmypid(),
         ]));
     }

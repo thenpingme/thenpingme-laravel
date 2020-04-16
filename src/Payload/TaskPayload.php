@@ -2,8 +2,8 @@
 
 namespace Thenpingme\Payload;
 
-use Illuminate\Support\Str;
 use ReflectionClass;
+use Thenpingme\Facades\Thenpingme;
 use Thenpingme\TaskIdentifier;
 
 class TaskPayload extends ThenpingmePayload
@@ -30,7 +30,7 @@ class TaskPayload extends ThenpingmePayload
             'without_overlapping' => $this->task->withoutOverlapping,
             'on_one_server' => $this->task->onOneServer,
             'description' => $this->task->description,
-            'mutex' => $this->task->mutexName(),
+            'mutex' => Thenpingme::fingerprintTask($this->task),
             'filtered' => $this->isFiltered(),
         ];
     }

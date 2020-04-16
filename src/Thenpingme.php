@@ -2,11 +2,12 @@
 
 namespace Thenpingme;
 
+use Illuminate\Console\Scheduling\CallbackEvent;
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
+use ReflectionClass;
 
 class Thenpingme
 {
@@ -25,5 +26,41 @@ class Thenpingme
                 })
                 ->toArray();
         });
+    }
+
+    public function fingerprintTask(Event $event): string
+    {
+        if ($event instanceof CallbackEvent) {
+            return $this->fingerprintCallbackEvent($event);
+        }
+
+        return sprintf('thenpingme:%s', sha1(trim(
+            "{$event->expression}.{$event->command}.{$event->description}",
+            '.'
+        )));
+    }
+
+    public function fingerprintCallbackEvent(CallbackEvent $event): string
+    {
+        $callbackMutex = with(new ReflectionClass($event), function (ReflectionClass $class) use ($event): string {
+            $callback = $class->getProperty('callback');
+            $callback->setAccessible(true);
+
+            $command = $callback->getValue($event);
+
+            if (is_string($command)) {
+                return $command;
+            }
+
+            if (! is_callable($command)) {
+                return md5(serialize($command));
+            }
+
+            return '';
+        });
+
+        return sprintf('thenpingme:%s', sha1(
+            str_replace('..', '.', "{$event->expression}.{$callbackMutex}.{$event->description}")
+        ));
     }
 }

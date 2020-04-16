@@ -9,6 +9,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\Assert;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\ScheduledTaskFinishedPayload;
 use Thenpingme\Payload\ScheduledTaskSkippedPayload;
 use Thenpingme\Payload\ScheduledTaskStartingPayload;
@@ -46,7 +47,7 @@ class ThenpingmePayloadTest extends TestCase
                 'without_overlapping' => false,
                 'on_one_server' => false,
                 'description' => 'This is the description',
-                'mutex' => $task->mutexName(),
+                'mutex' => Thenpingme::fingerprintTask($task),
                 'filtered' => false,
             ], $payload);
         });
@@ -71,7 +72,7 @@ class ThenpingmePayloadTest extends TestCase
                 'without_overlapping' => false,
                 'on_one_server' => false,
                 'description' => 'This is the description',
-                'mutex' => $task->mutexName(),
+                'mutex' => Thenpingme::fingerprintTask($task),
                 'filtered' => true,
             ], $payload);
         });
@@ -103,7 +104,7 @@ class ThenpingmePayloadTest extends TestCase
                         'without_overlapping' => false,
                         'on_one_server' => false,
                         'description' => 'This is the first task',
-                        'mutex' => $events[0]->mutexName(),
+                        'mutex' => Thenpingme::fingerprintTask($events[0]),
                     ],
                     [
                         'type' => TaskIdentifier::TYPE_COMMAND,
@@ -113,7 +114,7 @@ class ThenpingmePayloadTest extends TestCase
                         'without_overlapping' => false,
                         'on_one_server' => false,
                         'description' => 'This is the second task',
-                        'mutex' => $events[1]->mutexName(),
+                        'mutex' => Thenpingme::fingerprintTask($events[1]),
                     ],
                 ],
             ], $payload);
