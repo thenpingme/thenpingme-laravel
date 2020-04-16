@@ -10,7 +10,7 @@ class ScheduledTaskCollection extends Collection
 {
     public function nonUnique(): self
     {
-        return $this
+        return static::make($this
             ->map(function ($task) {
                 return TaskPayload::fromTask($task)->toArray();
             })
@@ -29,7 +29,7 @@ class ScheduledTaskCollection extends Collection
                         ? sprintf('Line %s of %s', $task['extra']['line'], $task['extra']['file'])
                         : null,
                 ];
-            });
+            }));
     }
 
     public function hasNonUniqueJobs(): bool
