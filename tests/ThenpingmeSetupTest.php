@@ -117,6 +117,21 @@ class ThenpingmeSetupTest extends TestCase
         });
     }
 
+    /** @test */
+    public function it_exits_if_duplicate_tasks_are_detected()
+    {
+        Queue::fake(ThenpingmePingJob::class);
+
+        tap($this->app->make(Schedule::class), function ($schedule) {
+            $schedule->job(SomeJob::class)->everyMinute();
+            $schedule->job(SomeJob::class)->everyMinute();
+        });
+
+        $this->artisan('thenpingme:setup')->assertExitCode(1);
+
+        Queue::assertNotPushed(ThenpingmePingJob::class);
+    }
+
     protected function loadEnv($file)
     {
         return tap(new DotenvEditor)->load($file);
