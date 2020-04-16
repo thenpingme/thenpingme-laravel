@@ -157,7 +157,7 @@ class ThenpingmePayloadTest extends TestCase
 
         $event = new ScheduledTaskStarting(
             app(Schedule::class)
-                ->command('thenpingme:first', )
+                ->command('thenpingme:first')
                 ->description('This is the first task')
                 ->withoutOverlapping(10)
                 ->onOneServer()
