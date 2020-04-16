@@ -26,7 +26,7 @@ class ThenpingmeVerifyCommand extends Command
                 $this->line('Closure-based tasks should set a description to ensure uniqueness.');
             }
 
-            exit(1);
+            return 1;
         }
 
         $this->info('Your tasks are correctly configured and can be synced to thenping.me!');

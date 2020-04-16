@@ -5,6 +5,7 @@ namespace Thenpingme\Tests;
 use Illuminate\Console\Scheduling\Schedule;
 use Thenpingme\Payload\ThenpingmePayload;
 use Thenpingme\TaskIdentifier;
+use Thenpingme\Tests\Fixtures\SomeJob;
 
 class TaskIdentifierTest extends TestCase
 {

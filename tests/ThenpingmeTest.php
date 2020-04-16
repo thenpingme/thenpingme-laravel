@@ -4,9 +4,9 @@ namespace Thenpingme\Tests;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Arr;
-use Thenpingme\Console\Commands\ThenpingmeScheduleListCommand;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\TaskPayload;
+use Thenpingme\Tests\Fixtures\SomeJob;
 
 class ThenpingmeTest extends TestCase
 {
