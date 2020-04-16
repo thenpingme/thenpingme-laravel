@@ -33,7 +33,7 @@ class TaskIdentifier
         }
 
         if ($task instanceof Event) {
-            if (preg_match('/php(\d\.\d)? artisan/', str_replace("'", '', $task->command))) {
+            if (preg_match('/php((\d)?(\.\d)?)? artisan/', str_replace("'", '', $task->command))) {
                 return static::TYPE_COMMAND;
             }
 
