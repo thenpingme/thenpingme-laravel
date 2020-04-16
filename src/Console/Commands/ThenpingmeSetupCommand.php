@@ -44,7 +44,7 @@ class ThenpingmeSetupCommand extends Command
         $this->schedule = $schedule;
 
         if (! $this->prepareTasks()) {
-            return;
+            return 1;
         }
 
         if (! $this->option('tasks-only')) {
@@ -77,6 +77,8 @@ class ThenpingmeSetupCommand extends Command
             $this->info('    php artisan thenpingme:setup --tasks-only');
             $this->line(sprintf('THENPINGME_PROJECT_ID=%s', $this->argument('project_id')));
             $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
+
+            return 1;
         }
     }
 
