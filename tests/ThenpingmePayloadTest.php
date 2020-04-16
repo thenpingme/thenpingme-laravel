@@ -166,6 +166,7 @@ class ThenpingmePayloadTest extends TestCase
         tap(ThenpingmePayload::fromEvent($event), function ($payload) {
             tap($payload->toArray(), function ($body) {
                 $this->assertEquals('this is the release', $body['release']);
+                $this->assertEquals('this is the release', $body['task']['release']);
             });
         });
     }

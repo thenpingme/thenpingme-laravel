@@ -23,6 +23,7 @@ class TaskPayload extends ThenpingmePayload
     public function toArray(): array
     {
         return [
+            'release' => config('thenpingme.release'),
             'type' => (new TaskIdentifier)($this->task),
             'expression' => $this->task->expression,
             'command' => $this->sanitisedCommand(),
