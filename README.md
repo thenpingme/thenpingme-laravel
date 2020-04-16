@@ -7,6 +7,9 @@
 
 This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
 
+* This package requires at least Laravel 6.4.1.
+* Ensure documentation notes that scheduled closures must have unique descriptions
+
 ## Installation
 
 You can install the package via composer:
