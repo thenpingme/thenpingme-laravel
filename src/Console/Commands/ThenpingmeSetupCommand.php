@@ -4,10 +4,8 @@ namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 use sixlive\DotenvEditor\DotenvEditor;
 use Thenpingme\Client\Client;
