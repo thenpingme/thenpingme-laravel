@@ -4,17 +4,18 @@ namespace Thenpingme\Payload;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Facades\Config;
+use Thenpingme\Collections\ScheduledTaskCollection;
 
 class ThenpingmeSetupPayload implements Arrayable
 {
-    private $tasks;
+    private ScheduledTaskCollection $tasks;
 
-    private function __construct(array $tasks)
+    private function __construct(ScheduledTaskCollection $tasks)
     {
         $this->tasks = $tasks;
     }
 
-    public static function make(array $tasks): self
+    public static function make(ScheduledTaskCollection $tasks): self
     {
         return new static($tasks);
     }
@@ -28,7 +29,7 @@ class ThenpingmeSetupPayload implements Arrayable
                 'signing_key' => Config::get('thenpingme.signing_key'),
                 'release' => Config::get('thenpingme.release'),
             ]),
-            'tasks' => array_reduce($this->tasks, function ($tasks, $task) {
+            'tasks' => array_reduce($this->tasks->toArray(), function ($tasks, $task) {
                 $tasks[] = TaskPayload::make($task)->toArray();
 
                 return $tasks;

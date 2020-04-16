@@ -6,9 +6,10 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Foundation\Testing\Assert;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Testing\Assert;
+use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\ScheduledTaskFinishedPayload;
 use Thenpingme\Payload\ScheduledTaskSkippedPayload;
@@ -83,10 +84,10 @@ class ThenpingmePayloadTest extends TestCase
     {
         $scheduler = app(Schedule::class);
 
-        $events = [
+        $events = ScheduledTaskCollection::make([
             $scheduler->command('thenpingme:first')->description('This is the first task'),
             $scheduler->command('thenpingme:second')->description('This is the second task'),
-        ];
+        ]);
 
         tap(ThenpingmeSetupPayload::make($events)->toArray(), function ($payload) use ($events) {
             Assert::assertArraySubset([

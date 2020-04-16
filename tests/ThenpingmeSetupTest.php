@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use sixlive\DotenvEditor\DotenvEditor;
+use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\ThenpingmePingJob;
 
@@ -33,7 +34,7 @@ class ThenpingmeSetupTest extends TestCase
     public function it_correctly_sets_environment_variables()
     {
         Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
-        Thenpingme::shouldReceive('scheduledTasks')->once()->andReturn([]);
+        Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
@@ -78,7 +79,7 @@ class ThenpingmeSetupTest extends TestCase
         unlink(base_path('.env'));
 
         Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
-        Thenpingme::shouldReceive('scheduledTasks')->never();
+        Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 

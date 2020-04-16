@@ -8,6 +8,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use Thenpingme\Collections\ScheduledTaskCollection;
 
 class Thenpingme
 {
