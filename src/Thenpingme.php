@@ -7,6 +7,8 @@ use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
+use Lorisleiva\CronTranslator\CronParsingException;
+use Lorisleiva\CronTranslator\CronTranslator;
 use ReflectionClass;
 use Thenpingme\Collections\ScheduledTaskCollection;
 
@@ -31,6 +33,15 @@ class Thenpingme
                     return $event;
                 });
         });
+    }
+
+    public function translateExpression(string $expression): string
+    {
+        try {
+            return CronTranslator::translate($expression);
+        } catch (CronParsingException $e) {
+            return $expression;
+        }
     }
 
     public function fingerprintTask(Event $event): string
