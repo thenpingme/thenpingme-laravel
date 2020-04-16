@@ -39,7 +39,7 @@ class ThenpingmeSetupCommand extends Command
         parent::__construct();
     }
 
-    public function handle(Schedule $schedule): void
+    public function handle(Schedule $schedule)
     {
         $this->schedule = $schedule;
 
@@ -52,15 +52,15 @@ class ThenpingmeSetupCommand extends Command
                 return $this->generateSigningKey();
             });
 
-            $this->task('Writing configuration to .env file', function () {
+            $this->task('Write configuration to .env file', function () {
                 return $this->writeEnvFile();
             });
 
-            $this->task('Writing configuration to .env.example file', function () {
+            $this->task('Write configuration to .env.example file', function () {
                 return $this->writeExampleEnvFile();
             });
 
-            $this->task('Publishing config file', function () {
+            $this->task('Publish config file', function () {
                 return $this->publishConfig();
             });
         }
