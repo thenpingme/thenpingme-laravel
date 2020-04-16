@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Thenpingme\Client\Client;
 use Thenpingme\Client\TestClient;
 use Thenpingme\Client\ThenpingmeClient;
+use Thenpingme\Console\Commands\ThenpingmeScheduleListCommand;
 use Thenpingme\Console\Commands\ThenpingmeSetupCommand;
 use Thenpingme\Console\Commands\ThenpingmeVerifyCommand;
 use Thenpingme\Signer\Signer;
@@ -27,6 +28,7 @@ class ThenpingmeServiceProvider extends ServiceProvider
 
             $this->commands([
                 ThenpingmeSetupCommand::class,
+                ThenpingmeScheduleListCommand::class,
                 ThenpingmeVerifyCommand::class,
             ]);
 
