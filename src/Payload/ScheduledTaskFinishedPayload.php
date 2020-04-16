@@ -14,9 +14,6 @@ class ScheduledTaskFinishedPayload extends ThenpingmePayload
             'runtime' => $this->event->runtime,
             'exit_code' => $this->event->task->exitCode,
             'memory' => memory_get_usage(true),
-            'project' => [
-                'uuid' => config('thenpingme.project_id'),
-            ],
             'task' => TaskPayload::make($this->event->task)->toArray(),
         ]);
     }
