@@ -20,7 +20,7 @@ class ThenpingmeClientTest extends TestCase
         config(['thenpingme.api_url' => null]);
 
         $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessageMatches('/base URL is not set/');
+        $this->expectExceptionMessageRegExp('/base URL is not set/');
 
         $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
     }
@@ -31,7 +31,7 @@ class ThenpingmeClientTest extends TestCase
         config(['thenpingme.signing_key' => null]);
 
         $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessageMatches('/signing secret is not set/');
+        $this->expectExceptionMessageRegExp('/signing secret is not set/');
 
         $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
     }
@@ -40,7 +40,7 @@ class ThenpingmeClientTest extends TestCase
     public function it_does_not_send_a_ping_if_endpoint_is_missing()
     {
         $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessageMatches('/endpoint URL is not set/');
+        $this->expectExceptionMessageRegExp('/endpoint URL is not set/');
 
         $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->dispatch();
     }
