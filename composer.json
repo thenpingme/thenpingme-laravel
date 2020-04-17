@@ -6,7 +6,7 @@
         "laravel"
     ],
     "homepage": "https://github.com/thenpingme/laravel",
-    "license": "GPL-2.0-or-later",
+    "license": "MIT",
     "type": "library",
     "authors": [
         {
