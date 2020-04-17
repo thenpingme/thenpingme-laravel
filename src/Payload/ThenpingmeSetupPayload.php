@@ -8,7 +8,8 @@ use Thenpingme\Collections\ScheduledTaskCollection;
 
 class ThenpingmeSetupPayload implements Arrayable
 {
-    private ScheduledTaskCollection $tasks;
+    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
+    private $tasks;
 
     private function __construct(ScheduledTaskCollection $tasks)
     {

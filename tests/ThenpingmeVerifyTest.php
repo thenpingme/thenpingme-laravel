@@ -8,7 +8,8 @@ use Thenpingme\Tests\Fixtures\SomeJob;
 
 class ThenpingmeVerifyTest extends TestCase
 {
-    protected Translator $translator;
+    /** @var \Illuminate\Contracts\Translation\Translator */
+    protected $translator;
 
     public function setUp(): void
     {
