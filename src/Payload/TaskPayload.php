@@ -51,6 +51,7 @@ class TaskPayload extends ThenpingmePayload
     {
         return trim(str_replace([
             "'",
+            '"',
             PHP_BINARY,
             'artisan',
         ], '', $this->task->command));

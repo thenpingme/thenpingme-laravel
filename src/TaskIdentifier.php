@@ -43,8 +43,6 @@ class TaskIdentifier
 
     private function sanitisedCommand(string $command): string
     {
-        dump($command);
-
         return trim(str_replace([
             "'",
             '"',
