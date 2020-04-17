@@ -5,6 +5,7 @@ namespace Thenpingme\Tests;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Str;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\ThenpingmePingJob;
@@ -29,12 +30,17 @@ class ThenpingmeSyncTest extends TestCase
     public function it_fetches_tasks_to_be_synced()
     {
         tap($this->app->make(Schedule::class), function ($schedule) {
-            Thenpingme::partialMock();
-
             Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection([
                 $schedule->command('thenpingme:first')->description('This is the first task'),
                 $schedule->command('thenpingme:second')->description('This is the second task'),
             ]));
+            Thenpingme::shouldReceive('fingerprintTask')->times(4)->andReturn(
+                Str::random(16),
+                Str::random(16),
+                Str::random(16),
+                Str::random(16)
+            );
+            Thenpingme::shouldReceive('translateExpression');
         });
 
         $this->artisan('thenpingme:sync')
