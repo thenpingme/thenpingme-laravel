@@ -6,9 +6,9 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Testing\Assert;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Testing\Assert;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\ScheduledTaskFinishedPayload;
@@ -17,7 +17,6 @@ use Thenpingme\Payload\ScheduledTaskStartingPayload;
 use Thenpingme\Payload\ThenpingmePayload;
 use Thenpingme\Payload\ThenpingmeSetupPayload;
 use Thenpingme\TaskIdentifier;
-use Thenpingme\Tests\TestCase;
 
 class ThenpingmePayloadTest extends TestCase
 {
