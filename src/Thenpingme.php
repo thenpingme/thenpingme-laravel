@@ -12,7 +12,6 @@ use Lorisleiva\CronTranslator\CronTranslator;
 use ReflectionClass;
 use ReflectionFunction;
 use Thenpingme\Collections\ScheduledTaskCollection;
-use Thenpingme\Payload\TaskPayload;
 
 class Thenpingme
 {
