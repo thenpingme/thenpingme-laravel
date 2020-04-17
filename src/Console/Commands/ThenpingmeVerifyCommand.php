@@ -4,6 +4,7 @@ namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Support\Arr;
 use Thenpingme\Facades\Thenpingme;
 
 class ThenpingmeVerifyCommand extends Command
@@ -25,7 +26,12 @@ class ThenpingmeVerifyCommand extends Command
     public function handle()
     {
         if (($tasks = Thenpingme::scheduledTasks()->nonUnique())->isNotEmpty()) {
-            $this->table(['Type', 'Expression', 'Interval', 'Description', 'Extra'], $tasks->values());
+            $this->table(
+                ['Type', 'Expression', 'Interval', 'Description', 'Extra'],
+                $tasks->map(function ($task) {
+                    return Arr::only($task, ['type', 'expression', 'interval', 'description', 'extra']);
+                })
+            );
 
             $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
 
