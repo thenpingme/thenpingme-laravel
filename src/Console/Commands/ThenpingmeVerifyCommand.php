@@ -25,21 +25,21 @@ class ThenpingmeVerifyCommand extends Command
 
     public function handle()
     {
-        if (($tasks = Thenpingme::scheduledTasks()->nonUnique())->isNotEmpty()) {
+        if (($collisions = Thenpingme::scheduledTasks()->collisions())->isNotEmpty()) {
             $this->table(
                 ['Type', 'Expression', 'Interval', 'Description', 'Extra'],
-                $tasks->map(function ($task) {
+                $collisions->map(function ($task) {
                     return Arr::only($task, ['type', 'expression', 'interval', 'description', 'extra']);
                 })
             );
 
             $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
 
-            if ($tasks->hasNonUniqueJobs()) {
+            if ($collisions->hasNonUniqueJobs()) {
                 $this->line($this->translator->get('thenpingme::messages.duplicate_jobs'));
             }
 
-            if ($tasks->hasNonUniqueClosures()) {
+            if ($collisions->hasNonUniqueClosures()) {
                 $this->line($this->translator->get('thenpingme::messages.duplicate_closures'));
             }
 

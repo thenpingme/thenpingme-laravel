@@ -93,10 +93,10 @@ class ThenpingmeSetupCommand extends Command
     {
         $this->scheduledTasks = Thenpingme::scheduledTasks();
 
-        if (($nonUnique = $this->scheduledTasks->nonUnique())->isNotEmpty()) {
+        if (($collisions = $this->scheduledTasks->collisions())->isNotEmpty()) {
             $this->table(
                 ['Type', 'Expression', 'Interval', 'Description', 'Extra'],
-                $nonUnique->map(function ($task) {
+                $collisions->map(function ($task) {
                     return Arr::only($task, ['type', 'expression', 'interval', 'description', 'extra']);
                 })
             );

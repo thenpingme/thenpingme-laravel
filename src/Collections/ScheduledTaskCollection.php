@@ -8,7 +8,7 @@ use Thenpingme\Payload\TaskPayload;
 
 class ScheduledTaskCollection extends Collection
 {
-    public function nonUnique(): self
+    public function collisions(): self
     {
         return static::make($this
             ->map(function ($task) {
