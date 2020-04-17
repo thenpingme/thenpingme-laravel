@@ -2,14 +2,20 @@
 
 namespace Thenpingme\Tests;
 
+use Illuminate\Contracts\Translation\Translator;
 use Thenpingme\Client\Client;
 use Thenpingme\Exceptions\CouldNotSendPing;
 
 class ThenpingmeClientTest extends TestCase
 {
+    /** @var \Illuminate\Contracts\Translation\Translator */
+    protected $translator;
+
     public function setUp(): void
     {
         parent::setUp();
+
+        $this->translator = $this->app->make(Translator::class);
 
         config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
     }
@@ -20,7 +26,7 @@ class ThenpingmeClientTest extends TestCase
         config(['thenpingme.api_url' => null]);
 
         $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessageRegExp('/base URL is not set/');
+        $this->expectExceptionMessage($this->translator->get('thenpingme::messages.missing_base_url'));
 
         $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
     }
@@ -31,7 +37,7 @@ class ThenpingmeClientTest extends TestCase
         config(['thenpingme.signing_key' => null]);
 
         $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessageRegExp('/signing secret is not set/');
+        $this->expectExceptionMessage($this->translator->get('thenpingme::messages.missing_signing_secret'));
 
         $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
     }
@@ -40,7 +46,7 @@ class ThenpingmeClientTest extends TestCase
     public function it_does_not_send_a_ping_if_endpoint_is_missing()
     {
         $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessageRegExp('/endpoint URL is not set/');
+        $this->expectExceptionMessage($this->translator->get('thenpingme::messages.missing_endpoint_url'));
 
         $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->dispatch();
     }
