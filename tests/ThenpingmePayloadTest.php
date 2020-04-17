@@ -14,10 +14,10 @@ use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\ScheduledTaskFinishedPayload;
 use Thenpingme\Payload\ScheduledTaskSkippedPayload;
 use Thenpingme\Payload\ScheduledTaskStartingPayload;
+use Thenpingme\Payload\SyncPayload;
 use Thenpingme\Payload\ThenpingmePayload;
 use Thenpingme\Payload\ThenpingmeSetupPayload;
 use Thenpingme\TaskIdentifier;
-use Thenpingme\Tests\TestCase;
 
 class ThenpingmePayloadTest extends TestCase
 {
@@ -29,6 +29,7 @@ class ThenpingmePayloadTest extends TestCase
             'app.name' => 'We changed the project name',
             'thenpingme.project_id' => 'abc123',
             'thenpingme.signing_key' => 'super-secret',
+            'thenpingme.release' => 'this is the release',
         ]);
 
         request()->server->add(['SERVER_ADDR' => '127.0.0.1']);
@@ -216,6 +217,38 @@ class ThenpingmePayloadTest extends TestCase
                 $this->assertEquals('ScheduledTaskSkipped', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
             });
+        });
+    }
+
+    /** @test */
+    public function it_generates_a_sync_payload()
+    {
+        $schedule = $this->app->make(Schedule::class);
+
+        $events = ScheduledTaskCollection::make([
+            $schedule->command('thenpingme:first')->description('This is the first synced task'),
+        ]);
+
+        tap(SyncPayload::make($events)->toArray(), function ($payload) use ($events) {
+            Assert::assertArraySubset([
+                'project' => [
+                    'uuid' => 'abc123',
+                    'name' => 'We changed the project name',
+                    'release' => 'this is the release',
+                ],
+                'tasks' => [
+                    [
+                        'type' => TaskIdentifier::TYPE_COMMAND,
+                        'expression' => '* * * * *',
+                        'command' => 'thenpingme:first',
+                        'maintenance' => false,
+                        'without_overlapping' => false,
+                        'on_one_server' => false,
+                        'description' => 'This is the first synced task',
+                        'mutex' => Thenpingme::fingerprintTask($events[0]),
+                    ],
+                ],
+            ], $payload);
         });
     }
 }

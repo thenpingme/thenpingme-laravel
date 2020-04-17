@@ -6,7 +6,6 @@ use Cron\CronExpression;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Carbon;
-use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\TaskPayload;
 
@@ -43,7 +42,10 @@ class ThenpingmeScheduleListCommand extends Command
         }
     }
 
-    protected function schedule(): ScheduledTaskCollection
+    /**
+     * @return \Thenpingme\Collections\ScheduledTaskCollection
+     */
+    protected function schedule()
     {
         $collisions = Thenpingme::scheduledTasks()->collisions()->pluck('mutex')->unique();
 

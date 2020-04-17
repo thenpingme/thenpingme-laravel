@@ -6,13 +6,13 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Str;
 use Thenpingme\Facades\Thenpingme;
-use Thenpingme\TaskIdentifier;
 
 abstract class ThenpingmePayload implements Arrayable
 {
     protected $event;
+
+    protected $tasks;
 
     protected function __construct($event)
     {
