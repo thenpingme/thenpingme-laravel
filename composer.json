@@ -47,6 +47,9 @@
         "sort-packages": true
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "3.x-dev"
+        },
         "laravel": {
             "providers": [
                 "Thenpingme\\ThenpingmeServiceProvider"
