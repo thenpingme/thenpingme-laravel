@@ -45,6 +45,7 @@ class TaskIdentifier
     {
         return trim(str_replace([
             "'",
+            '"',
             PHP_BINARY,
         ], '', $command));
     }
