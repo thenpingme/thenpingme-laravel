@@ -26,7 +26,7 @@ class ScheduledTaskCollection extends Collection
                     'expression' => $task['expression'],
                     'interval' => Thenpingme::translateExpression($task['expression']),
                     'description' => $task['description'],
-                    'extra' => $task['type'] == 'closure'
+                    'extra' => $task['type'] == 'closure' && isset($task['extra'])
                         ? sprintf('Line %s of %s', $task['extra']['line'], $task['extra']['file'])
                         : null,
                 ];
