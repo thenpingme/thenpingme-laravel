@@ -4,6 +4,7 @@ namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
@@ -32,9 +33,14 @@ class ThenpingmeSetupCommand extends Command
     /** @var string */
     protected $signingKey;
 
-    public function __construct()
+    /** @var \Illuminate\Contracts\Translation\Translator */
+    protected $translator;
+
+    public function __construct(Translator $translator)
     {
         parent::__construct();
+
+        $this->translator = $translator;
     }
 
     public function handle(Schedule $schedule)
@@ -46,32 +52,34 @@ class ThenpingmeSetupCommand extends Command
         }
 
         if (! $this->option('tasks-only')) {
-            $this->task('Generate signing key', function () {
+            $this->task($this->translator->get('thenpingme::messages.setup.signing_key'), function () {
                 return $this->generateSigningKey();
             });
 
-            $this->task('Write configuration to .env file', function () {
+            $this->task($this->translator->get('thenpingme::messages.setup.write_env'), function () {
                 return $this->writeEnvFile();
             });
 
-            $this->task('Write configuration to .env.example file', function () {
+            $this->task($this->translator->get('thenpingme::messages.setup.write_env_example'), function () {
                 return $this->writeExampleEnvFile();
             });
 
-            $this->task('Publish config file', function () {
+            $this->task($this->translator->get('thenpingme::messages.setup.publish_config'), function () {
                 return $this->publishConfig();
             });
         }
 
         $this->task(
-            sprintf('Setting up initial tasks with %s', parse_url(config('thenpingme.api_url'), PHP_URL_HOST)),
+            $this->translator->get('thenpingme::messages.initial_setup', [
+                'url' => parse_url(config('thenpingme.api_url'), PHP_URL_HOST),
+            ]),
             function () {
                 return $this->setupInitialTasks();
             }
         );
 
         if ($this->envMissing) {
-            $this->error('The .env file is missing. Please add the following to your configuration, then run');
+            $this->error($this->translator->get('thenpingme::messages.env_missing'));
             $this->info('    php artisan thenpingme:setup --tasks-only');
             $this->line(sprintf('THENPINGME_PROJECT_ID=%s', $this->argument('project_id')));
             $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
@@ -90,7 +98,7 @@ class ThenpingmeSetupCommand extends Command
                 $nonUnique
             );
 
-            $this->error('Tasks have been identified that are not uniquely distinguishable, which will cause reporting issues.');
+            $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
 
             return false;
         }
