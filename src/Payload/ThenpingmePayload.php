@@ -12,6 +12,8 @@ abstract class ThenpingmePayload implements Arrayable
 {
     protected $event;
 
+    protected $tasks;
+
     protected function __construct($event)
     {
         $this->event = $event;

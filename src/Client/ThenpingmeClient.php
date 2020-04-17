@@ -43,6 +43,13 @@ class ThenpingmeClient implements Client
             ->useSecret(Config::get('thenpingme.signing_key'));
     }
 
+    public static function sync(): Client
+    {
+        return (new static)
+            ->endpoint(sprintf('/projects/%s/sync', Config::get('thenpingme.project_id')))
+            ->useSecret(Config::get('thenpingme.signing_key'));
+    }
+
     public function baseUrl(): ?string
     {
         return config('thenpingme.api_url');

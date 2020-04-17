@@ -21,8 +21,11 @@ return [
     'env_missing' => 'The .env file is missing. Please add the following lines to your configuration, then run:',
 
     'initial_setup' => 'Setting up initial tasks with :url',
+    'syncing_tasks' => 'Syncing your scheduled tasks with :url',
 
     'healthy_tasks' => 'Your tasks are correctly configured and can be synced to thenping.me!',
+
+    'successful_sync' => 'Your tasks have been synced with thenping.me!',
 
     'indistinguishable_tasks' => 'Tasks have been identified that are not uniquely distinguishable!',
 

@@ -8,6 +8,7 @@ use Thenpingme\Client\Client;
 use Thenpingme\Client\ThenpingmeClient;
 use Thenpingme\Console\Commands\ThenpingmeScheduleListCommand;
 use Thenpingme\Console\Commands\ThenpingmeSetupCommand;
+use Thenpingme\Console\Commands\ThenpingmeSyncCommand;
 use Thenpingme\Console\Commands\ThenpingmeVerifyCommand;
 use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
@@ -32,6 +33,7 @@ class ThenpingmeServiceProvider extends ServiceProvider
                 ThenpingmeSetupCommand::class,
                 ThenpingmeScheduleListCommand::class,
                 ThenpingmeVerifyCommand::class,
+                ThenpingmeSyncCommand::class,
             ]);
 
             Event::subscribe(ScheduledTaskSubscriber::class);
