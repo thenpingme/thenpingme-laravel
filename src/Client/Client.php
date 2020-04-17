@@ -11,4 +11,6 @@ interface Client
     public static function ping(): self;
 
     public static function setup(): self;
+
+    public static function sync(): self;
 }

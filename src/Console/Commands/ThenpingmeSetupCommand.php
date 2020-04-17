@@ -5,22 +5,24 @@ namespace Thenpingme\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Translation\Translator;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use sixlive\DotenvEditor\DotenvEditor;
 use Thenpingme\Client\Client;
+use Thenpingme\Console\Commands\Concerns\FetchesTasks;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\ThenpingmeSetupPayload;
 use Thenpingme\ThenpingmeServiceProvider;
 
 class ThenpingmeSetupCommand extends Command
 {
-    protected $description = 'Configure your application to report scheduled tasks to ThenPing.me automatically.';
+    use FetchesTasks;
 
-    protected $signature = 'thenpingme:setup {project_id?  : The UUID of the ThenPing.me project you are setting up}
-                                             {--tasks-only : Only send your application tasks to ThenPing.me}';
+    protected $description = 'Configure your application to report scheduled tasks to thenping.me automatically.';
+
+    protected $signature = 'thenpingme:setup {project_id?  : The UUID of the thenping.me project you are setting up}
+                                             {--tasks-only : Only send your application tasks to thenping.me}';
 
     /** @var bool */
     protected $envMissing = false;
@@ -28,7 +30,7 @@ class ThenpingmeSetupCommand extends Command
     /** @var \Illuminate\Console\Scheduling\Schedule */
     protected $schedule;
 
-    /** @var array */
+    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
     protected $scheduledTasks;
 
     /** @var string */
@@ -87,26 +89,6 @@ class ThenpingmeSetupCommand extends Command
 
             return 1;
         }
-    }
-
-    protected function prepareTasks(): bool
-    {
-        $this->scheduledTasks = Thenpingme::scheduledTasks();
-
-        if (($collisions = $this->scheduledTasks->collisions())->isNotEmpty()) {
-            $this->table(
-                ['Type', 'Expression', 'Interval', 'Description', 'Extra'],
-                $collisions->map(function ($task) {
-                    return Arr::only($task, ['type', 'expression', 'interval', 'description', 'extra']);
-                })
-            );
-
-            $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
-
-            return false;
-        }
-
-        return true;
     }
 
     protected function writeEnvFile(): bool
