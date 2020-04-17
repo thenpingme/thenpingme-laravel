@@ -21,6 +21,7 @@ class ScheduledTaskCollection extends Collection
             ->flatten(1)
             ->map(function ($task) {
                 return [
+                    'mutex' => $task['mutex'],
                     'type' => $task['type'],
                     'expression' => $task['expression'],
                     'interval' => Thenpingme::translateExpression($task['expression']),

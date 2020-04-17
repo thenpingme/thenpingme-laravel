@@ -3,10 +3,20 @@
 namespace Thenpingme\Tests;
 
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Contracts\Translation\Translator;
 use Thenpingme\Tests\Fixtures\SomeJob;
 
 class ThenpingmeVerifyTest extends TestCase
 {
+    protected Translator $translator;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->translator = $this->app->make(Translator::class);
+    }
+
     /** @test */
     public function it_detects_non_unique_jobs()
     {
@@ -16,8 +26,8 @@ class ThenpingmeVerifyTest extends TestCase
         });
 
         $this->artisan('thenpingme:verify')
-            ->expectsOutput('Tasks have been identified that are not uniquely distinguishable!')
-            ->expectsOutput('Job-based tasks should set a description, or run on a unique schedule.')
+            ->expectsOutput()
+            ->expectsOutput($this->translator->get('thenpingme.errors.duplicate.jobs'))
             ->assertExitCode(1);
     }
 
@@ -35,8 +45,8 @@ class ThenpingmeVerifyTest extends TestCase
         });
 
         $this->artisan('thenpingme:verify')
-            ->expectsOutput('Tasks have been identified that are not uniquely distinguishable!')
-            ->expectsOutput('Closure-based tasks should set a description to ensure uniqueness.')
+            ->expectsOutput($this->translator->get('thenpingme.errors.indistinguishable_tasks'))
+            ->expectsOutput($this->translator->get('thenpingme.errors.duplicate.closures'))
             ->assertExitCode(1);
     }
 
@@ -49,7 +59,7 @@ class ThenpingmeVerifyTest extends TestCase
         });
 
         $this->artisan('thenpingme:verify')
-            ->expectsOutput('Your tasks are correctly configured and can be synced to thenping.me!')
+            ->expectsOutput($this->translator->get('thenpingme.healthy_tasks'))
             ->assertExitCode(0);
     }
 

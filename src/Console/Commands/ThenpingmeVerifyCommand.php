@@ -3,6 +3,7 @@
 namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Translation\Translator;
 use Thenpingme\Facades\Thenpingme;
 
 class ThenpingmeVerifyCommand extends Command
@@ -11,24 +12,33 @@ class ThenpingmeVerifyCommand extends Command
 
     protected $signature = 'thenpingme:verify';
 
+    protected Translator $translator;
+
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+
+        parent::__construct();
+    }
+
     public function handle()
     {
         if (($tasks = Thenpingme::scheduledTasks()->nonUnique())->isNotEmpty()) {
             $this->table(['Type', 'Expression', 'Interval', 'Description', 'Extra'], $tasks->values());
 
-            $this->error('Tasks have been identified that are not uniquely distinguishable!');
+            $this->error($this->translator->get('thenpingme.messages.indistinguishable_tasks'));
 
             if ($tasks->hasNonUniqueJobs()) {
-                $this->line('Job-based tasks should set a description, or run on a unique schedule.');
+                $this->line($this->translator->get('thenpingme.messages.duplicate.jobs'));
             }
 
             if ($tasks->hasNonUniqueClosures()) {
-                $this->line('Closure-based tasks should set a description to ensure uniqueness.');
+                $this->line($this->translator->get('thenpingme.messages.duplicate.closures'));
             }
 
             return 1;
         }
 
-        $this->info('Your tasks are correctly configured and can be synced to thenping.me!');
+        $this->info($this->translator->get('thenpingme.messages.healthy_tasks'));
     }
 }

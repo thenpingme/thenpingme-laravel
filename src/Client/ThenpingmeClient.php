@@ -3,10 +3,7 @@
 namespace Thenpingme\Client;
 
 use Illuminate\Support\Facades\Config;
-use Thenpingme\Client\Client;
 use Thenpingme\Exceptions\CouldNotSendPing;
-use Thenpingme\Exceptions\InvalidSigner;
-use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
 use Thenpingme\ThenpingmePingJob;
 

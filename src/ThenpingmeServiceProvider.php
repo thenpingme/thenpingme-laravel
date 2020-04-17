@@ -2,11 +2,9 @@
 
 namespace Thenpingme;
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Thenpingme\Client\Client;
-use Thenpingme\Client\TestClient;
 use Thenpingme\Client\ThenpingmeClient;
 use Thenpingme\Console\Commands\ThenpingmeScheduleListCommand;
 use Thenpingme\Console\Commands\ThenpingmeSetupCommand;
@@ -19,12 +17,16 @@ class ThenpingmeServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application services.
      */
-    public function boot(): void
+    public function boot()
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/thenpingme.php' => config_path('thenpingme.php'),
-            ], 'config');
+            ], 'thenpingme-config');
+
+            $this->publishes([
+                __DIR__.'/../resources/lang' => resource_path('lang/vendor/thenpingme'),
+            ], 'thenpingme-lang');
 
             $this->commands([
                 ThenpingmeSetupCommand::class,
@@ -34,6 +36,8 @@ class ThenpingmeServiceProvider extends ServiceProvider
 
             Event::subscribe(ScheduledTaskSubscriber::class);
         }
+
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'thenpingme');
     }
 
     /**
