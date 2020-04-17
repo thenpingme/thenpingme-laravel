@@ -5,6 +5,7 @@ namespace Thenpingme\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
@@ -92,10 +93,12 @@ class ThenpingmeSetupCommand extends Command
     {
         $this->scheduledTasks = Thenpingme::scheduledTasks();
 
-        if (($nonUnique = $this->scheduledTasks->nonUnique())->isNotEmpty()) {
+        if (($collisions = $this->scheduledTasks->collisions())->isNotEmpty()) {
             $this->table(
                 ['Type', 'Expression', 'Interval', 'Description', 'Extra'],
-                $nonUnique
+                $collisions->map(function ($task) {
+                    return Arr::only($task, ['type', 'expression', 'interval', 'description', 'extra']);
+                })
             );
 
             $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
