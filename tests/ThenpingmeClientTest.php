@@ -81,6 +81,15 @@ class ThenpingmeClientTest extends TestCase
     }
 
     /** @test */
+    public function it_gets_a_sync_client()
+    {
+        $this->assertEquals(
+            'http://thenpingme.test/api/projects/abc123/sync',
+            $this->app->make(Client::class)->sync()->url
+        );
+    }
+
+    /** @test */
     public function it_sets_the_signature_header()
     {
         $client = $this->app->make(Client::class)->useSecret('abc')->payload(['thenpingme' => 'test']);
