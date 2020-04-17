@@ -73,6 +73,10 @@ class Thenpingme
                 return md5(serialize($command));
             }
 
+            if (is_object($command) && ($class = get_class($command)) !== 'Closure') {
+                return $class;
+            }
+
             tap(new ReflectionFunction($command), function (ReflectionFunction $function) use (&$event, $command) {
                 $event->extra = [
                     'file' => $function->getClosureScopeClass()->getName(),

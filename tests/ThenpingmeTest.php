@@ -55,12 +55,18 @@ class ThenpingmeTest extends TestCase
     }
 
     /** @test */
-    public function it_determines_closures_with_unique_descriptions_are_unique()
+    public function it_determines_called_jobs_are_non_unique_tasks()
     {
-        $schedule = $this->app->make(Schedule::class);
-        $schedule->call(function () {
-            // This task does one thing
-        })->everyMinute()->description('first task description');
+        tap($this->app->make(Schedule::class), function ($schedule) {
+            $schedule->call(new InvokableJob)->everyMinute();
+            $schedule->call(new InvokableJob)->everyMinute();
+        });
+
+        tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
+            $this->assertCount(2, $tasks);
+            $this->assertNull($tasks[0]['extra']);
+        });
+    }
 
         $schedule->call(function () {
             // This task does another thing
