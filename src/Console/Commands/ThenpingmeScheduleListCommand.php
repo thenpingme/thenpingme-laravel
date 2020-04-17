@@ -16,7 +16,8 @@ class ThenpingmeScheduleListCommand extends Command
 
     protected $signature = 'thenpingme:schedule';
 
-    protected Translator $translator;
+    /** @var \Illuminate\Contracts\Translation\Translator */
+    protected $translator;
 
     public function __construct(Translator $translator)
     {
@@ -35,7 +36,7 @@ class ThenpingmeScheduleListCommand extends Command
             'Next Due',
         ], $this->schedule());
 
-        if (Thenpingme::scheduledTasks()->nonUnique()->isNotEmpty()) {
+        if (Thenpingme::scheduledTasks()->collisions()->isNotEmpty()) {
             $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
 
             return 1;
@@ -44,15 +45,15 @@ class ThenpingmeScheduleListCommand extends Command
 
     protected function schedule(): ScheduledTaskCollection
     {
-        $nonUnique = Thenpingme::scheduledTasks()->nonUnique()->pluck('mutex')->unique();
+        $collisions = Thenpingme::scheduledTasks()->collisions()->pluck('mutex')->unique();
 
         return Thenpingme::scheduledTasks()
             ->map(function ($task) {
                 return TaskPayload::fromTask($task)->toArray();
             })
-            ->map(function ($task) use ($nonUnique) {
+            ->map(function ($task) use ($collisions) {
                 return [
-                    $nonUnique->contains($task['mutex']) ? '<error> ! </error>' : '',
+                    $collisions->contains($task['mutex']) ? '<error> ! </error>' : '',
                     Thenpingme::translateExpression($task['expression']),
                     $task['description'],
                     CronExpression::factory($task['expression'])->getPreviousRunDate(Carbon::now()),

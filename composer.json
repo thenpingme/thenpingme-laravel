@@ -6,7 +6,7 @@
         "laravel"
     ],
     "homepage": "https://github.com/thenpingme/laravel",
-    "license": "GPL-2.0-or-later",
+    "license": "MIT",
     "type": "library",
     "authors": [
         {
@@ -16,19 +16,17 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0|^7.2.5",
-        "kitetail/zttp": "^0.4.0",
-        "laravel/framework": "^6.2|^7.0",
+        "php": "^7.2.5",
+        "laravel/framework": "^7.0",
         "lorisleiva/cron-translator": "^0.1.1",
         "nunomaduro/laravel-console-task": "^1.4",
         "sixlive/dotenv-editor": "^1.2"
     },
     "require-dev": {
         "mockery/mockery": "^1.2.3",
-        "orchestra/testbench": "4.* || 5.*",
-        "phpunit/phpunit": "^6.0 || ^7.0 || ^8.5",
-        "sempro/phpunit-pretty-print": "^1.1",
-        "spatie/phpunit-watcher": "^1.12"
+        "orchestra/testbench": "5.*",
+        "phpunit/phpunit": "^8.5",
+        "sempro/phpunit-pretty-print": "^1.1"
     },
     "autoload": {
         "psr-4": {

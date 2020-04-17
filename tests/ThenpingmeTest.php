@@ -17,7 +17,7 @@ class ThenpingmeTest extends TestCase
         $schedule->command('test:command')->hourly();
         $schedule->command('test:command')->hourly();
 
-        tap(Thenpingme::scheduledTasks()->nonUnique(), function ($tasks) {
+        tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
             $this->assertCount(2, $tasks);
             $this->assertNull($tasks[0]['extra']);
         });
@@ -30,7 +30,7 @@ class ThenpingmeTest extends TestCase
         $schedule->job(SomeJob::class)->hourly();
         $schedule->job(SomeJob::class)->hourly();
 
-        tap(Thenpingme::scheduledTasks()->nonUnique(), function ($tasks) {
+        tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
             $this->assertCount(2, $tasks);
             $this->assertNull($tasks[0]['extra']);
         });
@@ -48,7 +48,7 @@ class ThenpingmeTest extends TestCase
             // This task does another thing
         })->everyMinute();
 
-        tap(Thenpingme::scheduledTasks()->nonUnique(), function ($tasks) {
+        tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
             $this->assertCount(2, $tasks);
             $this->assertRegExp('/^Line [0-9]+ to [0-9]+ of/', $tasks[0]['extra']);
         });
@@ -66,7 +66,7 @@ class ThenpingmeTest extends TestCase
             // This task does another thing
         })->everyMinute()->description('second task description');
 
-        $this->assertEmpty(Thenpingme::scheduledTasks()->nonUnique());
+        $this->assertEmpty(Thenpingme::scheduledTasks()->collisions());
     }
 
     /** @test */
@@ -76,7 +76,7 @@ class ThenpingmeTest extends TestCase
         $schedule->job(SomeJob::class)->hourly();
         $schedule->job(SomeJob::class)->weekly();
 
-        $this->assertEmpty(Thenpingme::scheduledTasks()->nonUnique());
+        $this->assertEmpty(Thenpingme::scheduledTasks()->collisions());
     }
 
     /** @test */

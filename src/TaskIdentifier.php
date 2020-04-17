@@ -33,11 +33,20 @@ class TaskIdentifier
         }
 
         if ($task instanceof Event) {
-            if (preg_match('/php((\d)?(\.\d)?)? artisan/', str_replace("'", '', $task->command))) {
+            if (Str::contains($this->sanitisedCommand($task->command), 'artisan')) {
                 return static::TYPE_COMMAND;
             }
 
             return static::TYPE_SHELL;
         }
+    }
+
+    private function sanitisedCommand(string $command): string
+    {
+        return trim(str_replace([
+            "'",
+            '"',
+            PHP_BINARY,
+        ], '', $command));
     }
 }

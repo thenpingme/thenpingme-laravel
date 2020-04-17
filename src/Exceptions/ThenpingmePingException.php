@@ -13,9 +13,9 @@ class ThenpingmePingException extends Exception
 
     public static function couldNotPing($status)
     {
-        return new static(vsprintf('Could not send ping to %s: [%s]', [
-            parse_url(config('thenpingme.api_url'), PHP_URL_HOST),
-            $status,
+        return new static(app('translator')->get('thenpingme::messages.could_not_ping', [
+            'url' => parse_url(config('thenpingme.api_url'), PHP_URL_HOST),
+            'status' => $status,
         ]));
     }
 }

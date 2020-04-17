@@ -4,6 +4,7 @@ namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Support\Arr;
 use Thenpingme\Facades\Thenpingme;
 
 class ThenpingmeVerifyCommand extends Command
@@ -12,7 +13,8 @@ class ThenpingmeVerifyCommand extends Command
 
     protected $signature = 'thenpingme:verify';
 
-    protected Translator $translator;
+    /** @var \Illuminate\Contracts\Translation\Translator */
+    protected $translator;
 
     public function __construct(Translator $translator)
     {
@@ -23,16 +25,21 @@ class ThenpingmeVerifyCommand extends Command
 
     public function handle()
     {
-        if (($tasks = Thenpingme::scheduledTasks()->nonUnique())->isNotEmpty()) {
-            $this->table(['Type', 'Expression', 'Interval', 'Description', 'Extra'], $tasks->values());
+        if (($collisions = Thenpingme::scheduledTasks()->collisions())->isNotEmpty()) {
+            $this->table(
+                ['Type', 'Expression', 'Interval', 'Description', 'Extra'],
+                $collisions->map(function ($task) {
+                    return Arr::only($task, ['type', 'expression', 'interval', 'description', 'extra']);
+                })
+            );
 
             $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
 
-            if ($tasks->hasNonUniqueJobs()) {
+            if ($collisions->hasNonUniqueJobs()) {
                 $this->line($this->translator->get('thenpingme::messages.duplicate_jobs'));
             }
 
-            if ($tasks->hasNonUniqueClosures()) {
+            if ($collisions->hasNonUniqueClosures()) {
                 $this->line($this->translator->get('thenpingme::messages.duplicate_closures'));
             }
 
