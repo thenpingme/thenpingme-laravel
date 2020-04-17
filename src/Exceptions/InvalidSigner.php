@@ -9,8 +9,9 @@ class InvalidSigner extends InvalidArgumentException
 {
     public static function doesntImplementSigner(string $signingClass)
     {
-        $signingInterface = Signer::class;
-
-        return new static("`{$signingClass}` does not implement `{$signingInterface}`");
+        return new static(app('translator')->get('thenpingme::messages.invalid_signer', [
+            'concrete' => $signingClass,
+            'contract' => Signer::class,
+        ]));
     }
 }
