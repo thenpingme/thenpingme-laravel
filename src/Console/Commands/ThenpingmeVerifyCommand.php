@@ -26,19 +26,19 @@ class ThenpingmeVerifyCommand extends Command
         if (($tasks = Thenpingme::scheduledTasks()->nonUnique())->isNotEmpty()) {
             $this->table(['Type', 'Expression', 'Interval', 'Description', 'Extra'], $tasks->values());
 
-            $this->error($this->translator->get('thenpingme.messages.indistinguishable_tasks'));
+            $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
 
             if ($tasks->hasNonUniqueJobs()) {
-                $this->line($this->translator->get('thenpingme.messages.duplicate.jobs'));
+                $this->line($this->translator->get('thenpingme::messages.duplicate_jobs'));
             }
 
             if ($tasks->hasNonUniqueClosures()) {
-                $this->line($this->translator->get('thenpingme.messages.duplicate.closures'));
+                $this->line($this->translator->get('thenpingme::messages.duplicate_closures'));
             }
 
             return 1;
         }
 
-        $this->info($this->translator->get('thenpingme.messages.healthy_tasks'));
+        $this->info($this->translator->get('thenpingme::messages.healthy_tasks'));
     }
 }

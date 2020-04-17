@@ -5,8 +5,6 @@ return [
 
     'indistinguishable_tasks' => 'Tasks have been identified that are not uniquely distinguishable!',
 
-    'duplicate' => [
-        'jobs' => 'Job-based tasks should set a description, or run on a unique schedule.',
-        'closures' => 'Closure-based tasks should set a description to ensure uniqueness.',
-    ],
+    'duplicate_jobs' => 'Job-based tasks should set a description, or run on a unique schedule.',
+    'duplicate_closures' => 'Closure-based tasks should set a description to ensure uniqueness.',
 ];
