@@ -3,9 +3,9 @@
 namespace Thenpingme;
 
 use Illuminate\Console\Events\ScheduledTaskFinished;
+use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Thenpingme\Client\Client;
-use Thenpingme\Events\ScheduledTaskSkipped;
 use Thenpingme\Payload\ThenpingmePayload;
 
 class ScheduledTaskSubscriber

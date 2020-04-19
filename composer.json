@@ -18,7 +18,7 @@
     "require": {
         "php": "^7.2",
         "kitetail/zttp": "^0.4.0",
-        "laravel/framework": ">=6.0.4 <6.4.1",
+        "laravel/framework": "^6.4.1",
         "lorisleiva/cron-translator": "^0.1.1",
         "nunomaduro/laravel-console-task": "^1.4",
         "sixlive/dotenv-editor": "^1.2"

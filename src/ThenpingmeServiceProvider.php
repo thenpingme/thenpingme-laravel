@@ -2,12 +2,10 @@
 
 namespace Thenpingme;
 
-use Illuminate\Console\Scheduling\ScheduleRunCommand;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Thenpingme\Client\Client;
 use Thenpingme\Client\ThenpingmeClient;
-use Thenpingme\Console\Commands\ScheduleRunCommand as ThenpingmeScheduleRunCommand;
 use Thenpingme\Console\Commands\ThenpingmeScheduleListCommand;
 use Thenpingme\Console\Commands\ThenpingmeSetupCommand;
 use Thenpingme\Console\Commands\ThenpingmeSyncCommand;
@@ -37,10 +35,6 @@ class ThenpingmeServiceProvider extends ServiceProvider
                 ThenpingmeVerifyCommand::class,
                 ThenpingmeSyncCommand::class,
             ]);
-
-            $this->app->extend(ScheduleRunCommand::class, function () {
-                return new ThenpingmeScheduleRunCommand;
-            });
 
             Event::subscribe(ScheduledTaskSubscriber::class);
         }
