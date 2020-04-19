@@ -7,7 +7,10 @@
 
 This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
 
-* This package requires at least Laravel 6.4.1.
+* If using Laravel >=6.0.0 < 6.0.4, use version 1.0 (ac94e2e3a14cae6763ab912e736685f6bcdafafa)
+* If using Laravel >=6.0.4 < 6.4.1, use version 1.1 (cd58ced11beec23208ab4e89217746d9fa0ce37f)
+* If using Laravel >=6.4.1 < 7.0.0, use version 1.2 (7b9dafb62b95603ca61e38736b4c4d2ea63821e2)
+* If using Laravel ^7.0, use version 2.0
 * Ensure documentation notes that scheduled closures must have unique descriptions
 
 ## Installation
