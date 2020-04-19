@@ -8,6 +8,7 @@
 This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
 
 * If using Laravel >=6.0.0 < 6.0.4, use version 1.0
+* If using Laravel >=6.0.4 < 6.4.1, use version 1.1
 * Ensure documentation notes that scheduled closures must have unique descriptions
 
 ## Installation

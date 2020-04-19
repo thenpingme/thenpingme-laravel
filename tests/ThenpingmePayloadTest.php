@@ -2,14 +2,14 @@
 
 namespace Thenpingme\Tests;
 
+use Illuminate\Console\Events\ScheduledTaskFinished;
+use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\Assert;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Collections\ScheduledTaskCollection;
-use Thenpingme\Events\ScheduledTaskFinished;
 use Thenpingme\Events\ScheduledTaskSkipped;
-use Thenpingme\Events\ScheduledTaskStarting;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\ScheduledTaskFinishedPayload;
 use Thenpingme\Payload\ScheduledTaskSkippedPayload;

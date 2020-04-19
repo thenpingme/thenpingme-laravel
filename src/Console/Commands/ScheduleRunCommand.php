@@ -3,12 +3,12 @@
 namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Console\Events\ScheduledTaskFinished;
+use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Date;
-use Thenpingme\Events\ScheduledTaskFinished;
 use Thenpingme\Events\ScheduledTaskSkipped;
-use Thenpingme\Events\ScheduledTaskStarting;
 
 class ScheduleRunCommand extends Command
 {

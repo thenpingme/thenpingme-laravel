@@ -2,10 +2,10 @@
 
 namespace Thenpingme\Payload;
 
+use Illuminate\Console\Events\ScheduledTaskFinished;
+use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Support\Arrayable;
-use Thenpingme\Events\ScheduledTaskFinished;
 use Thenpingme\Events\ScheduledTaskSkipped;
-use Thenpingme\Events\ScheduledTaskStarting;
 use Thenpingme\Facades\Thenpingme;
 
 abstract class ThenpingmePayload implements Arrayable
