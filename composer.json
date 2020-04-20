@@ -26,6 +26,7 @@
         "mockery/mockery": "^1.2.3",
         "orchestra/testbench": "5.*",
         "phpunit/phpunit": "^8.5",
+        "rector/rector": "^0.7.16",
         "sempro/phpunit-pretty-print": "^1.1"
     },
     "autoload": {

@@ -1,0 +1,6 @@
+parameters:
+  sets:
+    - 'code-quality'
+    - 'php72'
+  paths:
+    - 'src'

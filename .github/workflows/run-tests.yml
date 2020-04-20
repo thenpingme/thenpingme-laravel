@@ -41,5 +41,8 @@ jobs:
                   composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update
                   composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
+            - name: Rector
+              run: vendor/bin/rector process --dry-run
+
             - name: Execute tests
               run: vendor/bin/phpunit
