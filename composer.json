@@ -23,6 +23,7 @@
         "sixlive/dotenv-editor": "^1.2"
     },
     "require-dev": {
+        "ergebnis/composer-normalize": "^2.3",
         "mockery/mockery": "^1.2.3",
         "orchestra/testbench": "5.*",
         "phpunit/phpunit": "^8.5",
