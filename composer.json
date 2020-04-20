@@ -1,5 +1,6 @@
 {
     "name": "thenpingme/laravel",
+    "type": "library",
     "description": "Zero config scheduled task monitoring for Laravel",
     "keywords": [
         "thenpingme",
@@ -7,7 +8,6 @@
     ],
     "homepage": "https://github.com/thenpingme/laravel",
     "license": "MIT",
-    "type": "library",
     "authors": [
         {
             "name": "Michael Dyrynda",
@@ -30,21 +30,6 @@
         "rector/rector": "^0.7.16",
         "sempro/phpunit-pretty-print": "^1.1"
     },
-    "autoload": {
-        "psr-4": {
-            "Thenpingme\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Thenpingme\\Tests\\": "tests"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/phpunit --color=always",
-        "test-coverage": "vendor/bin/phpunit --color=always --coverage-html coverage",
-        "test-watch": "vendor/bin/phpunit-watcher watch"
-    },
     "config": {
         "sort-packages": true
     },
@@ -60,5 +45,20 @@
                 "Laravel": "Thenpingme\\Facades\\Thenpingme"
             }
         }
+    },
+    "autoload": {
+        "psr-4": {
+            "Thenpingme\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Thenpingme\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "rector-dry": "vendor/bin/rector process --ansi --dry-run",
+        "test": "vendor/bin/phpunit --color=always",
+        "test-coverage": "vendor/bin/phpunit --color=always --coverage-html coverage"
     }
 }
