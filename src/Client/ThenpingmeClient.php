@@ -12,6 +12,9 @@ class ThenpingmeClient implements Client
     /** @var array */
     protected $payload = [];
 
+    /** @var \Thenpingme\ThenpingmePingJob */
+    protected $pingJob;
+
     /** @var string */
     protected $secret;
 
@@ -57,11 +60,11 @@ class ThenpingmeClient implements Client
 
     public function dispatch(): void
     {
-        if (! $this->url) {
+        if (trim($this->url) === '') {
             throw CouldNotSendPing::missingUrl();
         }
 
-        if (! $this->secret) {
+        if (trim($this->secret) === '') {
             throw CouldNotSendPing::missingSigningSecret();
         }
 
