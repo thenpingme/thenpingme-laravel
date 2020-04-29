@@ -137,6 +137,7 @@ class ThenpingmeSetupTest extends TestCase
         });
 
         config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
+        config()->offsetUnset('thenpingme.signing_key');
 
         $this->artisan('thenpingme:setup --tasks-only')
             ->expectsOutput($this->translator->get('thenpingme::messages.signing_key_environment'))
@@ -144,7 +145,7 @@ class ThenpingmeSetupTest extends TestCase
 
         Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
             $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
-            $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
+            $this->assertEquals('secret', $job->payload['project']['signing_key']);
             $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
 
             return true;

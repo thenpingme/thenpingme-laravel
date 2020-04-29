@@ -173,16 +173,12 @@ class ThenpingmeSetupCommand extends Command
     {
         app(Client::class)
             ->setup()
-            ->useSecret($this->option('tasks-only') ? config('thenpingme.project_id') : $this->argument('project_id'))
-            ->payload(
-                ThenpingmeSetupPayload::make(Thenpingme::scheduledTasks(), $this->signingKey)->toArray()
-            )
+            ->useSecret($this->option('tasks-only') ? Config::get('thenpingme.project_id') : $this->argument('project_id'))
+            ->payload(ThenpingmeSetupPayload::make(
+                Thenpingme::scheduledTasks(),
+                Config::get('thenpingme.signing_key') ?: $this->signingKey
+            )->toArray())
             ->dispatch();
-
-        if (! $this->envExists()) {
-            $this->error($this->translator->get('thenpingme::messages.signing_key_environment'));
-            $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
-        }
 
         return true;
     }

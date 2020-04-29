@@ -15,7 +15,7 @@ class ThenpingmeSetupPayload implements Arrayable
     /** @var string */
     private $signingKey;
 
-    private function __construct(ScheduledTaskCollection $tasks, string $signingKey)
+    private function __construct(ScheduledTaskCollection $tasks, string $signingKey = null)
     {
         $this->tasks = $tasks;
         $this->signingKey = $signingKey;
