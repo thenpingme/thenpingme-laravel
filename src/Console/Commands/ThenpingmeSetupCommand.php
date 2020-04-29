@@ -59,11 +59,11 @@ class ThenpingmeSetupCommand extends Command
             return 1;
         }
 
-        if (! $this->option('tasks-only')) {
-            $this->task($this->translator->get('thenpingme::messages.setup.signing_key'), function () {
-                return $this->generateSigningKey();
-            });
+        $this->task($this->translator->get('thenpingme::messages.setup.signing_key'), function () {
+            return $this->generateSigningKey();
+        });
 
+        if (! $this->option('tasks-only')) {
             $this->task($this->translator->get('thenpingme::messages.setup.write_env'), function () {
                 return $this->writeEnvFile();
             });
@@ -93,6 +93,11 @@ class ThenpingmeSetupCommand extends Command
             return true;
         }
 
+        return $this->envExists();
+    }
+
+    protected function envExists(): bool
+    {
         try {
             tap(new DotenvEditor)->load(base_path('.env'));
 
@@ -168,6 +173,11 @@ class ThenpingmeSetupCommand extends Command
                 ThenpingmeSetupPayload::make(Thenpingme::scheduledTasks())->toArray()
             )
             ->dispatch();
+
+        if (! $this->envExists()) {
+            $this->error($this->translator->get('thenpingme::messages.signing_key_environment'));
+            $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
+        }
 
         return true;
     }
