@@ -20,6 +20,8 @@ return [
 
     'env_missing' => 'The .env file is missing. Please add the following lines to your configuration, then run:',
 
+    'signing_key_environment' => 'The .env file is missing. Please add the following lines to your configuration',
+
     'initial_setup' => 'Setting up initial tasks with :url',
 
     'syncing_tasks' => 'Syncing your scheduled tasks with :url',
