@@ -79,12 +79,11 @@ class ThenpingmeSetupTest extends TestCase
 
         unlink(base_path('.env'));
 
-        Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
-        Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
+        Thenpingme::shouldReceive('generateSigningKey')->never();
+        Thenpingme::shouldReceive('scheduledTasks')->never();
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
             ->expectsOutput('THENPINGME_PROJECT_ID=aaa-bbbb-c1c1c1-ddd-ef1')
-            ->expectsOutput('THENPINGME_SIGNING_KEY=this-is-the-signing-secret')
             ->assertExitCode(1);
 
         Queue::assertNotPushed(ThenpingmePingJob::class);
