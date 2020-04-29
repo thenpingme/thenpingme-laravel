@@ -85,6 +85,11 @@ class ThenpingmeSetupCommand extends Command
                 return $this->setupInitialTasks();
             }
         );
+
+        if (! $this->envExists()) {
+            $this->error($this->translator->get('thenpingme::messages.signing_key_environment'));
+            $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
+        }
     }
 
     protected function canBeSetup(): bool
