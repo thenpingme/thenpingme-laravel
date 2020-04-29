@@ -170,7 +170,7 @@ class ThenpingmeSetupCommand extends Command
             ->setup()
             ->useSecret($this->option('tasks-only') ? config('thenpingme.project_id') : $this->argument('project_id'))
             ->payload(
-                ThenpingmeSetupPayload::make(Thenpingme::scheduledTasks())->toArray()
+                ThenpingmeSetupPayload::make(Thenpingme::scheduledTasks(), $this->signingKey)->toArray()
             )
             ->dispatch();
 

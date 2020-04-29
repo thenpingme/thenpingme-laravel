@@ -12,14 +12,18 @@ class ThenpingmeSetupPayload implements Arrayable
     /** @var \Thenpingme\Collections\ScheduledTaskCollection */
     private $tasks;
 
-    private function __construct(ScheduledTaskCollection $tasks)
+    /** @var string */
+    private $signingKey;
+
+    private function __construct(ScheduledTaskCollection $tasks, string $signingKey)
     {
         $this->tasks = $tasks;
+        $this->signingKey = $signingKey;
     }
 
-    public static function make(ScheduledTaskCollection $tasks): self
+    public static function make(ScheduledTaskCollection $tasks, string $signingKey): self
     {
-        return new static($tasks);
+        return new static($tasks, $signingKey);
     }
 
     public function toArray(): array
@@ -28,7 +32,7 @@ class ThenpingmeSetupPayload implements Arrayable
             'project' => array_filter([
                 'uuid' => Config::get('thenpingme.project_id'),
                 'name' => Config::get('app.name'),
-                'signing_key' => Config::get('thenpingme.signing_key'),
+                'signing_key' => $this->signingKey,
                 'release' => Config::get('thenpingme.release'),
             ]),
             'tasks' => array_reduce($this->tasks->toArray(), function ($tasks, $task) {
