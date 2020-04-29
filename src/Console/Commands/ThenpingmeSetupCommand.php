@@ -79,7 +79,7 @@ class ThenpingmeSetupCommand extends Command
 
         $this->task(
             $this->translator->get('thenpingme::messages.initial_setup', [
-                'url' => parse_url(config('thenpingme.api_url'), PHP_URL_HOST),
+                'url' => parse_url(Config::get('thenpingme.api_url'), PHP_URL_HOST),
             ]),
             function () {
                 return $this->setupInitialTasks();
@@ -89,7 +89,7 @@ class ThenpingmeSetupCommand extends Command
 
     protected function canBeSetup(): bool
     {
-        if ($this->option('tasks-only') && config('thenpingme.project_id')) {
+        if ($this->option('tasks-only') && Config::get('thenpingme.project_id')) {
             return true;
         }
 
