@@ -11,7 +11,7 @@ use Thenpingme\Payload\ThenpingmePayload;
 class ScheduledTaskSubscriber
 {
     /**
-     * @var \Thenpingme\Thenpingme
+     * @var \Thenpingme\Client\Client
      */
     private $thenpingme;
 

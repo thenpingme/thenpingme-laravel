@@ -24,9 +24,6 @@ class ThenpingmeSetupCommand extends Command
     protected $signature = 'thenpingme:setup {project_id?  : The UUID of the thenping.me project you are setting up}
                                              {--tasks-only : Only send your application tasks to thenping.me}';
 
-    /** @var bool */
-    protected $envMissing = false;
-
     /** @var \Illuminate\Console\Scheduling\Schedule */
     protected $schedule;
 
@@ -50,15 +47,23 @@ class ThenpingmeSetupCommand extends Command
     {
         $this->schedule = $schedule;
 
+        if (! $this->canBeSetup()) {
+            $this->error($this->translator->get('thenpingme::messages.env_missing'));
+            $this->info('    php artisan thenpingme:setup --tasks-only');
+            $this->line(sprintf('THENPINGME_PROJECT_ID=%s', $this->argument('project_id')));
+
+            return 1;
+        }
+
         if (! $this->prepareTasks()) {
             return 1;
         }
 
-        if (! $this->option('tasks-only')) {
-            $this->task($this->translator->get('thenpingme::messages.setup.signing_key'), function () {
-                return $this->generateSigningKey();
-            });
+        $this->task($this->translator->get('thenpingme::messages.setup.signing_key'), function () {
+            return $this->generateSigningKey();
+        });
 
+        if (! $this->option('tasks-only')) {
             $this->task($this->translator->get('thenpingme::messages.setup.write_env'), function () {
                 return $this->writeEnvFile();
             });
@@ -74,49 +79,59 @@ class ThenpingmeSetupCommand extends Command
 
         $this->task(
             $this->translator->get('thenpingme::messages.initial_setup', [
-                'url' => parse_url(config('thenpingme.api_url'), PHP_URL_HOST),
+                'url' => parse_url(Config::get('thenpingme.api_url'), PHP_URL_HOST),
             ]),
             function () {
                 return $this->setupInitialTasks();
             }
         );
 
-        if ($this->envMissing) {
-            $this->error($this->translator->get('thenpingme::messages.env_missing'));
-            $this->info('    php artisan thenpingme:setup --tasks-only');
-            $this->line(sprintf('THENPINGME_PROJECT_ID=%s', $this->argument('project_id')));
+        if (! $this->envExists()) {
+            $this->error($this->translator->get('thenpingme::messages.signing_key_environment'));
             $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
+        }
+    }
 
-            return 1;
+    protected function canBeSetup(): bool
+    {
+        if ($this->option('tasks-only') && Config::get('thenpingme.project_id')) {
+            return true;
+        }
+
+        return $this->envExists();
+    }
+
+    protected function envExists(): bool
+    {
+        try {
+            tap(new DotenvEditor)->load(base_path('.env'));
+
+            return true;
+        } catch (InvalidArgumentException $e) {
+            return false;
         }
     }
 
     protected function writeEnvFile(): bool
     {
-        try {
-            tap(new DotenvEditor, function ($editor) {
-                $editor->load(base_path('.env'));
-                $editor->set('THENPINGME_PROJECT_ID', $this->argument('project_id'));
-                $editor->set('THENPINGME_SIGNING_KEY', $this->signingKey);
-                $editor->set('THENPINGME_QUEUE_PING', 'true');
-                $editor->save();
-            });
+        tap(new DotenvEditor, function ($editor) {
+            $editor->load(base_path('.env'));
+            $editor->set('THENPINGME_PROJECT_ID', $this->argument('project_id'));
+            $editor->set('THENPINGME_SIGNING_KEY', $this->signingKey);
+            $editor->set('THENPINGME_QUEUE_PING', 'true');
+            $editor->save();
+        });
 
-            Config::set([
-                'thenpingme.project_id' => $this->argument('project_id'),
-                'thenpingme.signing_key' => $this->signingKey,
-            ]);
+        Config::set([
+            'thenpingme.project_id' => $this->argument('project_id'),
+            'thenpingme.signing_key' => $this->signingKey,
+        ]);
 
-            if (file_exists(app()->getCachedConfigPath())) {
-                Artisan::call('config:cache');
-            }
-
-            return true;
-        } catch (InvalidArgumentException $e) {
-            $this->envMissing = true;
-
-            return false;
+        if (file_exists(app()->getCachedConfigPath())) {
+            Artisan::call('config:cache');
         }
+
+        return true;
     }
 
     protected function writeExampleEnvFile(): bool
@@ -156,16 +171,13 @@ class ThenpingmeSetupCommand extends Command
 
     protected function setupInitialTasks(): bool
     {
-        if ($this->envMissing) {
-            return false;
-        }
-
         app(Client::class)
             ->setup()
-            ->useSecret($this->option('tasks-only') ? config('thenpingme.project_id') : $this->argument('project_id'))
-            ->payload(
-                ThenpingmeSetupPayload::make(Thenpingme::scheduledTasks())->toArray()
-            )
+            ->useSecret($this->option('tasks-only') ? Config::get('thenpingme.project_id') : $this->argument('project_id'))
+            ->payload(ThenpingmeSetupPayload::make(
+                Thenpingme::scheduledTasks(),
+                Config::get('thenpingme.signing_key') ?: $this->signingKey
+            )->toArray())
             ->dispatch();
 
         return true;

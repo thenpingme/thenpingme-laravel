@@ -90,7 +90,7 @@ class ThenpingmePayloadTest extends TestCase
             $scheduler->command('thenpingme:second')->description('This is the second task'),
         ]);
 
-        tap(ThenpingmeSetupPayload::make($events)->toArray(), function ($payload) use ($events) {
+        tap(ThenpingmeSetupPayload::make($events, 'super-secret')->toArray(), function ($payload) use ($events) {
             Assert::assertArraySubset([
                 'project' => [
                     'uuid' => 'abc123',
