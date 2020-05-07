@@ -32,7 +32,7 @@ class ThenpingmePingJob implements ShouldQueue
             ->post($this->url, $this->payload);
 
         if (! Str::startsWith($response->status(), '2')) {
-            throw ThenpingmePingException::couldNotPing($response->status());
+            throw ThenpingmePingException::couldNotPing($response->status(), $response->json());
         }
     }
 }
