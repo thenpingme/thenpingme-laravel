@@ -8,7 +8,7 @@ return [
         'public_config' => 'Publish config file',
     ],
 
-    'could_not_ping' => 'Could not send ping to :url [:status]',
+    'could_not_ping' => 'Could not send ping to :url [:status]. :body',
 
     'missing_base_url' => 'Could not send ping beause the thenping.me base URL is not set',
 

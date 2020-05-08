@@ -16,7 +16,7 @@ class ThenpingmePingException extends Exception
         return new static(app('translator')->get('thenpingme::messages.could_not_ping', [
             'url' => parse_url(config('thenpingme.api_url'), PHP_URL_HOST),
             'status' => $status,
-            'body' => $body,
+            'body' => json_encode($body),
         ]));
     }
 }
