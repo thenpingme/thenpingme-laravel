@@ -13,7 +13,7 @@ class ScheduledTaskFinishedPayload extends ThenpingmePayload
             'time' => Carbon::now()->toIso8601String(),
             'runtime' => $this->event->runtime,
             'exit_code' => $this->event->task->exitCode,
-            'memory' => memory_get_peak_usage(true),
+            'memory' => memory_get_usage(true),
             'task' => TaskPayload::make($this->event->task)->toArray(),
         ]);
     }
