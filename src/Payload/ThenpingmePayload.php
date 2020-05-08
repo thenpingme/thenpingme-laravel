@@ -53,7 +53,7 @@ abstract class ThenpingmePayload implements Arrayable
         return array_filter([
             'release' => config('thenpingme.release'),
             'fingerprint' => $this->fingerprint(),
-            'ip' => request()->server('SERVER_ADDR'),
+            'ip' => gethostbyname(gethostname()),
             'project' => array_filter([
                 'uuid' => config('thenpingme.project_id'),
                 'name' => config('app.name'),
