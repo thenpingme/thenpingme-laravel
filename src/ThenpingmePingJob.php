@@ -25,6 +25,11 @@ class ThenpingmePingJob implements ShouldQueue
 
     public $response;
 
+    public function shouldQueue()
+    {
+        return config('thenpingme.queue_ping');
+    }
+
     public function handle()
     {
         $response = Http::withHeaders($this->headers)
