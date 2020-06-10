@@ -25,6 +25,8 @@ class ThenpingmePingJob implements ShouldQueue
 
     public $response;
 
+    public $tries = 1;
+
     public function shouldQueue()
     {
         return config('thenpingme.queue_ping');
