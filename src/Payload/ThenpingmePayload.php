@@ -57,7 +57,7 @@ abstract class ThenpingmePayload implements Arrayable
         return array_filter([
             'release' => config('thenpingme.release'),
             'fingerprint' => $this->fingerprint(),
-            'ip' => $this->getIp(),
+            'ip' => static::getIp(),
             'project' => array_filter([
                 'uuid' => config('thenpingme.project_id'),
                 'name' => config('app.name'),
@@ -66,7 +66,7 @@ abstract class ThenpingmePayload implements Arrayable
         ]);
     }
 
-    public function getIp(): ?string
+    public static function getIp(): ?string
     {
         // If this is Vapor
         if (isset($_ENV['VAPOR_SSM_PATH'])) {

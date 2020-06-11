@@ -169,7 +169,7 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(ThenpingmePayload::fromEvent($event), function ($payload) {
             tap($payload->toArray(), function ($body) use ($payload) {
-                $this->assertEquals(gethostbyname(gethostname()), $body['ip']);
+                $this->assertEquals(ThenpingmePayload::getIp(), $body['ip']);
             });
         });
 
