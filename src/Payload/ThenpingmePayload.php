@@ -57,7 +57,8 @@ abstract class ThenpingmePayload implements Arrayable
         return array_filter([
             'release' => config('thenpingme.release'),
             'fingerprint' => $this->fingerprint(),
-            'ip' => static::getIp(),
+            'hostname' => $hostname = gethostname(),
+            'ip' => static::getIp($hostname),
             'project' => array_filter([
                 'uuid' => config('thenpingme.project_id'),
                 'name' => config('app.name'),
@@ -66,15 +67,19 @@ abstract class ThenpingmePayload implements Arrayable
         ]);
     }
 
-    public static function getIp(): ?string
+    public static function getIp(string $hostname): ?string
     {
         // If this is Vapor
         if (isset($_ENV['VAPOR_SSM_PATH'])) {
-            return gethostbyname(gethostname());
+            return gethostbyname($hostname);
         }
 
-        if (isset($_SERVER['SERVER_ADDR'])) {
-            return $_SERVER['SERVER_ADDR'];
+        if ($ip = getenv('SERVER_ADDR')) {
+            return getenv('SERVER_ADDR');
+        }
+
+        if (($ip = gethostbyname($hostname)) !== '127.0.0.1') {
+            return $ip;
         }
 
         // I don't really know the best way to test this... but it should be fine.
