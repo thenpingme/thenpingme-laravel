@@ -31,6 +31,8 @@ class ThenpingmePayloadTest extends TestCase
             'thenpingme.signing_key' => 'super-secret',
             'thenpingme.release' => 'this is the release',
         ]);
+
+        $_SERVER['SERVER_ADDR'] = '10.1.1.1';
     }
 
     /** @test */
@@ -139,7 +141,7 @@ class ThenpingmePayloadTest extends TestCase
 
             tap($payload->toArray(), function ($body) use ($payload) {
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
-                $this->assertEquals(gethostbyname(gethostname()), $body['ip']);
+                $this->assertEquals('10.1.1.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskStarting', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
                 $this->assertEquals('2019-10-11T21:08:00+00:00', $body['expires']);
@@ -148,6 +150,30 @@ class ThenpingmePayloadTest extends TestCase
                 $this->assertArrayHasKey('memory', $body);
             });
         });
+    }
+
+    /** @test */
+    public function it_correctly_identifies_ip_for_a_vapor_app()
+    {
+        Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
+
+        $event = new ScheduledTaskStarting(
+            $this->app->make(Schedule::class)
+                ->command('thenpingme:first')
+                ->description('This is the first task')
+                ->withoutOverlapping(10)
+                ->onOneServer()
+        );
+
+        $_ENV['VAPOR_SSM_PATH'] = '/some/lambda/path';
+
+        tap(ThenpingmePayload::fromEvent($event), function ($payload) {
+            tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals(gethostbyname(gethostname()), $body['ip']);
+            });
+        });
+
+        unset($_ENV['VAPOR_SSM_PATH']);
     }
 
     /** @test */
@@ -186,7 +212,7 @@ class ThenpingmePayloadTest extends TestCase
 
             tap($payload->toArray(), function ($body) use ($payload) {
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
-                $this->assertEquals(gethostbyname(gethostname()), $body['ip']);
+                $this->assertEquals('10.1.1.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskFinished', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
                 $this->assertEquals('1', $body['runtime']);
@@ -211,7 +237,7 @@ class ThenpingmePayloadTest extends TestCase
 
             tap($payload->toArray(), function ($body) use ($payload) {
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
-                $this->assertEquals(gethostbyname(gethostname()), $body['ip']);
+                $this->assertEquals('10.1.1.1', $body['ip']);
                 $this->assertEquals('ScheduledTaskSkipped', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
             });

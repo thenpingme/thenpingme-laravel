@@ -55,12 +55,22 @@ abstract class ThenpingmePayload implements Arrayable
         return array_filter([
             'release' => config('thenpingme.release'),
             'fingerprint' => $this->fingerprint(),
-            'ip' => gethostbyname(gethostname()),
+            'ip' => $this->getIp(),
             'project' => array_filter([
                 'uuid' => config('thenpingme.project_id'),
                 'name' => config('app.name'),
                 'release' => config('thenpingme.release'),
             ]),
         ]);
+    }
+
+    public function getIp()
+    {
+        // If this is Vapor
+        if (isset($_ENV['VAPOR_SSM_PATH'])) {
+            return gethostbyname(gethostname());
+        }
+
+        return $_SERVER['SERVER_ADDR'] ?? null;
     }
 }
