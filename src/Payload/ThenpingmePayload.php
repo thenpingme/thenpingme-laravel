@@ -6,6 +6,8 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
+use Symfony\Component\Process\Process;
 use Thenpingme\Facades\Thenpingme;
 
 abstract class ThenpingmePayload implements Arrayable
@@ -64,13 +66,24 @@ abstract class ThenpingmePayload implements Arrayable
         ]);
     }
 
-    public function getIp()
+    public function getIp(): ?string
     {
         // If this is Vapor
         if (isset($_ENV['VAPOR_SSM_PATH'])) {
             return gethostbyname(gethostname());
         }
 
-        return $_SERVER['SERVER_ADDR'] ?? null;
+        if (isset($_SERVER['SERVER_ADDR'])) {
+            return $_SERVER['SERVER_ADDR'];
+        }
+
+        // I don't really know the best way to test this... but it should be fine.
+        if (PHP_OS == 'Linux') {
+            return trim(Arr::first(
+                explode(' ', tap(new Process(['hostname', '-I']), fn ($p) => $p->run())->getOutput())
+            ));
+        }
+
+        return null;
     }
 }
