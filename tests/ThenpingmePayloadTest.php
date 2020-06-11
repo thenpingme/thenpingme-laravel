@@ -299,6 +299,10 @@ class ThenpingmePayloadTest extends TestCase
         putenv('SERVER_ADDR');
 
         // Fallback
-        $this->assertNull(ThenpingmePayload::getIp($host));
+        if (($ip = gethostbyname($host)) !== '127.0.0.1') {
+            $this->assertEquals($ip, ThenpingmePayload::getIp($host));
+        } else {
+            $this->assertNull(ThenpingmePayload::getIp($host));
+        }
     }
 }
