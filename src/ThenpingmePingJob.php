@@ -34,7 +34,9 @@ class ThenpingmePingJob implements ShouldQueue
 
     public function handle()
     {
-        $response = Http::withHeaders($this->headers)
+        $response = Http::timeout(5)
+            ->retry(3, 250)
+            ->withHeaders($this->headers)
             ->asJson()
             ->post($this->url, $this->payload);
 
