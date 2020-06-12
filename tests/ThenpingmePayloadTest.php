@@ -96,6 +96,7 @@ class ThenpingmePayloadTest extends TestCase
                     'uuid' => 'abc123',
                     'name' => 'We changed the project name',
                     'signing_key' => 'super-secret',
+                    'timezone' => '+00:00',
                 ],
                 'tasks' => [
                     [
@@ -262,6 +263,7 @@ class ThenpingmePayloadTest extends TestCase
                     'uuid' => 'abc123',
                     'name' => 'We changed the project name',
                     'release' => 'this is the release',
+                    'timezone' => '+00:00',
                 ],
                 'tasks' => [
                     [

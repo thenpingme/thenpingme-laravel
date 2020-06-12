@@ -7,6 +7,7 @@ use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Symfony\Component\Process\Process;
 use Thenpingme\Facades\Thenpingme;
 
@@ -63,6 +64,7 @@ abstract class ThenpingmePayload implements Arrayable
                 'uuid' => config('thenpingme.project_id'),
                 'name' => config('app.name'),
                 'release' => config('thenpingme.release'),
+                'timezone' => Carbon::now()->timezone->toOffsetName(),
             ]),
         ]);
     }
