@@ -51,6 +51,7 @@ class ThenpingmePayloadTest extends TestCase
                 'description' => 'This is the description',
                 'mutex' => Thenpingme::fingerprintTask($task),
                 'filtered' => false,
+                'run_in_background' => false,
             ], $payload);
         });
     }
@@ -76,6 +77,31 @@ class ThenpingmePayloadTest extends TestCase
                 'description' => 'This is the description',
                 'mutex' => Thenpingme::fingerprintTask($task),
                 'filtered' => true,
+                'run_in_background' => false,
+            ], $payload);
+        });
+    }
+
+    /** @test */
+    public function it_determines_if_a_job_runs_in_the_background()
+    {
+        $task = $this->app->make(Schedule::class)
+            ->command('thenpingme:background')
+            ->description('This is the description')
+            ->runInBackground();
+
+        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+            Assert::assertArraySubset([
+                'type' => TaskIdentifier::TYPE_COMMAND,
+                'expression' => '* * * * *',
+                'command' => 'thenpingme:background',
+                'maintenance' => false,
+                'without_overlapping' => false,
+                'on_one_server' => false,
+                'description' => 'This is the description',
+                'mutex' => Thenpingme::fingerprintTask($task),
+                'filtered' => false,
+                'run_in_background' => true,
             ], $payload);
         });
     }
@@ -106,6 +132,7 @@ class ThenpingmePayloadTest extends TestCase
                         'maintenance' => false,
                         'without_overlapping' => false,
                         'on_one_server' => false,
+                        'run_in_background' => false,
                         'description' => 'This is the first task',
                         'mutex' => Thenpingme::fingerprintTask($events[0]),
                     ],
@@ -116,6 +143,7 @@ class ThenpingmePayloadTest extends TestCase
                         'maintenance' => false,
                         'without_overlapping' => false,
                         'on_one_server' => false,
+                        'run_in_background' => false,
                         'description' => 'This is the second task',
                         'mutex' => Thenpingme::fingerprintTask($events[1]),
                     ],
