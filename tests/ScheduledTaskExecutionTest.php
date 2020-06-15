@@ -131,7 +131,7 @@ class ScheduledTaskExecutionTest extends TestCase
     public function it_keeps_the_same_fingerprint_across_the_full_execution_of_a_closure()
     {
         $this->app->make(Schedule::class)->call(function () {
-            echo 'testing';
+            // we do nothing
         });
 
         $this->artisan('schedule:run');
