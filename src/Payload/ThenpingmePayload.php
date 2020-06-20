@@ -44,10 +44,12 @@ abstract class ThenpingmePayload implements Arrayable
 
     public function fingerprint(): string
     {
-        return sha1(vsprintf('%s.%s.%s', [
+        return sha1(vsprintf('%s.%s.%s.%s.%s', [
             config('thenpingme.project_id'),
             Thenpingme::fingerprintTask($this->event->task),
             getmypid(),
+            spl_object_id($this->event->task),
+            spl_object_hash($this->event->task),
         ]));
     }
 
