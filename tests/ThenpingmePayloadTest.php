@@ -175,6 +175,7 @@ class ThenpingmePayloadTest extends TestCase
                 $this->assertEquals('ScheduledTaskStarting', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
                 $this->assertEquals('2019-10-11T21:08:00+00:00', $body['expires']);
+                $this->assertEquals(app()->environment(), $body['environment']);
                 $this->assertTrue($body['task']['without_overlapping']);
                 $this->assertTrue($body['task']['on_one_server']);
             });
@@ -247,6 +248,7 @@ class ThenpingmePayloadTest extends TestCase
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
                 $this->assertEquals('1', $body['runtime']);
                 $this->assertNull($body['exit_code']);
+                $this->assertEquals(app()->environment(), $body['environment']);
             });
         });
     }
@@ -270,6 +272,7 @@ class ThenpingmePayloadTest extends TestCase
                 $this->assertEquals(gethostname(), $body['hostname']);
                 $this->assertEquals('ScheduledTaskSkipped', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
+                $this->assertEquals(app()->environment(), $body['environment']);
             });
         });
     }

@@ -58,6 +58,7 @@ abstract class ThenpingmePayload implements Arrayable
             'fingerprint' => $this->fingerprint(),
             'hostname' => $hostname = gethostname(),
             'ip' => static::getIp($hostname),
+            'environment' => app()->environment(),
             'project' => array_filter([
                 'uuid' => config('thenpingme.project_id'),
                 'name' => config('app.name'),
