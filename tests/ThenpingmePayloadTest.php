@@ -178,6 +178,7 @@ class ThenpingmePayloadTest extends TestCase
                 $this->assertEquals(app()->environment(), $body['environment']);
                 $this->assertTrue($body['task']['without_overlapping']);
                 $this->assertTrue($body['task']['on_one_server']);
+                $this->assertArrayHasKey('memory', $body);
             });
         });
     }
@@ -249,6 +250,7 @@ class ThenpingmePayloadTest extends TestCase
                 $this->assertEquals('1', $body['runtime']);
                 $this->assertNull($body['exit_code']);
                 $this->assertEquals(app()->environment(), $body['environment']);
+                $this->assertArrayHasKey('memory', $body);
             });
         });
     }
