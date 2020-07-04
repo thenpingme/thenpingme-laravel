@@ -2,6 +2,7 @@
 
 namespace Thenpingme;
 
+use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
@@ -35,6 +36,7 @@ class ScheduledTaskSubscriber
                 ScheduledTaskStarting::class,
                 ScheduledTaskFinished::class,
                 ScheduledTaskSkipped::class,
+                ScheduledTaskFailed::class,
             ],
             static::class.'@handleScheduledTaskEvent'
         );
