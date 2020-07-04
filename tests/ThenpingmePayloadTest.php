@@ -285,6 +285,10 @@ class ThenpingmePayloadTest extends TestCase
     /** @test */
     public function it_generates_the_correct_payload_for_a_failed_scheduled_task()
     {
+        if (! class_exists(ScheduledTaskFailed::class)) {
+            $this->markTestSkipped(ScheduledTaskFailed::class.' does not exist in this version of Laravel');
+        }
+
         Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
 
         $event = new ScheduledTaskFailed(

@@ -36,9 +36,17 @@ class ScheduledTaskSubscriber
                 ScheduledTaskStarting::class,
                 ScheduledTaskFinished::class,
                 ScheduledTaskSkipped::class,
-                ScheduledTaskFailed::class,
             ],
             static::class.'@handleScheduledTaskEvent'
         );
+
+        if (class_exists(ScheduledTaskFailed::class)) {
+            $events->listen(
+                [
+                    ScheduledTaskFailed::class,
+                ],
+                static::class.'@handleScheduledTaskEvent'
+            );
+        }
     }
 }
