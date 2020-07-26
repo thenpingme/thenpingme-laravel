@@ -5,7 +5,7 @@ return [
         'signing_key' => 'Generate signing key',
         'write_env' => 'Write configuration to the .env file',
         'write_env_example' => 'Write configuration to the .env.example file',
-        'public_config' => 'Publish config file',
+        'publish_config' => 'Publish config file',
     ],
 
     'could_not_ping' => 'Could not send ping to :url [:status]. :body',
