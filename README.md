@@ -3,8 +3,7 @@
 ![](./.github/logo.png)
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/thenpingme/laravel.svg?style=flat-square)](https://packagist.org/packages/thenpingme/laravel)
-[![Build Status](https://img.shields.io/travis/thenpingme/laravel/master.svg?style=flat-square)](https://travis-ci.org/thenpingme/laravel)
-[![Quality Score](https://img.shields.io/scrutinizer/g/thenpingme/laravel.svg?style=flat-square)](https://scrutinizer-ci.com/g/thenpingme/laravel)
+[![Build Status](https://github.com/thenpingme/thenpingme-laravel/workflows/run-tests/badge.svg)](https://github.com/thenpingme/thenpingme-laravel/actions?query=workflow%3Arun-tests)
 [![Total Downloads](https://img.shields.io/packagist/dt/thenpingme/laravel.svg?style=flat-square)](https://packagist.org/packages/thenpingme/laravel)
 
 thenping.me is a hands-free scheduled task monitoring application for your Laravel projects.
