@@ -1,5 +1,6 @@
 {
     "name": "thenpingme/laravel",
+    "type": "library",
     "description": "Zero config scheduled task monitoring for Laravel",
     "keywords": [
         "thenpingme",
@@ -7,7 +8,6 @@
     ],
     "homepage": "https://github.com/thenpingme/laravel",
     "license": "MIT",
-    "type": "library",
     "authors": [
         {
             "name": "Michael Dyrynda",
@@ -25,25 +25,12 @@
         "sixlive/dotenv-editor": "^1.2"
     },
     "require-dev": {
+        "ergebnis/composer-normalize": "^2.6",
         "mockery/mockery": "^1.2.3",
         "orchestra/testbench": "4.*",
         "phpunit/phpunit": "^8.3",
+        "rector/rector-prefixed": "^0.7.59",
         "sempro/phpunit-pretty-print": "^1.1"
-    },
-    "autoload": {
-        "psr-4": {
-            "Thenpingme\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Thenpingme\\Tests\\": "tests"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/phpunit --color=always",
-        "test-coverage": "vendor/bin/phpunit --color=always --coverage-html coverage",
-        "test-watch": "vendor/bin/phpunit-watcher watch"
     },
     "config": {
         "sort-packages": true
@@ -60,5 +47,21 @@
                 "Laravel": "Thenpingme\\Facades\\Thenpingme"
             }
         }
+    },
+    "autoload": {
+        "psr-4": {
+            "Thenpingme\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Thenpingme\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "normalise": "@composer normalize --indent-style space --indent-size 2 --ansi",
+        "rector": "vendor/bin/rector process src --ansi",
+        "test": "vendor/bin/phpunit --color=always",
+        "test-coverage": "vendor/bin/phpunit --color=always --coverage-html coverage"
     }
 }
