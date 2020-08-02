@@ -2,14 +2,13 @@
 
 namespace Thenpingme;
 
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
 use Thenpingme\Exceptions\ThenpingmePingException;
-use Zttp\Zttp;
 
 class ThenpingmePingJob implements ShouldQueue
 {
@@ -37,11 +36,13 @@ class ThenpingmePingJob implements ShouldQueue
 
     public function handle()
     {
-        $response = Zttp::withHeaders($this->headers)
+        $response = Http::timeout(5)
+            ->retry(3, 250)
+            ->withHeaders($this->headers)
             ->asJson()
             ->post($this->url, $this->payload);
 
-        if (! $response->isSuccess()) {
+        if (! $response->successful()) {
             throw ThenpingmePingException::couldNotPing($response->status(), $response->json());
         }
     }
