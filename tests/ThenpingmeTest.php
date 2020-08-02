@@ -34,7 +34,7 @@ class ThenpingmeTest extends TestCase
 
         tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
             $this->assertCount(2, $tasks);
-            $this->assertRegExp('/^Line [0-9]+ to [0-9]+ of/', $tasks[0]['extra']);
+            $this->assertMatchesRegularExpression('/^Line [0-9]+ to [0-9]+ of/', $tasks[0]['extra']);
         });
     }
 
@@ -53,7 +53,7 @@ class ThenpingmeTest extends TestCase
 
         tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
             $this->assertCount(2, $tasks);
-            $this->assertRegExp('/^Line [0-9]+ to [0-9]+ of/', $tasks[0]['extra']);
+            $this->assertMatchesRegularExpression('/^Line [0-9]+ to [0-9]+ of/', $tasks[0]['extra']);
         });
     }
 

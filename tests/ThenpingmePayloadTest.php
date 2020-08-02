@@ -2,8 +2,6 @@
 
 namespace Thenpingme\Tests;
 
-use Exception;
-use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
@@ -13,7 +11,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Testing\Assert;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
-use Thenpingme\Payload\ScheduledTaskFailedPayload;
 use Thenpingme\Payload\ScheduledTaskFinishedPayload;
 use Thenpingme\Payload\ScheduledTaskSkippedPayload;
 use Thenpingme\Payload\ScheduledTaskStartingPayload;
@@ -278,35 +275,6 @@ class ThenpingmePayloadTest extends TestCase
                 $this->assertEquals('ScheduledTaskSkipped', $body['type']);
                 $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
                 $this->assertEquals(app()->environment(), $body['environment']);
-            });
-        });
-    }
-
-    /** @test */
-    public function it_generates_the_correct_payload_for_a_failed_scheduled_task()
-    {
-        if (! class_exists(ScheduledTaskFailed::class)) {
-            $this->markTestSkipped(ScheduledTaskFailed::class.' does not exist in this version of Laravel');
-        }
-
-        Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
-
-        $event = new ScheduledTaskFailed(
-            $this->app->make(Schedule::class)->command('thenpingme:first')->description('This is the first task'),
-            new Exception('Some exception has occurred')
-        );
-
-        tap(ThenpingmePayload::fromEvent($event), function ($payload) {
-            $this->assertInstanceOf(ScheduledTaskFailedPayload::class, $payload);
-
-            tap($payload->toArray(), function ($body) use ($payload) {
-                $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
-                $this->assertEquals('10.1.1.1', $body['ip']);
-                $this->assertEquals(gethostname(), $body['hostname']);
-                $this->assertEquals('ScheduledTaskFailed', $body['type']);
-                $this->assertEquals('2019-10-11T20:58:00+00:00', $body['time']);
-                $this->assertEquals(app()->environment(), $body['environment']);
-                $this->assertEquals('Some exception has occurred', $body['exception']);
             });
         });
     }

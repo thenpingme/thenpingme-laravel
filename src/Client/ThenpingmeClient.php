@@ -12,6 +12,9 @@ class ThenpingmeClient implements Client
     /** @var array */
     protected $payload = [];
 
+    /** @var \Thenpingme\ThenpingmePingJob */
+    protected $pingJob;
+
     /** @var string */
     protected $secret;
 

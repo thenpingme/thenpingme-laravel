@@ -77,7 +77,7 @@ class Thenpingme
                 return $class;
             }
 
-            tap(new ReflectionFunction($command), function (ReflectionFunction $function) use (&$event, $command) {
+            tap(new ReflectionFunction($command), function (ReflectionFunction $function) use (&$event) {
                 $event->extra = [
                     'file' => $function->getClosureScopeClass()->getName(),
                     'line' => "{$function->getStartLine()} to {$function->getEndLine()}",
