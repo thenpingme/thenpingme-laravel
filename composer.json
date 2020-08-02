@@ -27,7 +27,7 @@
         "ergebnis/composer-normalize": "^2.6",
         "mockery/mockery": "^1.2.3",
         "orchestra/testbench": "5.*",
-        "phpunit/phpunit": "^9.2",
+        "phpunit/phpunit": "^8.5",
         "rector/rector-prefixed": "^0.7.59",
         "vimeo/psalm": "^3.13"
     },
