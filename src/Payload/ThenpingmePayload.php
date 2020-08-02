@@ -22,7 +22,7 @@ abstract class ThenpingmePayload implements Arrayable
         $this->event = $event;
     }
 
-    public static function fromEvent($event): self
+    public static function fromEvent($event): ?self
     {
         if ($event instanceof ScheduledTaskStarting) {
             return new ScheduledTaskStartingPayload($event);
@@ -35,6 +35,8 @@ abstract class ThenpingmePayload implements Arrayable
         if ($event instanceof ScheduledTaskSkipped) {
             return new ScheduledTaskSkippedPayload($event);
         }
+
+        return null;
     }
 
     public static function fromTask($task): self
@@ -78,7 +80,7 @@ abstract class ThenpingmePayload implements Arrayable
         }
 
         if ($ip = getenv('SERVER_ADDR')) {
-            return getenv('SERVER_ADDR');
+            return $ip;
         }
 
         // I don't really know the best way to test this... but it should be fine.
