@@ -30,6 +30,7 @@ class TaskPayload extends ThenpingmePayload
             'maintenance' => $this->task->evenInMaintenanceMode,
             'without_overlapping' => $this->task->withoutOverlapping,
             'on_one_server' => $this->task->onOneServer,
+            'run_in_background' => $this->task->runInBackground,
             'description' => $this->task->description,
             'mutex' => Thenpingme::fingerprintTask($this->task),
             'filtered' => $this->isFiltered(),

@@ -17,7 +17,7 @@ class ThenpingmeSyncCommand extends Command
 
     protected $signature = 'thenpingme:sync';
 
-    /** @var array */
+    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
     protected $scheduledTasks;
 
     /** @var \Illuminate\Contracts\Translation\Translator */

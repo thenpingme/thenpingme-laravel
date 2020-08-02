@@ -29,6 +29,7 @@ class ThenpingmeScheduleListCommand extends Command
     {
         $this->table([
             '',
+            'Command',
             'Interval',
             'Description',
             'Last Run',
@@ -56,8 +57,9 @@ class ThenpingmeScheduleListCommand extends Command
             ->map(function ($task) use ($collisions) {
                 return [
                     $collisions->contains($task['mutex']) ? '<error> ! </error>' : '',
+                    $command = $task['command'] ?: $task['description'],
                     Thenpingme::translateExpression($task['expression']),
-                    $task['description'],
+                    $task['description'] !== $command ? $task['description'] : null,
                     CronExpression::factory($task['expression'])->getPreviousRunDate(Carbon::now()),
                     CronExpression::factory($task['expression'])->getNextRunDate(Carbon::now()),
                 ];

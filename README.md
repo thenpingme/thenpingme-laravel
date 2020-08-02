@@ -11,10 +11,6 @@ This is where your description should go. Try and limit it to a paragraph or two
 * If using Laravel >=6.0.4 < 6.4.1, use version 1.1 (cd58ced11beec23208ab4e89217746d9fa0ce37f)
 * If using Laravel >=6.4.1 < 7.0.0, use version 1.2 (7b9dafb62b95603ca61e38736b4c4d2ea63821e2)
 * If using Laravel ^7.0, use version 2.0
-
-* Bug fixes for Laravel ^6.0 should be sent to the 1.x branch
-* Bug fixes for Laravel ^7.0 should be sent to the 2.x branch
-* Bug fixes for the next Laravel release should be sent to the master branch
 * Ensure documentation notes that scheduled closures must have unique descriptions
 
 ## Installation

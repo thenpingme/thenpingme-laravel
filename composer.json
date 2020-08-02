@@ -1,62 +1,67 @@
 {
-    "name": "thenpingme/laravel",
-    "description": "Zero config scheduled task monitoring for Laravel",
-    "keywords": [
-        "thenpingme",
-        "laravel"
-    ],
-    "homepage": "https://github.com/thenpingme/laravel",
-    "license": "MIT",
-    "type": "library",
-    "authors": [
-        {
-            "name": "Michael Dyrynda",
-            "email": "michael@dyrynda.com.au",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": "^7.2.5",
-        "laravel/framework": "^7.0",
-        "lorisleiva/cron-translator": "^0.1.1",
-        "nunomaduro/laravel-console-task": "^1.4",
-        "sixlive/dotenv-editor": "^1.2"
-    },
-    "require-dev": {
-        "mockery/mockery": "^1.2.3",
-        "orchestra/testbench": "5.*",
-        "phpunit/phpunit": "^8.5",
-        "sempro/phpunit-pretty-print": "^1.1"
-    },
-    "autoload": {
-        "psr-4": {
-            "Thenpingme\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Thenpingme\\Tests\\": "tests"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/phpunit --color=always",
-        "test-coverage": "vendor/bin/phpunit --color=always --coverage-html coverage",
-        "test-watch": "vendor/bin/phpunit-watcher watch"
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "3.x-dev"
-        },
-        "laravel": {
-            "providers": [
-                "Thenpingme\\ThenpingmeServiceProvider"
-            ],
-            "aliases": {
-                "Laravel": "Thenpingme\\Facades\\Thenpingme"
-            }
-        }
+  "name": "thenpingme/laravel",
+  "type": "library",
+  "description": "Zero config scheduled task monitoring for Laravel",
+  "keywords": [
+    "thenpingme",
+    "laravel"
+  ],
+  "homepage": "https://github.com/thenpingme/laravel",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Michael Dyrynda",
+      "email": "michael@dyrynda.com.au",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": "^7.2.5",
+    "laravel/framework": "^7.0",
+    "lorisleiva/cron-translator": "^0.1.1",
+    "nesbot/carbon": "^2.33.0",
+    "nunomaduro/laravel-console-task": "^1.4",
+    "sixlive/dotenv-editor": "^1.2"
+  },
+  "require-dev": {
+    "ergebnis/composer-normalize": "^2.6",
+    "mockery/mockery": "^1.2.3",
+    "orchestra/testbench": "5.*",
+    "phpunit/phpunit": "^9.0",
+    "rector/rector-prefixed": "^0.7.59",
+    "vimeo/psalm": "^3.13"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.x-dev"
+    },
+    "laravel": {
+      "providers": [
+        "Thenpingme\\ThenpingmeServiceProvider"
+      ],
+      "aliases": {
+        "Laravel": "Thenpingme\\Facades\\Thenpingme"
+      }
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Thenpingme\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Thenpingme\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "normalise": "@composer normalize --indent-style space --indent-size 2 --ansi",
+    "psalm": "vendor/bin/psalm",
+    "rector": "vendor/bin/rector process src --ansi",
+    "test": "vendor/bin/phpunit --color=always",
+    "test-coverage": "vendor/bin/phpunit --color=always --coverage-html coverage"
+  }
 }
