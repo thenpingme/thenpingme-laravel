@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters = $containerConfigurator->parameters();
 
-    $parameters->set('php_version_features', '7.2');
+    $parameters->set('php_version_features', '7.3');
 
     $services = $containerConfigurator->services();
 };
