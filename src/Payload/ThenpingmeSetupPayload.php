@@ -4,6 +4,7 @@ namespace Thenpingme\Payload;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Collections\ScheduledTaskCollection;
 
@@ -34,6 +35,7 @@ class ThenpingmeSetupPayload implements Arrayable
                 'name' => Config::get('app.name'),
                 'signing_key' => $this->signingKey,
                 'release' => Config::get('thenpingme.release'),
+                'timezone' => Carbon::now()->timezone->toOffsetName(),
             ]),
             'tasks' => array_reduce($this->tasks->toArray(), function ($tasks, $task) {
                 $tasks[] = Arr::except(TaskPayload::make($task)->toArray(), ['extra']);

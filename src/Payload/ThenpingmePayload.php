@@ -6,6 +6,9 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
+use Symfony\Component\Process\Process;
 use Thenpingme\Facades\Thenpingme;
 
 abstract class ThenpingmePayload implements Arrayable
@@ -45,8 +48,8 @@ abstract class ThenpingmePayload implements Arrayable
             config('thenpingme.project_id'),
             Thenpingme::fingerprintTask($this->event->task),
             getmypid(),
-            spl_object_id($this->event),
-            spl_object_hash($this->event),
+            spl_object_id($this->event->task),
+            spl_object_hash($this->event->task),
         ]));
     }
 
@@ -55,12 +58,42 @@ abstract class ThenpingmePayload implements Arrayable
         return array_filter([
             'release' => config('thenpingme.release'),
             'fingerprint' => $this->fingerprint(),
-            'ip' => gethostbyname(gethostname()),
+            'hostname' => $hostname = gethostname(),
+            'ip' => static::getIp($hostname),
+            'environment' => app()->environment(),
             'project' => array_filter([
                 'uuid' => config('thenpingme.project_id'),
                 'name' => config('app.name'),
                 'release' => config('thenpingme.release'),
+                'timezone' => Carbon::now()->timezone->toOffsetName(),
             ]),
         ]);
+    }
+
+    public static function getIp(string $hostname): ?string
+    {
+        // If this is Vapor
+        if (isset($_ENV['VAPOR_SSM_PATH'])) {
+            return gethostbyname($hostname);
+        }
+
+        if ($ip = getenv('SERVER_ADDR')) {
+            return getenv('SERVER_ADDR');
+        }
+
+        // I don't really know the best way to test this... but it should be fine.
+        if (PHP_OS == 'Linux') {
+            return trim(Arr::first(
+                explode(' ', tap(new Process(['hostname', '-I']), function ($process) {
+                    $process->run();
+                })->getOutput())
+            ));
+        }
+
+        if (($ip = gethostbyname($hostname)) !== '127.0.0.1') {
+            return $ip;
+        }
+
+        return null;
     }
 }
