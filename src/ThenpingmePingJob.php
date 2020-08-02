@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
 use Thenpingme\Exceptions\ThenpingmePingException;
 use Zttp\Zttp;
 
@@ -29,14 +28,21 @@ class ThenpingmePingJob implements ShouldQueue
 
     public $response;
 
+    public $tries = 1;
+
+    public function shouldQueue()
+    {
+        return config('thenpingme.queue_ping');
+    }
+
     public function handle()
     {
         $response = Zttp::withHeaders($this->headers)
             ->asJson()
             ->post($this->url, $this->payload);
 
-        if (! Str::startsWith($response->status(), '2')) {
-            throw ThenpingmePingException::couldNotPing($response->status());
+        if (! $response->isSuccess()) {
+            throw ThenpingmePingException::couldNotPing($response->status(), $response->json());
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Thenpingme;
 
+use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
@@ -38,5 +39,14 @@ class ScheduledTaskSubscriber
             ],
             static::class.'@handleScheduledTaskEvent'
         );
+
+        if (class_exists(ScheduledTaskFailed::class)) {
+            $events->listen(
+                [
+                    ScheduledTaskFailed::class,
+                ],
+                static::class.'@handleScheduledTaskEvent'
+            );
+        }
     }
 }
