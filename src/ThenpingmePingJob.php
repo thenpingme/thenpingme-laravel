@@ -29,11 +29,6 @@ class ThenpingmePingJob implements ShouldQueue
 
     public $tries = 1;
 
-    public function shouldQueue()
-    {
-        return config('thenpingme.queue_ping');
-    }
-
     public function handle()
     {
         $response = Http::timeout(5)
