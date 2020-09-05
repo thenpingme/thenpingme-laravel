@@ -70,7 +70,9 @@ class ThenpingmeClient implements Client
 
         $this->pingJob->headers = $this->headers();
 
-        dispatch($this->pingJob);
+        config('thenpingme.queue_ping')
+            ? dispatch($this->pingJob)
+            : dispatchNow($this->pingJob);
     }
 
     public function endpoint($url): self
