@@ -23,9 +23,10 @@ class ScheduledTaskCollection extends Collection
                 return [
                     'mutex' => $task['mutex'],
                     'type' => $task['type'],
+                    'command' => $command = $task['command'] ?: $task['description'],
                     'expression' => $task['expression'],
                     'interval' => Thenpingme::translateExpression($task['expression']),
-                    'description' => $task['description'],
+                    'description' => $task['description'] !== $command ? $task['description'] : null,
                     'extra' => $task['type'] == 'closure' && isset($task['extra'])
                         ? sprintf('Line %s of %s', $task['extra']['line'], $task['extra']['file'])
                         : null,
