@@ -8,6 +8,10 @@ return [
 
     'queue_ping' => env('THENPINGME_QUEUE_PING', true),
 
+    'queue_connection' => env('THENPINGME_QUEUE_CONNECTION', config('queue.default')),
+
+    'queue_name' => env('THENPINGME_QUEUE_NAME', config(sprintf('queue.connections.%s.queue', config('thenpingme.queue_connection')))),
+
     // Capture git sha with ping
     // 'release' => trim(exec('git --git-dir ' . base_path('.git') . ' log --pretty="%h" -n1 HEAD')),
 
