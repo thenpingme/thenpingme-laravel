@@ -74,7 +74,7 @@ class ThenpingmeClient implements Client
             ? dispatch($this->pingJob)
                 ->onConnection(config('thenpingme.queue_connection'))
                 ->onQueue(config('thenpingme.queue_name'))
-            : dispatchNow($this->pingJob);
+            : dispatch_now($this->pingJob);
     }
 
     public function endpoint($url): self
