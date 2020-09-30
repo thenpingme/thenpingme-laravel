@@ -3,8 +3,10 @@
 namespace Thenpingme\Tests;
 
 use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Support\Facades\Bus;
 use Thenpingme\Client\Client;
 use Thenpingme\Exceptions\CouldNotSendPing;
+use Thenpingme\ThenpingmePingJob;
 
 class ThenpingmeClientTest extends TestCase
 {
@@ -18,6 +20,18 @@ class ThenpingmeClientTest extends TestCase
         $this->translator = $this->app->make(Translator::class);
 
         config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
+    }
+
+    /** @test */
+    public function it_does_not_send_a_ping_if_thenpingme_is_disabled()
+    {
+        Bus::fake();
+
+        config(['thenpingme.enabled' => false]);
+
+        $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
+
+        Bus::assertNotDispatched(ThenpingmePingJob::class);
     }
 
     /** @test */
