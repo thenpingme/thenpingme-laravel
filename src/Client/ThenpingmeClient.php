@@ -60,6 +60,10 @@ class ThenpingmeClient implements Client
 
     public function dispatch(): void
     {
+        if (! config('thenpingme.enabled')) {
+            return;
+        }
+
         if (! $this->url) {
             throw CouldNotSendPing::missingUrl();
         }

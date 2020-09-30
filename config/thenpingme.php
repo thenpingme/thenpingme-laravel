@@ -2,6 +2,8 @@
 
 return [
 
+    'enabled' => env('THENPINGME_ENABLED', true),
+
     'project_id' => env('THENPINGME_PROJECT_ID'),
 
     'signing_key' => env('THENPINGME_SIGNING_KEY'),
