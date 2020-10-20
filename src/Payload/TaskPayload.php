@@ -23,6 +23,7 @@ class TaskPayload extends ThenpingmePayload
     public function toArray(): array
     {
         return [
+            'timezone' => $this->task->timezone,
             'release' => config('thenpingme.release'),
             'type' => (new TaskIdentifier)($this->task),
             'expression' => $this->task->expression,
