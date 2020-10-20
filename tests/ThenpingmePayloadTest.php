@@ -287,6 +287,37 @@ class ThenpingmePayloadTest extends TestCase
     }
 
     /** @test */
+    public function it_handles_scheduled_task_specific_timezones()
+    {
+        Carbon::setTestNow('2019-10-11 00:00:00', 'UTC');
+
+        config(['app.schedule_timezone' => '+10:30']);
+
+        $event = new ScheduledTaskSkipped(
+            $this
+                ->app
+                ->makeWith(Schedule::class, ['+10:30'])
+                ->command('thenpingme:first')
+                ->description('This is the first task'),
+            1
+        );
+
+        tap(ThenpingmePayload::fromEvent($event), function ($payload) {
+            $this->assertInstanceOf(ScheduledTaskSkippedPayload::class, $payload);
+
+            tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals('+10:30', $body['task']['timezone']);
+                $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
+                $this->assertEquals('10.1.1.1', $body['ip']);
+                $this->assertEquals(gethostname(), $body['hostname']);
+                $this->assertEquals('ScheduledTaskSkipped', $body['type']);
+                $this->assertEquals('2019-10-11T00:00:00+00:00', $body['time']);
+                $this->assertEquals(app()->environment(), $body['environment']);
+            });
+        });
+    }
+
+    /** @test */
     public function it_generates_a_sync_payload()
     {
         $schedule = $this->app->make(Schedule::class);
