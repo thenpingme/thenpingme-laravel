@@ -42,6 +42,7 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             Assert::assertArraySubset([
+                'timezone' => 'UTC',
                 'type' => TaskIdentifier::TYPE_COMMAND,
                 'expression' => '* * * * *',
                 'command' => 'generate:payload',
@@ -68,6 +69,7 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             Assert::assertArraySubset([
+                'timezone' => 'UTC',
                 'type' => TaskIdentifier::TYPE_COMMAND,
                 'expression' => '* * * * *',
                 'command' => 'thenpingme:filtered',
@@ -92,6 +94,7 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             Assert::assertArraySubset([
+                'timezone' => 'UTC',
                 'type' => TaskIdentifier::TYPE_COMMAND,
                 'expression' => '* * * * *',
                 'command' => 'thenpingme:background',
@@ -169,6 +172,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskStartingPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals('UTC', $body['task']['timezone']);
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('10.1.1.1', $body['ip']);
                 $this->assertEquals(gethostname(), $body['hostname']);
@@ -269,6 +273,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskSkippedPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals('UTC', $body['task']['timezone']);
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('10.1.1.1', $body['ip']);
                 $this->assertEquals(gethostname(), $body['hostname']);
