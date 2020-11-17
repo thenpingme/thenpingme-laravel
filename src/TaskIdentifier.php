@@ -27,7 +27,7 @@ class TaskIdentifier
                 return static::TYPE_CLOSURE;
             }
 
-            if (Str::of($task->getSummaryForDisplay())->contains(['Closure', 'Callback'])) {
+            if (Str::of($task->getSummaryForDisplay())->is(['Closure', 'Callback'])) {
                 return static::TYPE_CLOSURE;
             }
         }
