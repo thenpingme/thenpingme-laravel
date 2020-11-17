@@ -19,15 +19,15 @@ class TaskIdentifier
     public function __invoke($task)
     {
         if ($task instanceof CallbackEvent) {
-            if (is_null($task->command) && $task->description && class_exists($task->description)) {
+            if (Str::of($task->command)->isEmpty() && $task->description && class_exists($task->description)) {
                 return static::TYPE_JOB;
             }
 
-            if (is_null($task->command) && Str::is($task->description, $task->getSummaryForDisplay())) {
+            if (Str::of($task->command)->isEmpty() && Str::is($task->description, $task->getSummaryForDisplay())) {
                 return static::TYPE_CLOSURE;
             }
 
-            if (Str::is($task->getSummaryForDisplay(), 'Closure')) {
+            if (Str::of($task->getSummaryForDisplay())->contains(['Closure', 'Callback'])) {
                 return static::TYPE_CLOSURE;
             }
         }
@@ -41,7 +41,7 @@ class TaskIdentifier
         }
     }
 
-    private function sanitisedCommand(string $command): string
+    private function sanitisedCommand(?string $command): string
     {
         return trim(str_replace([
             "'",
