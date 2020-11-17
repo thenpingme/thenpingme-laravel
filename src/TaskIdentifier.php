@@ -19,15 +19,15 @@ class TaskIdentifier
     public function __invoke($task)
     {
         if ($task instanceof CallbackEvent) {
-            if (is_null($task->command) && $task->description && class_exists($task->description)) {
+            if (trim($task->command) === '' && $task->description && class_exists($task->description)) {
                 return static::TYPE_JOB;
             }
 
-            if (is_null($task->command) && Str::is($task->description, $task->getSummaryForDisplay())) {
+            if (trim($task->command) === '' && Str::is($task->description, $task->getSummaryForDisplay())) {
                 return static::TYPE_CLOSURE;
             }
 
-            if (Str::is($task->getSummaryForDisplay(), 'Closure')) {
+            if (Str::is(['Closure', 'Callback'], $task->getSummaryForDisplay())) {
                 return static::TYPE_CLOSURE;
             }
         }
