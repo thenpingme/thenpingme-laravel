@@ -2,6 +2,7 @@
 
 namespace Thenpingme\Payload;
 
+use Illuminate\Support\Facades\Date;
 use ReflectionClass;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\TaskIdentifier;
@@ -23,7 +24,7 @@ class TaskPayload extends ThenpingmePayload
     public function toArray(): array
     {
         return [
-            'timezone' => $this->task->timezone,
+            'timezone' => Date::now($this->task->timezone)->getOffsetString(),
             'release' => config('thenpingme.release'),
             'type' => (new TaskIdentifier)($this->task),
             'expression' => $this->task->expression,
