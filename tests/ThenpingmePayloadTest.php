@@ -2,7 +2,6 @@
 
 namespace Thenpingme\Tests;
 
-use Exception;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
@@ -12,7 +11,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
-use Thenpingme\Payload\ScheduledTaskFailedPayload;
 use Thenpingme\Payload\ScheduledTaskFinishedPayload;
 use Thenpingme\Payload\ScheduledTaskSkippedPayload;
 use Thenpingme\Payload\ScheduledTaskStartingPayload;
@@ -44,7 +42,7 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             Assert::assertArraySubset([
-                'timezone' => 'UTC',
+                'timezone' => '+00:00',
                 'type' => TaskIdentifier::TYPE_COMMAND,
                 'expression' => '* * * * *',
                 'command' => 'generate:payload',
@@ -71,7 +69,7 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             Assert::assertArraySubset([
-                'timezone' => 'UTC',
+                'timezone' => '+00:00',
                 'type' => TaskIdentifier::TYPE_COMMAND,
                 'expression' => '* * * * *',
                 'command' => 'thenpingme:filtered',
@@ -96,7 +94,7 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
             Assert::assertArraySubset([
-                'timezone' => 'UTC',
+                'timezone' => '+00:00',
                 'type' => TaskIdentifier::TYPE_COMMAND,
                 'expression' => '* * * * *',
                 'command' => 'thenpingme:background',
@@ -174,7 +172,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskStartingPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) use ($payload) {
-                $this->assertEquals('UTC', $body['task']['timezone']);
+                $this->assertEquals('+00:00', $body['task']['timezone']);
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('10.1.1.1', $body['ip']);
                 $this->assertEquals(gethostname(), $body['hostname']);
@@ -275,7 +273,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskSkippedPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) use ($payload) {
-                $this->assertEquals('UTC', $body['task']['timezone']);
+                $this->assertEquals('+00:00', $body['task']['timezone']);
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('10.1.1.1', $body['ip']);
                 $this->assertEquals(gethostname(), $body['hostname']);
@@ -297,6 +295,37 @@ class ThenpingmePayloadTest extends TestCase
             $this
                 ->app
                 ->makeWith(Schedule::class, ['+10:30'])
+                ->command('thenpingme:first')
+                ->description('This is the first task'),
+            1
+        );
+
+        tap(ThenpingmePayload::fromEvent($event), function ($payload) {
+            $this->assertInstanceOf(ScheduledTaskSkippedPayload::class, $payload);
+
+            tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals('+10:30', $body['task']['timezone']);
+                $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
+                $this->assertEquals('10.1.1.1', $body['ip']);
+                $this->assertEquals(gethostname(), $body['hostname']);
+                $this->assertEquals('ScheduledTaskSkipped', $body['type']);
+                $this->assertEquals('2019-10-11T00:00:00+00:00', $body['time']);
+                $this->assertEquals(app()->environment(), $body['environment']);
+            });
+        });
+    }
+
+    /** @test */
+    public function it_converts_string_timezones_to_utc_offset()
+    {
+        Carbon::setTestNow('2019-10-11 00:00:00', 'UTC');
+
+        config(['app.schedule_timezone' => 'Australia/Adelaide']);
+
+        $event = new ScheduledTaskSkipped(
+            $this
+                ->app
+                ->makeWith(Schedule::class, ['Australia/Adelaide'])
                 ->command('thenpingme:first')
                 ->description('This is the first task'),
             1
