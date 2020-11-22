@@ -6,9 +6,9 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
+use Thenpingme\Client\Client;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
-use Thenpingme\ThenpingmePingJob;
 
 class ThenpingmeSyncTest extends TestCase
 {
@@ -29,6 +29,8 @@ class ThenpingmeSyncTest extends TestCase
     /** @test */
     public function it_fetches_tasks_to_be_synced()
     {
+        config(['thenpingme.queue_ping' => true]);
+
         tap($this->app->make(Schedule::class), function ($schedule) {
             Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection([
                 $schedule->command('thenpingme:first')->description('This is the first task'),
@@ -43,11 +45,19 @@ class ThenpingmeSyncTest extends TestCase
             Thenpingme::shouldReceive('translateExpression');
         });
 
-        $this->artisan('thenpingme:sync')
+        $this->partialMock(Client::class, function ($mock) {
+            $mock
+                ->shouldReceive('sync')->once()->andReturnSelf()
+                ->shouldReceive('payload')->once()->andReturnSelf()
+                ->shouldReceive('dispatch')->once();
+        });
+
+        $this
+            ->artisan('thenpingme:sync')
             ->expectsOutput($this->translator->get('thenpingme::messages.successful_sync'))
             ->assertExitCode(0);
 
-        Queue::assertPushed(ThenpingmePingJob::class);
+        $this->assertFalse(config('thenpingme.queue_ping'));
     }
 
     /** @test */
