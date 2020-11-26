@@ -7,7 +7,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Thenpingme\Exceptions\ThenpingmePingException;
 use Zttp\Zttp;
 
 class ThenpingmePingJob implements ShouldQueue
@@ -36,7 +35,10 @@ class ThenpingmePingJob implements ShouldQueue
             ->post($this->url, $this->payload);
 
         if (! $response->isSuccess()) {
-            throw ThenpingmePingException::couldNotPing($response->status(), $response->json());
+            logger('Could not reach '.parse_url($this->url, PHP_URL_HOST), [
+                'status' => $response->status() ?? null,
+                'response' => data_get($response->json(), 'message'),
+            ]);
         }
     }
 }
