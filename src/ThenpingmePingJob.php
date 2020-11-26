@@ -33,6 +33,7 @@ class ThenpingmePingJob implements ShouldQueue
             Http::timeout(5)
                 ->retry(3, 250)
                 ->withHeaders($this->headers)
+                ->acceptJson()
                 ->asJson()
                 ->post($this->url, $this->payload);
         } catch (Throwable $e) {
