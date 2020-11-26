@@ -8,7 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Thenpingme\Exceptions\ThenpingmePingException;
+use Throwable;
 
 class ThenpingmePingJob implements ShouldQueue
 {
@@ -25,20 +25,21 @@ class ThenpingmePingJob implements ShouldQueue
 
     public $queue;
 
-    public $response;
-
     public $tries = 1;
 
     public function handle()
     {
-        $response = Http::timeout(5)
-            ->retry(3, 250)
-            ->withHeaders($this->headers)
-            ->asJson()
-            ->post($this->url, $this->payload);
-
-        if (! $response->successful()) {
-            throw ThenpingmePingException::couldNotPing($response->status(), $response->json());
+        try {
+            Http::timeout(5)
+                ->retry(3, 250)
+                ->withHeaders($this->headers)
+                ->asJson()
+                ->post($this->url, $this->payload);
+        } catch (Throwable $e) {
+            logger('Could not reach '.parse_url($this->url, PHP_URL_HOST), [
+                'status' => $e->response->status() ?? null,
+                'response' => $e->response->json('message') ?? null,
+            ]);
         }
     }
 }
