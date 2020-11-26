@@ -31,6 +31,7 @@ class ThenpingmePingJob implements ShouldQueue
     public function handle()
     {
         $response = Zttp::withHeaders($this->headers)
+            ->accept('application/json')
             ->asJson()
             ->post($this->url, $this->payload);
 
