@@ -171,13 +171,17 @@ class ThenpingmeSetupCommand extends Command
 
     protected function setupInitialTasks(): bool
     {
+        config(['thenpingme.queue_ping' => false]);
+
         app(Client::class)
             ->setup()
             ->useSecret($this->option('tasks-only') ? Config::get('thenpingme.project_id') : $this->argument('project_id'))
-            ->payload(ThenpingmeSetupPayload::make(
-                Thenpingme::scheduledTasks(),
-                Config::get('thenpingme.signing_key') ?: $this->signingKey
-            )->toArray())
+            ->payload(
+                ThenpingmeSetupPayload::make(
+                    Thenpingme::scheduledTasks(),
+                    Config::get('thenpingme.signing_key') ?: $this->signingKey
+                )->toArray()
+            )
             ->dispatch();
 
         return true;
