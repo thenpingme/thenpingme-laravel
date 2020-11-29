@@ -69,6 +69,9 @@ abstract class ThenpingmePayload implements Arrayable
                 'release' => config('thenpingme.release'),
                 'timezone' => Carbon::now()->timezone->toOffsetName(),
             ]),
+            'thenpingme' => [
+                'version' => Thenpingme::version(),
+            ],
         ]);
     }
 
