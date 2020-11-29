@@ -41,6 +41,7 @@ class ThenpingmeSetupTest extends TestCase
     {
         Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
         Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
+        Thenpingme::shouldReceive('version');
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
@@ -131,6 +132,7 @@ class ThenpingmeSetupTest extends TestCase
 
         Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('secret');
         Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
+        Thenpingme::shouldReceive('version');
 
         tap($this->app->make(Schedule::class), function ($schedule) {
             $schedule->command('test:command')->hourly();
