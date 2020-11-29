@@ -61,6 +61,8 @@ class ThenpingmeSetupTest extends TestCase
     /** @test */
     public function it_sets_up_initial_scheduled_tasks()
     {
+        config(['thenpingme.queue_ping' => true]);
+
         tap($this->app->make(Schedule::class), function ($schedule) {
             $schedule->command('test:command')->hourly();
         });
@@ -77,13 +79,13 @@ class ThenpingmeSetupTest extends TestCase
 
             return true;
         });
+
+        $this->assertFalse(config('thenpingme.queue_ping'));
     }
 
     /** @test */
     public function it_handles_missing_environment_file()
     {
-        Bus::fake(ThenpingmePingJob::class);
-
         unlink(base_path('.env'));
 
         Thenpingme::shouldReceive('generateSigningKey')->never();
@@ -101,8 +103,6 @@ class ThenpingmeSetupTest extends TestCase
     /** @test */
     public function it_runs_setup_with_tasks_only()
     {
-        Bus::fake(ThenpingmePingJob::class);
-
         tap($this->app->make(Schedule::class), function ($schedule) {
             $schedule->command('test:command')->hourly();
         });
@@ -112,7 +112,6 @@ class ThenpingmeSetupTest extends TestCase
         $this->artisan('thenpingme:setup --tasks-only');
 
         Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-            $this->assertEquals(Thenpingme::version(), $job->payload['thenpingme']['version']);
             $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
             $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
             $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
@@ -127,8 +126,6 @@ class ThenpingmeSetupTest extends TestCase
     /** @test */
     public function it_runs_setup_with_tasks_only_when_env_does_not_exist()
     {
-        Bus::fake(ThenpingmePingJob::class);
-
         unlink(base_path('.env'));
 
         Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('secret');
@@ -161,8 +158,6 @@ class ThenpingmeSetupTest extends TestCase
     /** @test */
     public function it_exits_if_duplicate_tasks_are_detected()
     {
-        Bus::fake(ThenpingmePingJob::class);
-
         tap($this->app->make(Schedule::class), function ($schedule) {
             $schedule->job(SomeJob::class)->everyMinute();
             $schedule->job(SomeJob::class)->everyMinute();
