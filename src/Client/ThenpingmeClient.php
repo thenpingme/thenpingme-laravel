@@ -4,6 +4,7 @@ namespace Thenpingme\Client;
 
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Exceptions\CouldNotSendPing;
+use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Signer\ThenpingmeSigner;
 use Thenpingme\ThenpingmePingJob;
 
@@ -99,6 +100,7 @@ class ThenpingmeClient implements Client
     {
         return [
             'Signature' => $this->signer->calculateSignature($this->payload, $this->secret),
+            'X-Thenpingme-Version' => Thenpingme::version(),
         ];
     }
 

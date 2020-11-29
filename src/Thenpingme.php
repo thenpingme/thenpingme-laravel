@@ -15,6 +15,8 @@ use Thenpingme\Collections\ScheduledTaskCollection;
 
 class Thenpingme
 {
+    public const VERSION = '1.3.9';
+
     public function generateSigningKey(): string
     {
         return Str::random(512);
@@ -90,5 +92,10 @@ class Thenpingme
         return sprintf('thenpingme:%s', sha1(
             str_replace('..', '.', "{$event->expression}.{$callbackMutex}.{$event->description}")
         ));
+    }
+
+    public function version(): string
+    {
+        return static::VERSION;
     }
 }

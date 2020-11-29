@@ -6,6 +6,7 @@ use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Bus;
 use Thenpingme\Client\Client;
 use Thenpingme\Exceptions\CouldNotSendPing;
+use Thenpingme\Facades\Thenpingme;
 use Thenpingme\ThenpingmePingJob;
 
 class ThenpingmeClientTest extends TestCase
@@ -74,6 +75,8 @@ class ThenpingmeClientTest extends TestCase
             '90b01e2e084d0df073d028a5c60a303618d5d56a194b08626f7236334f3345df',
             $client->headers()['Signature']
         );
+
+        $this->assertEquals(Thenpingme::version(), $client->headers()['X-Thenpingme-Version']);
     }
 
     /** @test */
