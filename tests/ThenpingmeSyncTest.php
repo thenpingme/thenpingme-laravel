@@ -43,7 +43,7 @@ class ThenpingmeSyncTest extends TestCase
                 Str::random(16)
             );
             Thenpingme::shouldReceive('translateExpression');
-            Thenpingme::shouldReceive('version');
+            Thenpingme::shouldReceive('version')->once();
         });
 
         $this->partialMock(Client::class, function ($mock) {

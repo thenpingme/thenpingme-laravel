@@ -41,7 +41,7 @@ class ThenpingmeSetupTest extends TestCase
     {
         Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
         Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
-        Thenpingme::shouldReceive('version');
+        Thenpingme::shouldReceive('version')->once();
 
         $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
@@ -111,7 +111,8 @@ class ThenpingmeSetupTest extends TestCase
 
         $this->artisan('thenpingme:setup --tasks-only');
 
-        Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
+        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+            $this->assertEquals(Thenpingme::version(), $job->payload['thenpingme']['version']);
             $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
             $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
             $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
@@ -132,7 +133,7 @@ class ThenpingmeSetupTest extends TestCase
 
         Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('secret');
         Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
-        Thenpingme::shouldReceive('version');
+        Thenpingme::shouldReceive('version')->andReturn('1.2.3');
 
         tap($this->app->make(Schedule::class), function ($schedule) {
             $schedule->command('test:command')->hourly();
@@ -145,7 +146,8 @@ class ThenpingmeSetupTest extends TestCase
             ->expectsOutput($this->translator->get('thenpingme::messages.signing_key_environment'))
             ->expectsOutput('THENPINGME_SIGNING_KEY=secret');
 
-        Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
+        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+            $this->assertEquals('1.2.3', $job->payload['thenpingme']['version']);
             $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
             $this->assertEquals('secret', $job->payload['project']['signing_key']);
             $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
