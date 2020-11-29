@@ -43,6 +43,7 @@ class ThenpingmeSyncTest extends TestCase
                 Str::random(16)
             );
             Thenpingme::shouldReceive('translateExpression');
+            Thenpingme::shouldReceive('version');
         });
 
         $this

@@ -3,6 +3,7 @@
 namespace Thenpingme\Tests;
 
 use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Bus;
 use Thenpingme\Client\Client;
 use Thenpingme\Exceptions\CouldNotSendPing;
@@ -113,7 +114,7 @@ class ThenpingmeClientTest extends TestCase
 
         $this->assertEquals(
             ['Signature' => 'd276b8572f3ea342d7946fc8c100266ceb0ffaee9443e95bde3762d66adb2146'],
-            $client->headers()
+            Arr::only($client->headers(), 'Signature')
         );
     }
 }
