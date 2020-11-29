@@ -58,6 +58,9 @@ abstract class ThenpingmePayload implements Arrayable
     public function toArray(): array
     {
         return array_filter([
+            'thenpingme' => [
+                'version' => Thenpingme::version(),
+            ],
             'release' => config('thenpingme.release'),
             'fingerprint' => $this->fingerprint(),
             'hostname' => $hostname = gethostname(),

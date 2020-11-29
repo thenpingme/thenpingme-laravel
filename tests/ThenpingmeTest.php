@@ -112,4 +112,10 @@ class ThenpingmeTest extends TestCase
             TaskPayload::fromTask(Arr::first(Thenpingme::scheduledTasks()))->toArray()['mutex']
         );
     }
+
+    /** @test */
+    public function it_returns_the_current_client_version()
+    {
+        $this->assertNotNull(Thenpingme::version());
+    }
 }
