@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Collections\ScheduledTaskCollection;
+use Thenpingme\Facades\Thenpingme;
 
 class SyncPayload implements Arrayable
 {
@@ -26,6 +27,9 @@ class SyncPayload implements Arrayable
     public function toArray(): array
     {
         return [
+            'thenpingme' => [
+                'version' => Thenpingme::version(),
+            ],
             'project' => array_filter([
                 'uuid' => Config::get('thenpingme.project_id'),
                 'name' => Config::get('app.name'),
