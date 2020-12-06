@@ -37,10 +37,12 @@ class ThenpingmePingJob implements ShouldQueue
                 ->asJson()
                 ->post($this->url, $this->payload);
         } catch (Throwable $e) {
-            logger('Could not reach '.parse_url($this->url, PHP_URL_HOST), [
-                'status' => $e->response->status() ?? null,
-                'response' => $e->response->json('message') ?? null,
-            ]);
+            if ($e instanceof RequestException) {
+                logger('Could not reach '.parse_url($this->url, PHP_URL_HOST), [
+                    'status' => $e->response->status() ?? null,
+                    'response' => $e->response->json('message') ?? null,
+                ]);
+            }
         }
     }
 }
