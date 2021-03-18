@@ -140,7 +140,7 @@ class ThenpingmeSetupTest extends TestCase
         config()->offsetUnset('thenpingme.signing_key');
 
         $this->artisan('thenpingme:setup --tasks-only')
-            ->expectsOutput($this->translator->get('thenpingme::messages.signing_key_environment'))
+            ->expectsOutput($this->translator->get('thenpingme::translations.signing_key_environment'))
             ->expectsOutput('THENPINGME_SIGNING_KEY=secret');
 
         Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {

@@ -48,7 +48,7 @@ class ThenpingmeSetupCommand extends Command
         $this->schedule = $schedule;
 
         if (! $this->canBeSetup()) {
-            $this->error($this->translator->get('thenpingme::messages.env_missing'));
+            $this->error($this->translator->get('thenpingme::translations.env_missing'));
             $this->info('    php artisan thenpingme:setup --tasks-only');
             $this->line(sprintf('THENPINGME_PROJECT_ID=%s', $this->argument('project_id')));
 
@@ -59,26 +59,26 @@ class ThenpingmeSetupCommand extends Command
             return 1;
         }
 
-        $this->task($this->translator->get('thenpingme::messages.setup.signing_key'), function () {
+        $this->task($this->translator->get('thenpingme::translations.setup.signing_key'), function () {
             return $this->generateSigningKey();
         });
 
         if (! $this->option('tasks-only')) {
-            $this->task($this->translator->get('thenpingme::messages.setup.write_env'), function () {
+            $this->task($this->translator->get('thenpingme::translations.setup.write_env'), function () {
                 return $this->writeEnvFile();
             });
 
-            $this->task($this->translator->get('thenpingme::messages.setup.write_env_example'), function () {
+            $this->task($this->translator->get('thenpingme::translations.setup.write_env_example'), function () {
                 return $this->writeExampleEnvFile();
             });
 
-            $this->task($this->translator->get('thenpingme::messages.setup.publish_config'), function () {
+            $this->task($this->translator->get('thenpingme::translations.setup.publish_config'), function () {
                 return $this->publishConfig();
             });
         }
 
         $this->task(
-            $this->translator->get('thenpingme::messages.initial_setup', [
+            $this->translator->get('thenpingme::translations.initial_setup', [
                 'url' => parse_url(Config::get('thenpingme.api_url'), PHP_URL_HOST),
             ]),
             function () {
@@ -87,7 +87,7 @@ class ThenpingmeSetupCommand extends Command
         );
 
         if (! $this->envExists()) {
-            $this->error($this->translator->get('thenpingme::messages.signing_key_environment'));
+            $this->error($this->translator->get('thenpingme::translations.signing_key_environment'));
             $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
         }
     }
