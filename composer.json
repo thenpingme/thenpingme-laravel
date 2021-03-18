@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^7.4|^8.0",
         "laravel/framework": "^8.12",
         "lorisleiva/cron-translator": "^0.1.1",
         "nesbot/carbon": "^2.33",
