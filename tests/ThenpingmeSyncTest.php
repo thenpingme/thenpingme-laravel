@@ -48,7 +48,7 @@ class ThenpingmeSyncTest extends TestCase
 
         $this
             ->artisan('thenpingme:sync')
-            ->expectsOutput($this->translator->get('thenpingme::messages.successful_sync'))
+            ->expectsOutput($this->translator->get('thenpingme::translations.successful_sync'))
             ->assertExitCode(0);
 
         Bus::assertDispatched(ThenpingmePingJob::class);
@@ -69,7 +69,7 @@ class ThenpingmeSyncTest extends TestCase
         });
 
         $this->artisan('thenpingme:sync')
-            ->expectsOutput($this->translator->get('thenpingme::messages.indistinguishable_tasks'))
+            ->expectsOutput($this->translator->get('thenpingme::translations.indistinguishable_tasks'))
             ->assertExitCode(1);
     }
 }
