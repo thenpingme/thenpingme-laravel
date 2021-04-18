@@ -222,6 +222,9 @@ class ThenpingmePayloadTest extends TestCase
                         'run_in_background' => false,
                         'description' => 'This is the first task',
                         'mutex' => Thenpingme::fingerprintTask($events[0]),
+                        'grace_period' => null,
+                        'allowed_run_time' => null,
+                        'notify_after_consecutive_alerts' => null,
                     ],
                     [
                         'type' => TaskIdentifier::TYPE_COMMAND,
@@ -233,6 +236,9 @@ class ThenpingmePayloadTest extends TestCase
                         'run_in_background' => false,
                         'description' => 'This is the second task',
                         'mutex' => Thenpingme::fingerprintTask($events[1]),
+                        'grace_period' => null,
+                        'allowed_run_time' => null,
+                        'notify_after_consecutive_alerts' => null,
                     ],
                 ],
             ], $payload);
