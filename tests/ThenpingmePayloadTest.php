@@ -489,7 +489,10 @@ class ThenpingmePayloadTest extends TestCase
         putenv('SERVER_ADDR');
 
         // Fallback
-        if (($ip = gethostbyname($host)) !== '127.0.0.1') {
+        if (PHP_OS == 'Linux') {
+            // The only way to really test this works would be to duplicate the hostname
+            // lookup that is executed in ThenpingmePayload, which is also pointless.
+        } elseif (($ip = gethostbyname($host)) !== '127.0.0.1') {
             $this->assertEquals($ip, ThenpingmePayload::getIp($host));
         } else {
             $this->assertNull(ThenpingmePayload::getIp($host));
