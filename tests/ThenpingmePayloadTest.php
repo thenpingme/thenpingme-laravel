@@ -240,6 +240,80 @@ class ThenpingmePayloadTest extends TestCase
     }
 
     /** @test */
+    public function it_generates_a_setup_payload_with_explicit_settings()
+    {
+        $scheduler = $this->app->make(Schedule::class);
+
+        $events = ScheduledTaskCollection::make([
+            $scheduler
+                ->command('thenpingme:first')
+                ->description('This is the first task')
+                ->thenpingme([
+                    'grace_period' => 2,
+                    'allowed_run_time' => 2,
+                    'notify_after_consecutive_alerts' => 3,
+                ]),
+        ]);
+
+        tap(ThenpingmeSetupPayload::make($events, 'super-secret')->toArray(), function ($payload) use ($events) {
+            Assert::assertArraySubset([
+                'thenpingme' => [
+                    'version' => Thenpingme::version(),
+                ],
+                'project' => [
+                    'uuid' => 'abc123',
+                    'name' => 'We changed the project name',
+                    'signing_key' => 'super-secret',
+                    'timezone' => '+00:00',
+                ],
+                'tasks' => [
+                    [
+                        'grace_period' => 2,
+                        'allowed_run_time' => 2,
+                        'notify_after_consecutive_alerts' => 3,
+                    ],
+                ],
+            ], $payload);
+        });
+    }
+
+    /** @test */
+    public function it_generates_a_setup_payload_with_partial_explicit_settings()
+    {
+        $scheduler = $this->app->make(Schedule::class);
+
+        $events = ScheduledTaskCollection::make([
+            $scheduler
+                ->command('thenpingme:first')
+                ->description('This is the first task')
+                ->thenpingme([
+                    'notify_after_consecutive_alerts' => 3,
+                ]),
+        ]);
+
+        tap(ThenpingmeSetupPayload::make($events, 'super-secret')->toArray(), function ($payload) use ($events) {
+            Assert::assertArraySubset([
+                'thenpingme' => [
+                    'version' => Thenpingme::version(),
+                ],
+                'project' => [
+                    'uuid' => 'abc123',
+                    'name' => 'We changed the project name',
+                    'signing_key' => 'super-secret',
+                    'timezone' => '+00:00',
+                ],
+                'tasks' => [
+                    [
+                        'grace_period' => null,
+                        'allowed_run_time' => null,
+                        'notify_after_consecutive_alerts' => 3,
+                    ],
+                ],
+            ], $payload);
+        });
+    }
+
+    /** @test */
     public function it_generates_the_correct_payload_for_a_scheduled_task_starting()
     {
         Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');

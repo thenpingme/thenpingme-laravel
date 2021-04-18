@@ -84,6 +84,56 @@ class ThenpingmeSetupTest extends TestCase
     }
 
     /** @test */
+    public function it_sets_up_initial_scheduled_tasks_with_explicit_settings()
+    {
+        config(['thenpingme.queue_ping' => true]);
+
+        tap($this->app->make(Schedule::class), function ($schedule) {
+            $schedule->command('test:command')->hourly()->thenpingme([
+                'grace_period' => 2,
+                'allowed_run_time' => 2,
+                'notify_after_consecutive_alerts' => 3,
+            ]);
+        });
+
+        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+
+        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+            $this->assertEquals(2, $job->payload['tasks'][0]['grace_period']);
+            $this->assertEquals(2, $job->payload['tasks'][0]['allowed_run_time']);
+            $this->assertEquals(3, $job->payload['tasks'][0]['notify_after_consecutive_alerts']);
+
+            return true;
+        });
+
+        $this->assertFalse(config('thenpingme.queue_ping'));
+    }
+
+    /** @test */
+    public function it_sets_up_initial_scheduled_tasks_with_partial_explicit_settings()
+    {
+        config(['thenpingme.queue_ping' => true]);
+
+        tap($this->app->make(Schedule::class), function ($schedule) {
+            $schedule->command('test:command')->hourly()->thenpingme([
+                'notify_after_consecutive_alerts' => 3,
+            ]);
+        });
+
+        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+
+        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+            $this->assertNull($job->payload['tasks'][0]['grace_period']);
+            $this->assertNull($job->payload['tasks'][0]['allowed_run_time']);
+            $this->assertEquals(3, $job->payload['tasks'][0]['notify_after_consecutive_alerts']);
+
+            return true;
+        });
+
+        $this->assertFalse(config('thenpingme.queue_ping'));
+    }
+
+    /** @test */
     public function it_handles_missing_environment_file()
     {
         unlink(base_path('.env'));
