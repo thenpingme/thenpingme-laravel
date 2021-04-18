@@ -91,8 +91,6 @@ abstract class ThenpingmePayload implements Arrayable
 
         // I don't really know the best way to test this... but it should be fine.
         if (PHP_OS == 'Linux') {
-            dump(gethostbyname($hostname));
-
             return trim(Arr::first(
                 explode(' ', tap(new Process(['hostname', '-I']), function (Process $process) {
                     $process->run();
