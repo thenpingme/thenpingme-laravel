@@ -43,10 +43,10 @@ class TaskPayload extends ThenpingmePayload
     private function isFiltered(): bool
     {
         return with(new ReflectionClass($this->task), function ($class) {
-            $filters = $class->getProperty('filters');
-            $filters->setAccessible(true);
-
-            return ! empty($filters->getValue($this->task));
+            return ! empty(array_merge(
+                tap($class->getProperty('filters'))->setAccessible(true)->getValue($this->task),
+                tap($class->getProperty('rejects'))->setAccessible(true)->getValue($this->task),
+            ));
         });
     }
 
