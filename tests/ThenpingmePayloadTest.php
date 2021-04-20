@@ -85,6 +85,86 @@ class ThenpingmePayloadTest extends TestCase
     }
 
     /** @test */
+    public function it_determines_if_a_task_is_filtered_by_unlessBetween()
+    {
+        $task = $this->app->make(Schedule::class)
+            ->command('thenpingme:filtered')
+            ->hourly()
+            ->description('This is the description')
+            ->unlessBetween('00:00', '07:00');
+
+        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+            Assert::assertArraySubset([
+                'timezone' => '+00:00',
+                'type' => TaskIdentifier::TYPE_COMMAND,
+                'expression' => '0 * * * *',
+                'command' => 'thenpingme:filtered',
+                'maintenance' => false,
+                'without_overlapping' => false,
+                'on_one_server' => false,
+                'description' => 'This is the description',
+                'mutex' => Thenpingme::fingerprintTask($task),
+                'filtered' => true,
+                'run_in_background' => false,
+            ], $payload);
+        });
+    }
+
+    /** @test */
+    public function it_determines_if_a_task_is_filtered_by_skip()
+    {
+        $task = $this->app->make(Schedule::class)
+            ->command('thenpingme:filtered')
+            ->hourly()
+            ->description('This is the description')
+            ->skip(function () {
+                return true;
+            });
+
+        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+            Assert::assertArraySubset([
+                'timezone' => '+00:00',
+                'type' => TaskIdentifier::TYPE_COMMAND,
+                'expression' => '0 * * * *',
+                'command' => 'thenpingme:filtered',
+                'maintenance' => false,
+                'without_overlapping' => false,
+                'on_one_server' => false,
+                'description' => 'This is the description',
+                'mutex' => Thenpingme::fingerprintTask($task),
+                'filtered' => true,
+                'run_in_background' => false,
+            ], $payload);
+        });
+    }
+
+    /** @test */
+    public function it_determines_if_a_task_is_filtered_by_between()
+    {
+        $task = $this->app->make(Schedule::class)
+            ->command('thenpingme:filtered')
+            ->hourly()
+            ->description('This is the description')
+            ->between('07:00', '19:00');
+
+        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+            Assert::assertArraySubset([
+                'timezone' => '+00:00',
+                'type' => TaskIdentifier::TYPE_COMMAND,
+                'expression' => '0 * * * *',
+                'command' => 'thenpingme:filtered',
+                'maintenance' => false,
+                'without_overlapping' => false,
+                'on_one_server' => false,
+                'description' => 'This is the description',
+                'mutex' => Thenpingme::fingerprintTask($task),
+                'filtered' => true,
+                'run_in_background' => false,
+            ], $payload);
+        });
+    }
+
+    /** @test */
     public function it_determines_if_a_job_runs_in_the_background()
     {
         $task = $this->app->make(Schedule::class)
