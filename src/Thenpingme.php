@@ -15,7 +15,7 @@ use Thenpingme\Collections\ScheduledTaskCollection;
 
 class Thenpingme
 {
-    public const VERSION = '1.3.9';
+    public const VERSION = '1.3.10';
 
     public function generateSigningKey(): string
     {
