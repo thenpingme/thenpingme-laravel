@@ -45,7 +45,7 @@ class TaskPayload extends ThenpingmePayload
         return with(new ReflectionClass($this->task), function ($class) {
             return ! empty(array_merge(
                 tap($class->getProperty('filters'))->setAccessible(true)->getValue($this->task),
-                tap($class->getProperty('rejects'))->setAccessible(true)->getValue($this->task),
+                tap($class->getProperty('rejects'))->setAccessible(true)->getValue($this->task)
             ));
         });
     }
