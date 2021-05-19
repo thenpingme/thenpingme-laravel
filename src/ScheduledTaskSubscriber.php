@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Thenpingme;
 
+use Illuminate\Console\Events\ScheduledBackgroundTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
@@ -48,6 +49,12 @@ class ScheduledTaskSubscriber
                 ],
                 static::class.'@handleScheduledTaskEvent'
             );
+        }
+
+        if (class_exists(ScheduledBackgroundTaskFinished::class)) {
+            $events->listen([
+                ScheduledBackgroundTaskFinished::class,
+            ], static::class.'@handleScheduledTaskEvent');
         }
     }
 }

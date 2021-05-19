@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Console\Events\ScheduledBackgroundTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
@@ -36,4 +37,5 @@ it('listens for scheduler events', function ($event, $args) {
     'scheduled task finished' => [ScheduledTaskFinished::class, [1]],
     'scheduled task skipped' => [ScheduledTaskSkipped::class, [1]],
     'scheduled task failed' => [ScheduledTaskFailed::class, [new Exception('testing')]],
+    'scheduled backround task finished' => [ScheduledBackgroundTaskFinished::class, []],
 ]);

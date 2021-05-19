@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Thenpingme\Payload;
 
+use Illuminate\Console\Events\ScheduledBackgroundTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
@@ -34,6 +35,10 @@ abstract class ThenpingmePayload implements Arrayable
 
         if ($event instanceof ScheduledTaskFinished) {
             return new ScheduledTaskFinishedPayload($event);
+        }
+
+        if ($event instanceof ScheduledBackgroundTaskFinished) {
+            return new ScheduledBackgroundTaskFinishedPayload($event);
         }
 
         if ($event instanceof ScheduledTaskSkipped) {
