@@ -37,5 +37,5 @@ it('listens for scheduler events', function ($event, $args) {
     'scheduled task finished' => [ScheduledTaskFinished::class, [1]],
     'scheduled task skipped' => [ScheduledTaskSkipped::class, [1]],
     'scheduled task failed' => [ScheduledTaskFailed::class, [new Exception('testing')]],
-    'scheduled backround task finished' => [ScheduledBackgroundTaskFinished::class, []],
+    'scheduled background task finished' => [ScheduledBackgroundTaskFinished::class, []],
 ]);
