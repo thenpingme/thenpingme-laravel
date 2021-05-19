@@ -33,14 +33,11 @@ class ScheduledTaskSubscriber
 
     public function subscribe(Dispatcher $events): void
     {
-        $events->listen(
-            [
-                ScheduledTaskStarting::class,
-                ScheduledTaskFinished::class,
-                ScheduledTaskSkipped::class,
-            ],
-            static::class.'@handleScheduledTaskEvent'
-        );
+        $events->listen([
+            ScheduledTaskStarting::class,
+            ScheduledTaskFinished::class,
+            ScheduledTaskSkipped::class,
+        ], static::class.'@handleScheduledTaskEvent');
 
         if (class_exists(ScheduledTaskFailed::class)) {
             $events->listen(
