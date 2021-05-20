@@ -3,7 +3,7 @@ name: run-tests
 on:
     push:
     pull_request:
-      types: [opened, edited]
+        types: [opened, edited]
     schedule:
         - cron: "0 0 * * *"
 
@@ -33,6 +33,16 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd, pdo_mysql, fileinfo, ftp, redis, memcached
+                  tools: composer:v2
+                  coverage: none
+
+            - name: Install dependencies
+              uses: nick-invision/retry@v1
+              with:
+                  timeout_minutes: 5
+                  max_attempts: 5
+                  command: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest --no-progress
 
             - name: Execute tests
               run: vendor/bin/phpunit
