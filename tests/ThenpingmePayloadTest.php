@@ -201,6 +201,9 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(ThenpingmeSetupPayload::make($events, 'super-secret')->toArray(), function ($payload) use ($events) {
             Assert::assertArraySubset([
+                'thenpingme' => [
+                    'version' => Thenpingme::version(),
+                ],
                 'project' => [
                     'uuid' => 'abc123',
                     'name' => 'We changed the project name',
@@ -252,6 +255,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskStartingPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals(Thenpingme::version(), $body['thenpingme']['version']);
                 $this->assertEquals('+00:00', $body['task']['timezone']);
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('10.1.1.1', $body['ip']);
@@ -353,6 +357,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskSkippedPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals(Thenpingme::version(), $body['thenpingme']['version']);
                 $this->assertEquals('+00:00', $body['task']['timezone']);
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('10.1.1.1', $body['ip']);
@@ -384,6 +389,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskSkippedPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals(Thenpingme::version(), $body['thenpingme']['version']);
                 $this->assertEquals('+10:30', $body['task']['timezone']);
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('10.1.1.1', $body['ip']);
@@ -415,6 +421,7 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertInstanceOf(ScheduledTaskSkippedPayload::class, $payload);
 
             tap($payload->toArray(), function ($body) use ($payload) {
+                $this->assertEquals(Thenpingme::version(), $body['thenpingme']['version']);
                 $this->assertEquals('+10:30', $body['task']['timezone']);
                 $this->assertEquals($payload->fingerprint(), $body['fingerprint']);
                 $this->assertEquals('10.1.1.1', $body['ip']);
@@ -437,6 +444,9 @@ class ThenpingmePayloadTest extends TestCase
 
         tap(SyncPayload::make($events)->toArray(), function ($payload) use ($events) {
             Assert::assertArraySubset([
+                'thenpingme' => [
+                    'version' => Thenpingme::version(),
+                ],
                 'project' => [
                     'uuid' => 'abc123',
                     'name' => 'We changed the project name',

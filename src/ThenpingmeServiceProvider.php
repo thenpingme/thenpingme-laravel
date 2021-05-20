@@ -2,8 +2,8 @@
 
 namespace Thenpingme;
 
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\ServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Thenpingme\Client\Client;
 use Thenpingme\Client\ThenpingmeClient;
 use Thenpingme\Console\Commands\ThenpingmeScheduleListCommand;
@@ -13,42 +13,31 @@ use Thenpingme\Console\Commands\ThenpingmeVerifyCommand;
 use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
 
-class ThenpingmeServiceProvider extends ServiceProvider
+class ThenpingmeServiceProvider extends PackageServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     */
-    public function boot()
+    public function configurePackage(Package $package): void
     {
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../config/thenpingme.php' => config_path('thenpingme.php'),
-            ], 'thenpingme-config');
-
-            $this->publishes([
-                __DIR__.'/../resources/lang' => resource_path('lang/vendor/thenpingme'),
-            ], 'thenpingme-lang');
-
-            $this->commands([
+        $package
+            ->name('laravel-thenpingme')
+            ->hasConfigFile()
+            ->hasTranslations()
+            ->hasCommands([                 
                 ThenpingmeSetupCommand::class,
                 ThenpingmeScheduleListCommand::class,
                 ThenpingmeVerifyCommand::class,
                 ThenpingmeSyncCommand::class,
             ]);
-
-            Event::subscribe(ScheduledTaskSubscriber::class);
-        }
-
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'thenpingme');
     }
 
-    /**
-     * Register the application services.
-     */
-    public function register(): void
+    public function bootingPackage()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/thenpingme.php', 'thenpingme');
+        if ($this->app->runningInConsole()) {
+            $this->app['events']->subscribe(ScheduledTaskSubscriber::class);
+        }
+    }
 
+    public function packageRegistered()
+    {
         $this->app->singleton('thenpingme', function () {
             return new Thenpingme;
         });

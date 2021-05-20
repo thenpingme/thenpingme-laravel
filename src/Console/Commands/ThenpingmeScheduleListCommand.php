@@ -37,7 +37,7 @@ class ThenpingmeScheduleListCommand extends Command
         ], $this->schedule());
 
         if (Thenpingme::scheduledTasks()->collisions()->isNotEmpty()) {
-            $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
+            $this->error($this->translator->get('thenpingme::translations.indistinguishable_tasks'));
 
             return 1;
         }

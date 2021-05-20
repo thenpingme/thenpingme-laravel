@@ -27,8 +27,8 @@ class ThenpingmeVerifyTest extends TestCase
         });
 
         $this->artisan('thenpingme:verify')
-            ->expectsOutput($this->translator->get('thenpingme::messages.indistinguishable_tasks'))
-            ->expectsOutput($this->translator->get('thenpingme::messages.duplicate_jobs'))
+            ->expectsOutput($this->translator->get('thenpingme::translations.indistinguishable_tasks'))
+            ->expectsOutput($this->translator->get('thenpingme::translations.duplicate_jobs'))
             ->assertExitCode(1);
     }
 
@@ -46,8 +46,8 @@ class ThenpingmeVerifyTest extends TestCase
         });
 
         $this->artisan('thenpingme:verify')
-            ->expectsOutput($this->translator->get('thenpingme::messages.indistinguishable_tasks'))
-            ->expectsOutput($this->translator->get('thenpingme::messages.duplicate_closures'))
+            ->expectsOutput($this->translator->get('thenpingme::translations.indistinguishable_tasks'))
+            ->expectsOutput($this->translator->get('thenpingme::translations.duplicate_closures'))
             ->assertExitCode(1);
     }
 
@@ -60,7 +60,7 @@ class ThenpingmeVerifyTest extends TestCase
         });
 
         $this->artisan('thenpingme:verify')
-            ->expectsOutput($this->translator->get('thenpingme::messages.healthy_tasks'))
+            ->expectsOutput($this->translator->get('thenpingme::translations.healthy_tasks'))
             ->assertExitCode(0);
     }
 

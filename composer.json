@@ -16,20 +16,21 @@
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^7.4|^8.0",
         "laravel/framework": "^8.12",
         "lorisleiva/cron-translator": "^0.1.1",
-        "nesbot/carbon": "^2.33.0",
+        "nesbot/carbon": "^2.33",
         "nunomaduro/laravel-console-task": "^1.5",
-        "sixlive/dotenv-editor": "^1.2"
+        "sixlive/dotenv-editor": "^1.2",
+        "spatie/laravel-package-tools": "^1.6"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.6",
-        "mockery/mockery": "^1.4.1",
-        "orchestra/testbench": "^6.0",
-        "phpunit/phpunit": "^9.3",
-        "rector/rector-prefixed": "^0.8.56",
-        "vimeo/psalm": "^3.18|^4.0"
+        "mockery/mockery": "^1.4.2",
+        "orchestra/testbench": "^6.5",
+        "phpunit/phpunit": "^9.4",
+        "rector/rector-prefixed": "^0.9",
+        "vimeo/psalm": "^3.13|^4.0"
     },
     "config": {
         "sort-packages": true

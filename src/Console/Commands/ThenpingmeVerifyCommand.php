@@ -33,19 +33,19 @@ class ThenpingmeVerifyCommand extends Command
                 })
             );
 
-            $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
+            $this->error($this->translator->get('thenpingme::translations.indistinguishable_tasks'));
 
             if ($collisions->hasNonUniqueJobs()) {
-                $this->line($this->translator->get('thenpingme::messages.duplicate_jobs'));
+                $this->line($this->translator->get('thenpingme::translations.duplicate_jobs'));
             }
 
             if ($collisions->hasNonUniqueClosures()) {
-                $this->line($this->translator->get('thenpingme::messages.duplicate_closures'));
+                $this->line($this->translator->get('thenpingme::translations.duplicate_closures'));
             }
 
             return 1;
         }
 
-        $this->info($this->translator->get('thenpingme::messages.healthy_tasks'));
+        $this->info($this->translator->get('thenpingme::translations.healthy_tasks'));
     }
 }
