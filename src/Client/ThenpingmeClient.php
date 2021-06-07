@@ -54,6 +54,11 @@ class ThenpingmeClient implements Client
         return config('thenpingme.api_url');
     }
 
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
     public function dispatch(): void
     {
         if (! config('thenpingme.enabled')) {
