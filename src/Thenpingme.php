@@ -78,7 +78,7 @@ class Thenpingme
             }
 
             tap(new ReflectionFunction($command), function (ReflectionFunction $function) use (&$event) {
-                /** @phpstan-ignore-next-line */
+                /* @phpstan-ignore-next-line */
                 $event->extra = [
                     'file' => $function->getClosureScopeClass()->getName(),
                     'line' => "{$function->getStartLine()} to {$function->getEndLine()}",

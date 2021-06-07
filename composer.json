@@ -25,6 +25,7 @@
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.6",
+        "friendsofphp/php-cs-fixer": "^3.0",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/larastan": "^0.7.6",
         "orchestra/testbench": "^6.5",
@@ -59,6 +60,7 @@
         }
     },
     "scripts": {
+        "cs": "vendor/bin/php-cs-fixer fix --config=./.php-cs-fixer.dist.php",
         "normalise": "@composer normalize --indent-style space --indent-size 2 --ansi",
         "psalm": "vendor/bin/psalm",
         "rector": "vendor/bin/rector process src --ansi",

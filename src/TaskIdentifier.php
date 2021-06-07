@@ -8,13 +8,13 @@ use Illuminate\Support\Str;
 
 class TaskIdentifier
 {
-    const TYPE_CLOSURE = 'closure';
+    public const TYPE_CLOSURE = 'closure';
 
-    const TYPE_COMMAND = 'command';
+    public const TYPE_COMMAND = 'command';
 
-    const TYPE_JOB = 'job';
+    public const TYPE_JOB = 'job';
 
-    const TYPE_SHELL = 'shell';
+    public const TYPE_SHELL = 'shell';
 
     public function __invoke($task)
     {

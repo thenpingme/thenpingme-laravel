@@ -37,7 +37,7 @@ class TaskPayload extends ThenpingmePayload
             'description' => $this->task->description,
             'mutex' => Thenpingme::fingerprintTask($this->task),
             'filtered' => $this->isFiltered(),
-            /** @phpstan-ignore-next-line */
+            /* @phpstan-ignore-next-line */
             'extra' => $this->task->extra ?? null,
         ];
     }

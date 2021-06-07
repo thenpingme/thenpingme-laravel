@@ -2,9 +2,9 @@
 
 namespace Thenpingme;
 
+use Illuminate\Contracts\Foundation\Application;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Illuminate\Contracts\Foundation\Application;
 use Thenpingme\Client\Client;
 use Thenpingme\Client\ThenpingmeClient;
 use Thenpingme\Console\Commands\ThenpingmeScheduleListCommand;
@@ -21,22 +21,16 @@ class ThenpingmeServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../config/thenpingme.php' => config_path('thenpingme.php'),
-            ], 'thenpingme-config');
-
-            $this->publishes([
-                __DIR__.'/../resources/lang' => resource_path('lang/vendor/thenpingme'),
-            ], 'thenpingme-lang');
-
-            $this->commands([
+        $package
+            ->name('laravel-thenpingme')
+            ->hasConfigFile()
+            ->hasTranslations()
+            ->hasCommands([
                 ThenpingmeSetupCommand::class,
                 ThenpingmeScheduleListCommand::class,
                 ThenpingmeVerifyCommand::class,
                 ThenpingmeSyncCommand::class,
             ]);
-        }
     }
 
     public function bootingPackage(): void
@@ -53,7 +47,7 @@ class ThenpingmeServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/thenpingme.php', 'thenpingme');
 
         $this->app->singleton('thenpingme', function () {
-            return new Thenpingme;
+            return new Thenpingme();
         });
 
         $this->app->singleton(Signer::class, function (Application $app): ThenpingmeSigner {

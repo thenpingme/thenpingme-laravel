@@ -5,3 +5,5 @@ vendor
 coverage
 phpunit.xml
 phpstan.neon
+.php-cs-fixer.cache
+.php-cs-fixer.php
