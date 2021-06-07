@@ -8,7 +8,10 @@ use Thenpingme\Payload\TaskPayload;
 
 class ScheduledTaskCollection extends Collection
 {
-    public function collisions(): self
+    /**
+     * @return ScheduledTaskCollection
+     */
+    public function collisions()
     {
         return static::make($this
             ->map(function ($task) {

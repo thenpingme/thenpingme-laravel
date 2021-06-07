@@ -17,7 +17,10 @@ class TaskPayload extends ThenpingmePayload
         $this->task = $task;
     }
 
-    public static function make(Event $task): static
+    /**
+     * @return TaskPayload
+     */
+    public static function make(Event $task)
     {
         return new static($task);
     }
@@ -47,7 +50,7 @@ class TaskPayload extends ThenpingmePayload
         return with(new ReflectionClass($this->task), function (ReflectionClass $class) {
             return ! empty(array_merge(
                 tap($class->getProperty('filters'))->setAccessible(true)->getValue($this->task),
-                tap($class->getProperty('rejects'))->setAccessible(true)->getValue($this->task),
+                tap($class->getProperty('rejects'))->setAccessible(true)->getValue($this->task)
             ));
         });
     }

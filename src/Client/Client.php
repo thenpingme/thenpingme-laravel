@@ -4,17 +4,32 @@ namespace Thenpingme\Client;
 
 interface Client
 {
+    /**
+     * @return Client
+     */
+    public function payload(array $payload);
+
+    /**
+     * @return Client
+     */
+    public static function ping();
+
+    /**
+     * @return Client
+     */
+    public static function setup();
+
+    /**
+     * @return Client
+     */
+    public static function sync();
+
+    /**
+     * @return Client
+     */
+    public function useSecret(?string $secret);
+
     public function baseUrl(): ?string;
 
-    public function payload(array $payload): self;
-
-    public static function ping(): self;
-
-    public static function setup(): self;
-
-    public static function sync(): self;
-
     public function dispatch(): void;
-
-    public function useSecret(?string $secret): self;
 }

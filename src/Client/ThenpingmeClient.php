@@ -82,7 +82,10 @@ class ThenpingmeClient implements Client
             : dispatch_now($this->pingJob);
     }
 
-    public function endpoint(string $url): self
+    /**
+     * @return Client
+     */
+    public function endpoint(string $url)
     {
         if (is_null($baseUrl = $this->baseUrl())) {
             throw CouldNotSendPing::missingBaseUrl();
@@ -114,7 +117,10 @@ class ThenpingmeClient implements Client
         return $this;
     }
 
-    public function useSecret(?string $secret): self
+    /**
+     * @return Client
+     */
+    public function useSecret(?string $secret)
     {
         $this->secret = $secret;
 

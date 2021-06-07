@@ -18,7 +18,10 @@ class SyncPayload implements Arrayable
         $this->tasks = $tasks;
     }
 
-    public static function make(ScheduledTaskCollection $tasks): static
+    /**
+     * @return SyncPayload
+     */
+    public static function make(ScheduledTaskCollection $tasks)
     {
         return new static($tasks);
     }

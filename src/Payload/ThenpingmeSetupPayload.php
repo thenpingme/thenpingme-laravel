@@ -20,7 +20,10 @@ class ThenpingmeSetupPayload implements Arrayable
         $this->signingKey = $signingKey;
     }
 
-    public static function make(ScheduledTaskCollection $tasks, string $signingKey): static
+    /**
+     * @return ThenpingmeSetupPayload
+     */
+    public static function make(ScheduledTaskCollection $tasks, string $signingKey)
     {
         return new static($tasks, $signingKey);
     }
