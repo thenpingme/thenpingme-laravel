@@ -9,14 +9,12 @@ use Thenpingme\ThenpingmePingJob;
 
 class ThenpingmeClient implements Client
 {
-    /** @var array */
-    protected $payload = [];
+    protected array $payload = [];
 
     /** @var \Thenpingme\ThenpingmePingJob */
     protected $pingJob;
 
-    /** @var string */
-    protected $secret;
+    protected ?string $secret = null;
 
     /** @var \Thenpingme\Signer\Signer */
     protected $signer;
@@ -34,14 +32,14 @@ class ThenpingmeClient implements Client
 
     public static function setup(): Client
     {
-        return (new static())
+        return (new static)
             ->endpoint(sprintf('/projects/%s/setup', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.project_id'));
     }
 
     public static function ping(): Client
     {
-        return (new static())
+        return (new static)
             ->endpoint(sprintf('/projects/%s/ping', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.signing_key'));
     }
@@ -81,7 +79,7 @@ class ThenpingmeClient implements Client
             : dispatch_now($this->pingJob);
     }
 
-    public function endpoint($url): self
+    public function endpoint(string $url): self
     {
         if (! $this->baseUrl()) {
             throw CouldNotSendPing::missingBaseUrl();
