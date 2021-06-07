@@ -44,10 +44,7 @@ class ThenpingmeScheduleListCommand extends Command
         }
     }
 
-    /**
-     * @return \Thenpingme\Collections\ScheduledTaskCollection
-     */
-    protected function schedule()
+    protected function schedule(): ScheduledTaskCollection
     {
         $collisions = Thenpingme::scheduledTasks()->collisions()->pluck('mutex')->unique();
 
