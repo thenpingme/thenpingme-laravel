@@ -65,7 +65,7 @@ class ThenpingmeClient implements Client
             return;
         }
 
-        if (! $this->url) {
+        if (blank($this->url)) {
             throw CouldNotSendPing::missingUrl();
         }
 
