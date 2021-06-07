@@ -6,6 +6,7 @@ use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -16,14 +17,12 @@ abstract class ThenpingmePayload implements Arrayable
 {
     protected $event;
 
-    protected $tasks;
-
     protected function __construct($event)
     {
         $this->event = $event;
     }
 
-    public static function fromEvent($event): ?self
+    public static function fromEvent($event): ?ThenpingmePayload
     {
         if ($event instanceof ScheduledTaskStarting) {
             return new ScheduledTaskStartingPayload($event);
@@ -44,7 +43,7 @@ abstract class ThenpingmePayload implements Arrayable
         return null;
     }
 
-    public static function fromTask($task): self
+    public static function fromTask(Event $task): TaskPayload
     {
         return TaskPayload::make($task);
     }
@@ -91,7 +90,7 @@ abstract class ThenpingmePayload implements Arrayable
         // I don't really know the best way to test this... but it should be fine.
         if (PHP_OS == 'Linux') {
             return trim(Arr::first(
-                explode(' ', tap(new Process(['hostname', '-I']), function ($process) {
+                explode(' ', tap(new Process(['hostname', '-I']), function (Process $process) {
                     $process->run();
                 })->getOutput())
             ));

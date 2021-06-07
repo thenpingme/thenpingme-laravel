@@ -8,6 +8,7 @@ use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
+use Thenpingme\Collections\ScheduledTaskCollection;
 use sixlive\DotenvEditor\DotenvEditor;
 use Thenpingme\Client\Client;
 use Thenpingme\Console\Commands\Concerns\FetchesTasks;
@@ -24,17 +25,13 @@ class ThenpingmeSetupCommand extends Command
     protected $signature = 'thenpingme:setup {project_id?  : The UUID of the thenping.me project you are setting up}
                                              {--tasks-only : Only send your application tasks to thenping.me}';
 
-    /** @var \Illuminate\Console\Scheduling\Schedule */
-    protected $schedule;
+    protected ?Schedule $schedule = null;
 
-    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
-    protected $scheduledTasks;
+    protected ScheduledTaskCollection $scheduledTasks;
 
-    /** @var string */
-    protected $signingKey;
+    protected string $signingKey;
 
-    /** @var \Illuminate\Contracts\Translation\Translator */
-    protected $translator;
+    protected Translator $translator;
 
     public function __construct(Translator $translator)
     {

@@ -15,4 +15,6 @@ interface Client
     public static function sync(): self;
 
     public function dispatch(): void;
+
+    public function useSecret(?string $secret): self;
 }

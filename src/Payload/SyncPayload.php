@@ -2,6 +2,7 @@
 
 namespace Thenpingme\Payload;
 
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -10,15 +11,14 @@ use Thenpingme\Collections\ScheduledTaskCollection;
 
 class SyncPayload implements Arrayable
 {
-    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
-    private $tasks;
+    private ScheduledTaskCollection $tasks;
 
-    private function __construct(ScheduledTaskCollection $tasks)
+    final public function __construct(ScheduledTaskCollection $tasks)
     {
         $this->tasks = $tasks;
     }
 
-    public static function make(ScheduledTaskCollection $tasks): self
+    public static function make(ScheduledTaskCollection $tasks): static
     {
         return new static($tasks);
     }
@@ -32,7 +32,7 @@ class SyncPayload implements Arrayable
                 'release' => Config::get('thenpingme.release'),
                 'timezone' => Carbon::now()->timezone->toOffsetName(),
             ]),
-            'tasks' => array_reduce($this->tasks->toArray(), function ($tasks, $task) {
+            'tasks' => array_reduce($this->tasks->toArray(), function (array $tasks, Event $task) {
                 $tasks[] = Arr::except(TaskPayload::make($task)->toArray(), ['extra']);
 
                 return $tasks;

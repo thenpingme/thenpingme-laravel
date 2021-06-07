@@ -2,6 +2,7 @@
 
 namespace Thenpingme\Payload;
 
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Support\Facades\Date;
 use ReflectionClass;
 use Thenpingme\Facades\Thenpingme;
@@ -9,14 +10,14 @@ use Thenpingme\TaskIdentifier;
 
 class TaskPayload extends ThenpingmePayload
 {
-    public $task;
+    public Event $task;
 
-    protected function __construct($task)
+    final protected function __construct(Event $task)
     {
         $this->task = $task;
     }
 
-    public static function make($task): self
+    public static function make(Event $task): static
     {
         return new static($task);
     }
@@ -36,17 +37,18 @@ class TaskPayload extends ThenpingmePayload
             'description' => $this->task->description,
             'mutex' => Thenpingme::fingerprintTask($this->task),
             'filtered' => $this->isFiltered(),
+            /** @phpstan-ignore-next-line */
             'extra' => $this->task->extra ?? null,
         ];
     }
 
     private function isFiltered(): bool
     {
-        return with(new ReflectionClass($this->task), function ($class) {
-            $filters = $class->getProperty('filters');
-            $filters->setAccessible(true);
-
-            return ! empty($filters->getValue($this->task));
+        return with(new ReflectionClass($this->task), function (ReflectionClass $class) {
+            return ! empty(array_merge(
+                tap($class->getProperty('filters'))->setAccessible(true)->getValue($this->task),
+                tap($class->getProperty('rejects'))->setAccessible(true)->getValue($this->task),
+            ));
         });
     }
 

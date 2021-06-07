@@ -13,8 +13,7 @@ class ThenpingmeVerifyCommand extends Command
 
     protected $signature = 'thenpingme:verify';
 
-    /** @var \Illuminate\Contracts\Translation\Translator */
-    protected $translator;
+    protected Translator $translator;
 
     public function __construct(Translator $translator)
     {
@@ -28,7 +27,7 @@ class ThenpingmeVerifyCommand extends Command
         if (($collisions = Thenpingme::scheduledTasks()->collisions())->isNotEmpty()) {
             $this->table(
                 ['Type', 'Command', 'Expression', 'Interval', 'Description', 'Extra'],
-                $collisions->map(function ($task) {
+                $collisions->map(function (array $task): array {
                     return Arr::only($task, ['type', 'command', 'expression', 'interval', 'description', 'extra']);
                 })
             );

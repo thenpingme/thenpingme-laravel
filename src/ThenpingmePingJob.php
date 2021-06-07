@@ -19,13 +19,13 @@ class ThenpingmePingJob implements ShouldQueue
 
     public $url;
 
-    public $headers = [];
+    public array $headers = [];
 
-    public $payload = [];
+    public array $payload = [];
 
     public $queue;
 
-    public $tries = 1;
+    public int $tries = 1;
 
     public function handle()
     {

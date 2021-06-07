@@ -10,19 +10,17 @@ use Thenpingme\Collections\ScheduledTaskCollection;
 
 class ThenpingmeSetupPayload implements Arrayable
 {
-    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
-    private $tasks;
+    private ScheduledTaskCollection $tasks;
 
-    /** @var string */
-    private $signingKey;
+    private ?string $signingKey = null;
 
-    private function __construct(ScheduledTaskCollection $tasks, string $signingKey = null)
+    final private function __construct(ScheduledTaskCollection $tasks, string $signingKey = null)
     {
         $this->tasks = $tasks;
         $this->signingKey = $signingKey;
     }
 
-    public static function make(ScheduledTaskCollection $tasks, string $signingKey): self
+    public static function make(ScheduledTaskCollection $tasks, string $signingKey): static
     {
         return new static($tasks, $signingKey);
     }

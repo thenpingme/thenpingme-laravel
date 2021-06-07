@@ -4,6 +4,7 @@ namespace Thenpingme\Client;
 
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Exceptions\CouldNotSendPing;
+use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
 use Thenpingme\ThenpingmePingJob;
 
@@ -11,16 +12,13 @@ class ThenpingmeClient implements Client
 {
     protected array $payload = [];
 
-    /** @var \Thenpingme\ThenpingmePingJob */
-    protected $pingJob;
+    protected ThenpingmePingJob $pingJob;
 
     protected ?string $secret = null;
 
-    /** @var \Thenpingme\Signer\Signer */
-    protected $signer;
+    protected Signer $signer;
 
-    /** @var string */
-    public $url;
+    protected ?string $url = null;
 
     public function __construct()
     {
@@ -32,21 +30,21 @@ class ThenpingmeClient implements Client
 
     public static function setup(): Client
     {
-        return (new static)
+        return (new ThenpingmeClient)
             ->endpoint(sprintf('/projects/%s/setup', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.project_id'));
     }
 
     public static function ping(): Client
     {
-        return (new static)
+        return (new ThenpingmeClient)
             ->endpoint(sprintf('/projects/%s/ping', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.signing_key'));
     }
 
     public static function sync(): Client
     {
-        return (new static)
+        return (new ThenpingmeClient)
             ->endpoint(sprintf('/projects/%s/sync', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.signing_key'));
     }
@@ -81,20 +79,24 @@ class ThenpingmeClient implements Client
 
     public function endpoint(string $url): self
     {
-        if (! $this->baseUrl()) {
+        if (is_null($baseUrl = $this->baseUrl())) {
             throw CouldNotSendPing::missingBaseUrl();
         }
 
         $this->url = $this->pingJob->url = vsprintf('%s/%s', [
-            rtrim($this->baseUrl(), '/'),
+            rtrim($baseUrl, '/'),
             ltrim($url, '/'),
         ]);
 
         return $this;
     }
 
-    public function headers()
+    public function headers(): array
     {
+        if (is_null($this->secret)) {
+            throw CouldNotSendPing::missingSigningSecret();
+        }
+
         return [
             'Signature' => $this->signer->calculateSignature($this->payload, $this->secret),
         ];

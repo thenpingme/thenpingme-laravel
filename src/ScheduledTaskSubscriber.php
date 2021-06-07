@@ -6,15 +6,13 @@ use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
+use Illuminate\Events\Dispatcher;
 use Thenpingme\Client\Client;
 use Thenpingme\Payload\ThenpingmePayload;
 
 class ScheduledTaskSubscriber
 {
-    /**
-     * @var \Thenpingme\Client\Client
-     */
-    private $thenpingme;
+    private Client $thenpingme;
 
     public function __construct(Client $thenpingme)
     {
@@ -25,11 +23,11 @@ class ScheduledTaskSubscriber
     {
         $this->thenpingme
             ->ping()
-            ->payload(ThenpingmePayload::fromEvent($event)->toArray())
+            ->payload(is_null($payload = ThenpingmePayload::fromEvent($event)) ? [] : $payload->toArray())
             ->dispatch();
     }
 
-    public function subscribe($events): void
+    public function subscribe(Dispatcher $events): void
     {
         $events->listen(
             [

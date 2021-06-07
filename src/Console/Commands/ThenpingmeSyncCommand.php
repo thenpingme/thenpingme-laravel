@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Client\Client;
+use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Console\Commands\Concerns\FetchesTasks;
 use Thenpingme\Payload\SyncPayload;
 
@@ -17,11 +18,9 @@ class ThenpingmeSyncCommand extends Command
 
     protected $signature = 'thenpingme:sync';
 
-    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
-    protected $scheduledTasks;
+    protected ScheduledTaskCollection $scheduledTasks;
 
-    /** @var \Illuminate\Contracts\Translation\Translator */
-    protected $translator;
+    protected Translator $translator;
 
     public function __construct(Translator $translator)
     {

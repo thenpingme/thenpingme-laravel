@@ -2,8 +2,9 @@
 
 namespace Thenpingme;
 
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\ServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Illuminate\Contracts\Foundation\Application;
 use Thenpingme\Client\Client;
 use Thenpingme\Client\ThenpingmeClient;
 use Thenpingme\Console\Commands\ThenpingmeScheduleListCommand;
@@ -35,17 +36,19 @@ class ThenpingmeServiceProvider extends ServiceProvider
                 ThenpingmeVerifyCommand::class,
                 ThenpingmeSyncCommand::class,
             ]);
+        }
+    }
 
-            Event::subscribe(ScheduledTaskSubscriber::class);
+    public function bootingPackage(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->app['events']->subscribe(ScheduledTaskSubscriber::class);
         }
 
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'thenpingme');
     }
 
-    /**
-     * Register the application services.
-     */
-    public function register(): void
+    public function packageRegistered(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/thenpingme.php', 'thenpingme');
 
@@ -53,11 +56,11 @@ class ThenpingmeServiceProvider extends ServiceProvider
             return new Thenpingme;
         });
 
-        $this->app->singleton(Signer::class, function ($app) {
+        $this->app->singleton(Signer::class, function (Application $app): ThenpingmeSigner {
             return $app->make(ThenpingmeSigner::class);
         });
 
-        $this->app->singleton(Client::class, function ($app) {
+        $this->app->singleton(Client::class, function (Application $app): Client {
             return $app->make(ThenpingmeClient::class);
         });
     }

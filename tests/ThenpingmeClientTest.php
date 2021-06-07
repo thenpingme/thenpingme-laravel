@@ -81,7 +81,7 @@ class ThenpingmeClientTest extends TestCase
     {
         $this->assertEquals(
             'http://thenpingme.test/api/projects/abc123/setup',
-            $this->app->make(Client::class)->setup()->url
+            $this->app->make(Client::class)->setup()->getUrl()
         );
     }
 
@@ -90,7 +90,7 @@ class ThenpingmeClientTest extends TestCase
     {
         $this->assertEquals(
             'http://thenpingme.test/api/projects/abc123/ping',
-            $this->app->make(Client::class)->ping()->url
+            $this->app->make(Client::class)->ping()->getUrl()
         );
     }
 
@@ -99,7 +99,7 @@ class ThenpingmeClientTest extends TestCase
     {
         $this->assertEquals(
             'http://thenpingme.test/api/projects/abc123/sync',
-            $this->app->make(Client::class)->sync()->url
+            $this->app->make(Client::class)->sync()->getUrl()
         );
     }
 

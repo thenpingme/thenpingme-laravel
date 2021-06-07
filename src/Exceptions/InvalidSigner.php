@@ -7,9 +7,9 @@ use Thenpingme\Signer\Signer;
 
 class InvalidSigner extends InvalidArgumentException
 {
-    public static function doesntImplementSigner(string $signingClass)
+    public static function doesntImplementSigner(string $signingClass): InvalidSigner
     {
-        return new static(app('translator')->get('thenpingme::messages.invalid_signer', [
+        return new InvalidSigner(app('translator')->get('thenpingme::translations.invalid_signer', [
             'concrete' => $signingClass,
             'contract' => Signer::class,
         ]));
