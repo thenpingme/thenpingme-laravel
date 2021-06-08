@@ -166,7 +166,6 @@ class ThenpingmePayloadTest extends TestCase
     }
 
     /** @test */
->>>>>>> 927af8e (Use TaskPayload::make, rather than muddying up ThenpingmePayload)
     public function it_determines_if_a_job_runs_in_the_background()
     {
         $task = $this->app->make(Schedule::class)
