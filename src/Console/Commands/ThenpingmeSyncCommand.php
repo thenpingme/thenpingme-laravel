@@ -37,7 +37,7 @@ class ThenpingmeSyncCommand extends Command
             return 1;
         }
 
-        $this->task($this->translator->get('thenpingme::messages.syncing_tasks', [
+        $this->task($this->translator->get('thenpingme::translations.syncing_tasks', [
             'url' => parse_url(Config::get('thenpingme.api_url'), PHP_URL_HOST),
         ]), function () {
             return $this->syncTasks();

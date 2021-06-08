@@ -40,7 +40,7 @@ class ThenpingmeClientTest extends TestCase
         config(['thenpingme.api_url' => null]);
 
         $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessage($this->translator->get('thenpingme::messages.missing_base_url'));
+        $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_base_url'));
 
         $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
     }
@@ -51,7 +51,7 @@ class ThenpingmeClientTest extends TestCase
         config(['thenpingme.signing_key' => null]);
 
         $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessage($this->translator->get('thenpingme::messages.missing_signing_secret'));
+        $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_signing_secret'));
 
         $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
     }
@@ -60,7 +60,7 @@ class ThenpingmeClientTest extends TestCase
     public function it_does_not_send_a_ping_if_endpoint_is_missing()
     {
         $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessage($this->translator->get('thenpingme::messages.missing_endpoint_url'));
+        $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_endpoint_url'));
 
         $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->dispatch();
     }

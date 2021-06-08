@@ -21,7 +21,7 @@ trait FetchesTasks
                 })
             );
 
-            $this->error($this->translator->get('thenpingme::messages.indistinguishable_tasks'));
+            $this->error($this->translator->get('thenpingme::translations.indistinguishable_tasks'));
 
             return false;
         }

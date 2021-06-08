@@ -37,14 +37,10 @@ class ThenpingmeServiceProvider extends PackageServiceProvider
         if ($this->app->runningInConsole()) {
             $this->app->make('events')->subscribe(ScheduledTaskSubscriber::class);
         }
-
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'thenpingme');
     }
 
     public function packageRegistered(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/thenpingme.php', 'thenpingme');
-
         $this->app->singleton('thenpingme', function () {
             return new Thenpingme();
         });

@@ -29,6 +29,9 @@ final class ThenpingmeSetupPayload implements Arrayable
     public function toArray(): array
     {
         return [
+            'thenpingme' => [
+                'version' => Thenpingme::version(),
+            ],
             'project' => array_filter([
                 'uuid' => Config::get('thenpingme.project_id'),
                 'name' => Config::get('app.name'),

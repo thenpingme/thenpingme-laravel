@@ -19,7 +19,7 @@
         "php": "^7.4|^8.0",
         "laravel/framework": "^8.36",
         "lorisleiva/cron-translator": "^0.1.1",
-        "nesbot/carbon": "^2.33.0",
+        "nesbot/carbon": "^2.33",
         "nunomaduro/laravel-console-task": "^1.5",
         "sixlive/dotenv-editor": "^1.2",
         "spatie/laravel-package-tools": "^1.9"
