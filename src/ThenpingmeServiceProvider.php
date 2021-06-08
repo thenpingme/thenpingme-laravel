@@ -16,12 +16,9 @@ use Thenpingme\Console\Commands\ThenpingmeVerifyCommand;
 use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
 
-class ThenpingmeServiceProvider extends ServiceProvider
+class ThenpingmeServiceProvider extends PackageServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     */
-    public function boot()
+    public function configurePackage(Package $package): void
     {
         $package
             ->name('laravel-thenpingme')
