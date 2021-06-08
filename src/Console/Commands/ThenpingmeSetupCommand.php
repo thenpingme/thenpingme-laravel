@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -10,6 +12,7 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use sixlive\DotenvEditor\DotenvEditor;
 use Thenpingme\Client\Client;
+use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Console\Commands\Concerns\FetchesTasks;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\ThenpingmeSetupPayload;
@@ -24,26 +27,18 @@ class ThenpingmeSetupCommand extends Command
     protected $signature = 'thenpingme:setup {project_id?  : The UUID of the thenping.me project you are setting up}
                                              {--tasks-only : Only send your application tasks to thenping.me}';
 
-    /** @var \Illuminate\Console\Scheduling\Schedule */
-    protected $schedule;
+    protected ?Schedule $schedule = null;
 
-    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
-    protected $scheduledTasks;
+    protected ?ScheduledTaskCollection $scheduledTasks = null;
 
-    /** @var string */
-    protected $signingKey;
+    protected string $signingKey = '';
 
-    /** @var \Illuminate\Contracts\Translation\Translator */
-    protected $translator;
-
-    public function __construct(Translator $translator)
+    public function __construct(protected Translator $translator)
     {
         parent::__construct();
-
-        $this->translator = $translator;
     }
 
-    public function handle(Schedule $schedule)
+    public function handle(Schedule $schedule): int
     {
         $this->schedule = $schedule;
 
@@ -90,6 +85,8 @@ class ThenpingmeSetupCommand extends Command
             $this->error($this->translator->get('thenpingme::translations.signing_key_environment'));
             $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
         }
+
+        return 0;
     }
 
     protected function canBeSetup(): bool
@@ -107,7 +104,7 @@ class ThenpingmeSetupCommand extends Command
             tap(new DotenvEditor)->load(base_path('.env'));
 
             return true;
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
     }
@@ -146,7 +143,7 @@ class ThenpingmeSetupCommand extends Command
             });
 
             return true;
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Payload;
 
 use Illuminate\Contracts\Support\Arrayable;
@@ -8,24 +10,14 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
+use Thenpingme\Makeable;
 
-class ThenpingmeSetupPayload implements Arrayable
+final class ThenpingmeSetupPayload implements Arrayable
 {
-    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
-    private $tasks;
+    use Makeable;
 
-    /** @var string */
-    private $signingKey;
-
-    private function __construct(ScheduledTaskCollection $tasks, string $signingKey = null)
+    protected function __construct(private ScheduledTaskCollection $tasks, private ?string $signingKey = null)
     {
-        $this->tasks = $tasks;
-        $this->signingKey = $signingKey;
-    }
-
-    public static function make(ScheduledTaskCollection $tasks, string $signingKey): self
-    {
-        return new static($tasks, $signingKey);
     }
 
     public function toArray(): array

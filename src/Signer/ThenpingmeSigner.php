@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Signer;
 
 class ThenpingmeSigner implements Signer

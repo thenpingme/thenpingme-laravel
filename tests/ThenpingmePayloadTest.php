@@ -15,6 +15,7 @@ use Thenpingme\Payload\ScheduledTaskFinishedPayload;
 use Thenpingme\Payload\ScheduledTaskSkippedPayload;
 use Thenpingme\Payload\ScheduledTaskStartingPayload;
 use Thenpingme\Payload\SyncPayload;
+use Thenpingme\Payload\TaskPayload;
 use Thenpingme\Payload\ThenpingmePayload;
 use Thenpingme\Payload\ThenpingmeSetupPayload;
 use Thenpingme\TaskIdentifier;
@@ -40,7 +41,7 @@ class ThenpingmePayloadTest extends TestCase
     {
         $task = $this->app->make(Schedule::class)->command('generate:payload')->description('This is the description');
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) use ($task) {
             Assert::assertArraySubset([
                 'timezone' => '+00:00',
                 'type' => TaskIdentifier::TYPE_COMMAND,
@@ -67,7 +68,7 @@ class ThenpingmePayloadTest extends TestCase
                 return false;
             });
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) use ($task) {
             Assert::assertArraySubset([
                 'timezone' => '+00:00',
                 'type' => TaskIdentifier::TYPE_COMMAND,
@@ -93,7 +94,7 @@ class ThenpingmePayloadTest extends TestCase
             ->description('This is the description')
             ->unlessBetween('00:00', '07:00');
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) use ($task) {
             Assert::assertArraySubset([
                 'timezone' => '+00:00',
                 'type' => TaskIdentifier::TYPE_COMMAND,
@@ -121,7 +122,7 @@ class ThenpingmePayloadTest extends TestCase
                 return true;
             });
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) use ($task) {
             Assert::assertArraySubset([
                 'timezone' => '+00:00',
                 'type' => TaskIdentifier::TYPE_COMMAND,
@@ -147,7 +148,7 @@ class ThenpingmePayloadTest extends TestCase
             ->description('This is the description')
             ->between('07:00', '19:00');
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) use ($task) {
             Assert::assertArraySubset([
                 'timezone' => '+00:00',
                 'type' => TaskIdentifier::TYPE_COMMAND,
@@ -172,7 +173,7 @@ class ThenpingmePayloadTest extends TestCase
             ->description('This is the description')
             ->runInBackground();
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($task) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) use ($task) {
             Assert::assertArraySubset([
                 'timezone' => '+00:00',
                 'type' => TaskIdentifier::TYPE_COMMAND,

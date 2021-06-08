@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -13,22 +15,17 @@ class ThenpingmeVerifyCommand extends Command
 
     protected $signature = 'thenpingme:verify';
 
-    /** @var \Illuminate\Contracts\Translation\Translator */
-    protected $translator;
-
-    public function __construct(Translator $translator)
+    public function __construct(protected Translator $translator)
     {
-        $this->translator = $translator;
-
         parent::__construct();
     }
 
-    public function handle()
+    public function handle(): int
     {
         if (($collisions = Thenpingme::scheduledTasks()->collisions())->isNotEmpty()) {
             $this->table(
                 ['Type', 'Command', 'Expression', 'Interval', 'Description', 'Extra'],
-                $collisions->map(function ($task) {
+                $collisions->map(function (array $task): array {
                     return Arr::only($task, ['type', 'command', 'expression', 'interval', 'description', 'extra']);
                 })
             );
@@ -47,5 +44,7 @@ class ThenpingmeVerifyCommand extends Command
         }
 
         $this->info($this->translator->get('thenpingme::translations.healthy_tasks'));
+
+        return 0;
     }
 }

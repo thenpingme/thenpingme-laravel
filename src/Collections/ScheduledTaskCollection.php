@@ -1,25 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Collections;
 
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Support\Collection;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\TaskPayload;
 
 class ScheduledTaskCollection extends Collection
 {
-    public function collisions(): self
+    /**
+     * @return ScheduledTaskCollection
+     */
+    public function collisions()
     {
         return static::make($this
-            ->map(function ($task) {
-                return TaskPayload::fromTask($task)->toArray();
+            ->map(function (Event $task) {
+                return TaskPayload::make($task)->toArray();
             })
             ->groupBy('mutex')
-            ->filter(function ($group) {
+            ->filter(function (ScheduledTaskCollection $group) {
                 return $group->count() > 1;
             })
             ->flatten(1)
-            ->map(function ($task) {
+            ->map(function (array $task) {
                 return [
                     'mutex' => $task['mutex'],
                     'type' => $task['type'],
@@ -38,10 +44,10 @@ class ScheduledTaskCollection extends Collection
     {
         return $this
             ->where('type', 'job')
-            ->groupBy(function ($task) {
+            ->groupBy(function (array $task) {
                 return $task['expression'].$task['interval'].$task['description'];
             })
-            ->filter(function ($group) {
+            ->filter(function (ScheduledTaskCollection $group) {
                 return $group->count() > 1;
             })
             ->isNotEmpty();
@@ -51,10 +57,10 @@ class ScheduledTaskCollection extends Collection
     {
         return $this
             ->where('type', 'closure')
-            ->groupBy(function ($task) {
+            ->groupBy(function (array $task) {
                 return $task['expression'].$task['interval'].$task['description'];
             })
-            ->filter(function ($group) {
+            ->filter(function (ScheduledTaskCollection $group) {
                 return $group->count() > 1;
             })
             ->isNotEmpty();
