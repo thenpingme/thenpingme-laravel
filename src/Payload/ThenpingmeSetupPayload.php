@@ -9,25 +9,21 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Collections\ScheduledTaskCollection;
+use Thenpingme\Facades\Thenpingme;
+use Thenpingme\Makeable;
 
 final class ThenpingmeSetupPayload implements Arrayable
 {
+    use Makeable;
+
     private ScheduledTaskCollection $tasks;
 
     private ?string $signingKey = null;
 
-    final private function __construct(ScheduledTaskCollection $tasks, string $signingKey = null)
+    protected function __construct(ScheduledTaskCollection $tasks, string $signingKey = null)
     {
         $this->tasks = $tasks;
         $this->signingKey = $signingKey;
-    }
-
-    /**
-     * @return ThenpingmeSetupPayload
-     */
-    public static function make(ScheduledTaskCollection $tasks, string $signingKey)
-    {
-        return new static($tasks, $signingKey);
     }
 
     public function toArray(): array

@@ -10,22 +10,18 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Collections\ScheduledTaskCollection;
+use Thenpingme\Facades\Thenpingme;
+use Thenpingme\Makeable;
 
 final class SyncPayload implements Arrayable
 {
+    use Makeable;
+
     private ScheduledTaskCollection $tasks;
 
     public function __construct(ScheduledTaskCollection $tasks)
     {
         $this->tasks = $tasks;
-    }
-
-    /**
-     * @return SyncPayload
-     */
-    public static function make(ScheduledTaskCollection $tasks)
-    {
-        return new SyncPayload($tasks);
     }
 
     public function toArray(): array
