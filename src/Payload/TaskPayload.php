@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Payload;
 
 use Illuminate\Console\Scheduling\Event;

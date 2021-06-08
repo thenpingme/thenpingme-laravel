@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Client;
 
 use Illuminate\Support\Facades\Config;
@@ -8,7 +10,7 @@ use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
 use Thenpingme\ThenpingmePingJob;
 
-class ThenpingmeClient implements Client
+final class ThenpingmeClient implements Client
 {
     protected array $payload = [];
 

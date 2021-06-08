@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Payload;
 
 use Illuminate\Console\Scheduling\Event;
@@ -13,7 +15,7 @@ class SyncPayload implements Arrayable
 {
     private ScheduledTaskCollection $tasks;
 
-    final public function __construct(ScheduledTaskCollection $tasks)
+    public function __construct(ScheduledTaskCollection $tasks)
     {
         $this->tasks = $tasks;
     }
@@ -23,7 +25,7 @@ class SyncPayload implements Arrayable
      */
     public static function make(ScheduledTaskCollection $tasks)
     {
-        return new static($tasks);
+        return new SyncPayload($tasks);
     }
 
     public function toArray(): array
