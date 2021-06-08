@@ -20,7 +20,7 @@ class ThenpingmeSyncCommand extends Command
 
     protected $signature = 'thenpingme:sync';
 
-    protected ScheduledTaskCollection $scheduledTasks;
+    protected ?ScheduledTaskCollection $scheduledTasks = null;
 
     protected Translator $translator;
 
@@ -31,7 +31,7 @@ class ThenpingmeSyncCommand extends Command
         $this->translator = $translator;
     }
 
-    public function handle()
+    public function handle(): int
     {
         if (! $this->prepareTasks()) {
             return 1;
@@ -43,7 +43,9 @@ class ThenpingmeSyncCommand extends Command
             return $this->syncTasks();
         });
 
-        $this->info($this->translator->get('thenpingme::messages.successful_sync'));
+        $this->info($this->translator->get('thenpingme::translations.successful_sync'));
+
+        return 0;
     }
 
     protected function syncTasks(): bool

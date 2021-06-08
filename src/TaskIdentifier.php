@@ -18,7 +18,7 @@ final class TaskIdentifier
 
     public const TYPE_SHELL = 'shell';
 
-    public function __invoke($task)
+    public function __invoke(Event $task)
     {
         if ($task instanceof CallbackEvent) {
             if (Str::of($task->command)->isEmpty() && $task->description && class_exists($task->description)) {
@@ -34,13 +34,11 @@ final class TaskIdentifier
             }
         }
 
-        if ($task instanceof Event) {
-            if (Str::contains($this->sanitisedCommand($task->command), 'artisan')) {
-                return static::TYPE_COMMAND;
-            }
-
-            return static::TYPE_SHELL;
+        if (Str::contains($this->sanitisedCommand($task->command), 'artisan')) {
+            return static::TYPE_COMMAND;
         }
+
+        return static::TYPE_SHELL;
     }
 
     private function sanitisedCommand(?string $command): string
@@ -49,6 +47,6 @@ final class TaskIdentifier
             "'",
             '"',
             PHP_BINARY,
-        ], '', $command));
+        ], '', $command ?: ''));
     }
 }

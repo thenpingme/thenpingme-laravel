@@ -29,9 +29,9 @@ class ThenpingmeSetupCommand extends Command
 
     protected ?Schedule $schedule = null;
 
-    protected ScheduledTaskCollection $scheduledTasks;
+    protected ?ScheduledTaskCollection $scheduledTasks = null;
 
-    protected string $signingKey;
+    protected string $signingKey = '';
 
     protected Translator $translator;
 
@@ -42,7 +42,7 @@ class ThenpingmeSetupCommand extends Command
         $this->translator = $translator;
     }
 
-    public function handle(Schedule $schedule)
+    public function handle(Schedule $schedule): int
     {
         $this->schedule = $schedule;
 
@@ -89,6 +89,8 @@ class ThenpingmeSetupCommand extends Command
             $this->error($this->translator->get('thenpingme::messages.signing_key_environment'));
             $this->line(sprintf('THENPINGME_SIGNING_KEY=%s', $this->signingKey));
         }
+
+        return 0;
     }
 
     protected function canBeSetup(): bool

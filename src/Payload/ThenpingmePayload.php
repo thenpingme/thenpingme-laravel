@@ -8,7 +8,6 @@ use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
-use Illuminate\Console\Scheduling\Event;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -17,13 +16,20 @@ use Thenpingme\Facades\Thenpingme;
 
 abstract class ThenpingmePayload implements Arrayable
 {
+    /** @var mixed */
     protected $event;
 
+    /**
+     * @param  mixed  $event
+     */
     protected function __construct($event)
     {
         $this->event = $event;
     }
 
+    /**
+     * @param  mixed  $event
+     */
     public static function fromEvent($event): ?ThenpingmePayload
     {
         if ($event instanceof ScheduledTaskStarting) {

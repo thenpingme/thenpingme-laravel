@@ -19,12 +19,12 @@ class ThenpingmeVerifyCommand extends Command
 
     public function __construct(Translator $translator)
     {
-        $this->translator = $translator;
-
         parent::__construct();
+
+        $this->translator = $translator;
     }
 
-    public function handle()
+    public function handle(): int
     {
         if (($collisions = Thenpingme::scheduledTasks()->collisions())->isNotEmpty()) {
             $this->table(
@@ -47,6 +47,8 @@ class ThenpingmeVerifyCommand extends Command
             return 1;
         }
 
-        $this->info($this->translator->get('thenpingme::messages.healthy_tasks'));
+        $this->info($this->translator->get('thenpingme::translations.healthy_tasks'));
+
+        return 0;
     }
 }

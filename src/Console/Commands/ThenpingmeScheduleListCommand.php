@@ -28,7 +28,7 @@ class ThenpingmeScheduleListCommand extends Command
         parent::__construct();
     }
 
-    public function handle()
+    public function handle(): int
     {
         $this->table([
             '',
@@ -44,6 +44,8 @@ class ThenpingmeScheduleListCommand extends Command
 
             return 1;
         }
+
+        return 0;
     }
 
     protected function schedule(): ScheduledTaskCollection

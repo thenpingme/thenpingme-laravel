@@ -19,17 +19,15 @@ class ThenpingmePingJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public $url;
+    public string $url = '';
 
     public array $headers = [];
 
     public array $payload = [];
 
-    public $queue;
-
     public int $tries = 1;
 
-    public function handle()
+    public function handle(): void
     {
         try {
             Http::timeout(5)

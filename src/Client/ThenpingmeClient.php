@@ -32,21 +32,21 @@ final class ThenpingmeClient implements Client
 
     public static function setup(): Client
     {
-        return (new ThenpingmeClient)
+        return (new self)
             ->endpoint(sprintf('/projects/%s/setup', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.project_id'));
     }
 
     public static function ping(): Client
     {
-        return (new ThenpingmeClient)
+        return (new self)
             ->endpoint(sprintf('/projects/%s/ping', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.signing_key'));
     }
 
     public static function sync(): Client
     {
-        return (new ThenpingmeClient)
+        return (new self)
             ->endpoint(sprintf('/projects/%s/sync', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.signing_key'));
     }

@@ -59,6 +59,6 @@ final class TaskPayload
             '"',
             PHP_BINARY,
             'artisan',
-        ], '', $this->task->command));
+        ], '', $this->schedulingEvent->command ?: ''));
     }
 }

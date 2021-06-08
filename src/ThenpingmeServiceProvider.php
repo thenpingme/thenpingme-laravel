@@ -38,7 +38,7 @@ class ThenpingmeServiceProvider extends ServiceProvider
     public function bootingPackage(): void
     {
         if ($this->app->runningInConsole()) {
-            $this->app['events']->subscribe(ScheduledTaskSubscriber::class);
+            $this->app->make('events')->subscribe(ScheduledTaskSubscriber::class);
         }
 
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'thenpingme');

@@ -21,9 +21,13 @@ class ScheduledTaskSubscriber
         $this->thenpingme = $thenpingme;
     }
 
+    /**
+     * @param  mixed  $event
+     */
     public function handleScheduledTaskEvent($event): void
     {
-        $this->thenpingme
+        $this
+            ->thenpingme
             ->ping()
             ->payload(is_null($payload = ThenpingmePayload::fromEvent($event)) ? [] : $payload->toArray())
             ->dispatch();
