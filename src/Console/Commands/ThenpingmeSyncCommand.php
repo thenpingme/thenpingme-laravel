@@ -52,9 +52,7 @@ class ThenpingmeSyncCommand extends Command
 
         app(Client::class)
             ->sync()
-            ->payload(
-                SyncPayload::make($this->scheduledTasks)->toArray()
-            )
+            ->payload(SyncPayload::make($this->scheduledTasks)->toArray())
             ->dispatch();
 
         return true;

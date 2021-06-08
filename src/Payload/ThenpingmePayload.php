@@ -45,11 +45,6 @@ abstract class ThenpingmePayload implements Arrayable
         return null;
     }
 
-    public static function fromTask(Event $task): TaskPayload
-    {
-        return TaskPayload::make($task);
-    }
-
     public function fingerprint(): string
     {
         return sha1(vsprintf('%s.%s.%s.%s.%s', [

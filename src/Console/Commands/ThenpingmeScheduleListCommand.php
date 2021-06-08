@@ -53,7 +53,7 @@ class ThenpingmeScheduleListCommand extends Command
         return ScheduledTaskCollection::make(
             Thenpingme::scheduledTasks()
                 ->map(function (Event $task): array {
-                    return TaskPayload::fromTask($task)->toArray();
+                    return TaskPayload::make($task)->toArray();
                 })
                 ->map(function (array $task) use ($collisions): array {
                     return [

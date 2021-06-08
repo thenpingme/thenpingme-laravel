@@ -18,6 +18,7 @@ class ScheduledTaskCollection extends Collection
         return static::make($this
             ->map(function ($task) {
                 return TaskPayload::fromTask($task)->toArray();
+                return TaskPayload::make($task)->toArray();
             })
             ->groupBy('mutex')
             ->filter(function ($group) {
