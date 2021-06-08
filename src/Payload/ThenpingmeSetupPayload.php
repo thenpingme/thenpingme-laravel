@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Collections\ScheduledTaskCollection;
 
-class ThenpingmeSetupPayload implements Arrayable
+final class ThenpingmeSetupPayload implements Arrayable
 {
     private ScheduledTaskCollection $tasks;
 

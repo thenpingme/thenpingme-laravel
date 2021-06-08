@@ -7,7 +7,7 @@ namespace Thenpingme\Exceptions;
 use InvalidArgumentException;
 use Thenpingme\Signer\Signer;
 
-class InvalidSigner extends InvalidArgumentException
+final class InvalidSigner extends InvalidArgumentException
 {
     public static function doesntImplementSigner(string $signingClass): InvalidSigner
     {

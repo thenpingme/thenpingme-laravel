@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Collections\ScheduledTaskCollection;
 
-class SyncPayload implements Arrayable
+final class SyncPayload implements Arrayable
 {
     private ScheduledTaskCollection $tasks;
 

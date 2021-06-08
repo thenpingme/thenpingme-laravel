@@ -8,7 +8,7 @@ use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Support\Str;
 
-class TaskIdentifier
+final class TaskIdentifier
 {
     public const TYPE_CLOSURE = 'closure';
 

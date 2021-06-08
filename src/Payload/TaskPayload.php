@@ -10,7 +10,7 @@ use ReflectionClass;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\TaskIdentifier;
 
-class TaskPayload extends ThenpingmePayload
+final class TaskPayload
 {
     public Event $task;
 

@@ -6,7 +6,7 @@ namespace Thenpingme\Payload;
 
 use Illuminate\Support\Carbon;
 
-class ScheduledTaskFailedPayload extends ThenpingmePayload
+final class ScheduledTaskFailedPayload extends ThenpingmePayload
 {
     public function toArray(): array
     {
