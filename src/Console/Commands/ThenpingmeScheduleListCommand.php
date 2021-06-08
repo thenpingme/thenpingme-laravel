@@ -19,12 +19,8 @@ class ThenpingmeScheduleListCommand extends Command
 
     protected $signature = 'thenpingme:schedule';
 
-    protected Translator $translator;
-
-    public function __construct(Translator $translator)
+    public function __construct(protected Translator $translator)
     {
-        $this->translator = $translator;
-
         parent::__construct();
     }
 

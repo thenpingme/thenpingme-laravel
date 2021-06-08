@@ -16,15 +16,11 @@ use Thenpingme\Facades\Thenpingme;
 
 abstract class ThenpingmePayload implements Arrayable
 {
-    /** @var mixed */
-    protected $event;
-
     /**
      * @param  mixed  $event
      */
-    protected function __construct($event)
+    protected function __construct(protected $event)
     {
-        $this->event = $event;
     }
 
     /**

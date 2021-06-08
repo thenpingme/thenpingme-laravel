@@ -44,7 +44,7 @@ class Thenpingme
     {
         try {
             return CronTranslator::translate($expression);
-        } catch (CronParsingException $e) {
+        } catch (CronParsingException) {
             return $expression;
         }
     }
@@ -77,7 +77,7 @@ class Thenpingme
                 return md5(serialize($command));
             }
 
-            if (is_object($command) && ($class = get_class($command)) !== 'Closure') {
+            if (is_object($command) && ($class = $command::class) !== 'Closure') {
                 return $class;
             }
 

@@ -33,13 +33,9 @@ class ThenpingmeSetupCommand extends Command
 
     protected string $signingKey = '';
 
-    protected Translator $translator;
-
-    public function __construct(Translator $translator)
+    public function __construct(protected Translator $translator)
     {
         parent::__construct();
-
-        $this->translator = $translator;
     }
 
     public function handle(Schedule $schedule): int
@@ -108,7 +104,7 @@ class ThenpingmeSetupCommand extends Command
             tap(new DotenvEditor)->load(base_path('.env'));
 
             return true;
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
     }
@@ -147,7 +143,7 @@ class ThenpingmeSetupCommand extends Command
             });
 
             return true;
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
     }

@@ -22,13 +22,9 @@ class ThenpingmeSyncCommand extends Command
 
     protected ?ScheduledTaskCollection $scheduledTasks = null;
 
-    protected Translator $translator;
-
-    public function __construct(Translator $translator)
+    public function __construct(protected Translator $translator)
     {
         parent::__construct();
-
-        $this->translator = $translator;
     }
 
     public function handle(): int

@@ -17,11 +17,8 @@ final class SyncPayload implements Arrayable
 {
     use Makeable;
 
-    private ScheduledTaskCollection $tasks;
-
-    protected function __construct(ScheduledTaskCollection $tasks)
+    protected function __construct(private ScheduledTaskCollection $tasks)
     {
-        $this->tasks = $tasks;
     }
 
     public function toArray(): array

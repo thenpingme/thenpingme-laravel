@@ -15,13 +15,9 @@ class ThenpingmeVerifyCommand extends Command
 
     protected $signature = 'thenpingme:verify';
 
-    protected Translator $translator;
-
-    public function __construct(Translator $translator)
+    public function __construct(protected Translator $translator)
     {
         parent::__construct();
-
-        $this->translator = $translator;
     }
 
     public function handle(): int

@@ -14,11 +14,8 @@ use Thenpingme\Payload\ThenpingmePayload;
 
 class ScheduledTaskSubscriber
 {
-    private Client $thenpingme;
-
-    public function __construct(Client $thenpingme)
+    public function __construct(private Client $thenpingme)
     {
-        $this->thenpingme = $thenpingme;
     }
 
     /**

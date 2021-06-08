@@ -15,11 +15,8 @@ final class TaskPayload
 {
     use Makeable;
 
-    private Event $schedulingEvent;
-
-    protected function __construct(Event $schedulingEvent)
+    protected function __construct(private Event $schedulingEvent)
     {
-        $this->schedulingEvent = $schedulingEvent;
     }
 
     public function toArray(): array
