@@ -8,6 +8,7 @@ parameters:
 
     ignoreErrors:
         - '#Call to an undefined method Thenpingme\\Console\\Commands\\Thenpingme(.+)Command::task\(\)#'
+
     # The level 8 is the highest level
     level: 5
 
