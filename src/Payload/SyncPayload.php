@@ -19,7 +19,7 @@ final class SyncPayload implements Arrayable
 
     private ScheduledTaskCollection $tasks;
 
-    public function __construct(ScheduledTaskCollection $tasks)
+    protected function __construct(ScheduledTaskCollection $tasks)
     {
         $this->tasks = $tasks;
     }
