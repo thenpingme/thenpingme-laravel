@@ -109,7 +109,7 @@ class ThenpingmeTest extends TestCase
 
         $this->assertEquals(
             'thenpingme:'.sha1('* * * * *.some task'),
-            TaskPayload::fromTask(Arr::first(Thenpingme::scheduledTasks()))->toArray()['mutex']
+            TaskPayload::make(Arr::first(Thenpingme::scheduledTasks()))->toArray()['mutex']
         );
     }
 

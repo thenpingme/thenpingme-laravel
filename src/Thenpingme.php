@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme;
 
 use Illuminate\Console\Scheduling\CallbackEvent;
@@ -24,13 +26,13 @@ class Thenpingme
 
     public function scheduledTasks(): ScheduledTaskCollection
     {
-        return with(app(Schedule::class), function ($scheduler) {
+        return with(app(Schedule::class), function (Schedule $scheduler) {
             return ScheduledTaskCollection::make($scheduler->events())
-                ->filter(function ($event) {
+                ->filter(function (Event $event) {
                     return App::environment($event->environments)
                         || empty($event->environments);
                 })
-                ->transform(function ($event) {
+                ->transform(function (Event $event) {
                     $this->fingerprintTask($event);
 
                     return $event;
@@ -80,6 +82,7 @@ class Thenpingme
             }
 
             tap(new ReflectionFunction($command), function (ReflectionFunction $function) use (&$event) {
+                /* @phpstan-ignore-next-line */
                 $event->extra = [
                     'file' => $function->getClosureScopeClass()->getName(),
                     'line' => "{$function->getStartLine()} to {$function->getEndLine()}",

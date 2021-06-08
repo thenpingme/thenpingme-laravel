@@ -1,28 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Client;
 
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Exceptions\CouldNotSendPing;
+use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
 use Thenpingme\ThenpingmePingJob;
 
-class ThenpingmeClient implements Client
+final class ThenpingmeClient implements Client
 {
-    /** @var array */
-    protected $payload = [];
+    protected array $payload = [];
 
-    /** @var \Thenpingme\ThenpingmePingJob */
-    protected $pingJob;
+    protected ThenpingmePingJob $pingJob;
 
-    /** @var string */
-    protected $secret;
+    protected ?string $secret = null;
 
-    /** @var \Thenpingme\Signer\Signer */
-    protected $signer;
+    protected Signer $signer;
 
-    /** @var string */
-    public $url;
+    protected ?string $url = null;
 
     public function __construct()
     {
@@ -34,21 +32,21 @@ class ThenpingmeClient implements Client
 
     public static function setup(): Client
     {
-        return (new static())
+        return (new self)
             ->endpoint(sprintf('/projects/%s/setup', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.project_id'));
     }
 
     public static function ping(): Client
     {
-        return (new static())
+        return (new self)
             ->endpoint(sprintf('/projects/%s/ping', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.signing_key'));
     }
 
     public static function sync(): Client
     {
-        return (new static)
+        return (new self)
             ->endpoint(sprintf('/projects/%s/sync', Config::get('thenpingme.project_id')))
             ->useSecret(Config::get('thenpingme.signing_key'));
     }
@@ -58,13 +56,18 @@ class ThenpingmeClient implements Client
         return config('thenpingme.api_url');
     }
 
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
     public function dispatch(): void
     {
         if (! config('thenpingme.enabled')) {
             return;
         }
 
-        if (! $this->url) {
+        if (blank($this->url)) {
             throw CouldNotSendPing::missingUrl();
         }
 
@@ -78,25 +81,32 @@ class ThenpingmeClient implements Client
             ? dispatch($this->pingJob)
                 ->onConnection(config('thenpingme.queue_connection'))
                 ->onQueue(config('thenpingme.queue_name'))
-            : dispatch_now($this->pingJob);
+            : dispatch_sync($this->pingJob);
     }
 
-    public function endpoint($url): self
+    /**
+     * @return Client
+     */
+    public function endpoint(string $url)
     {
-        if (! $this->baseUrl()) {
+        if (is_null($baseUrl = $this->baseUrl())) {
             throw CouldNotSendPing::missingBaseUrl();
         }
 
         $this->url = $this->pingJob->url = vsprintf('%s/%s', [
-            rtrim($this->baseUrl(), '/'),
+            rtrim($baseUrl, '/'),
             ltrim($url, '/'),
         ]);
 
         return $this;
     }
 
-    public function headers()
+    public function headers(): array
     {
+        if (is_null($this->secret)) {
+            throw CouldNotSendPing::missingSigningSecret();
+        }
+
         return [
             'Signature' => $this->signer->calculateSignature($this->payload, $this->secret),
         ];
@@ -109,7 +119,10 @@ class ThenpingmeClient implements Client
         return $this;
     }
 
-    public function useSecret(?string $secret): self
+    /**
+     * @return Client
+     */
+    public function useSecret(?string $secret)
     {
         $this->secret = $secret;
 

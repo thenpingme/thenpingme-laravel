@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme;
 
 use Illuminate\Bus\Queueable;
@@ -18,17 +20,15 @@ class ThenpingmePingJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public $url;
+    public string $url = '';
 
-    public $headers = [];
+    public array $headers = [];
 
-    public $payload = [];
+    public array $payload = [];
 
-    public $queue;
+    public int $tries = 1;
 
-    public $tries = 1;
-
-    public function handle()
+    public function handle(): void
     {
         try {
             Http::timeout(5)

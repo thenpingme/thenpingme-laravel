@@ -3,7 +3,7 @@
 namespace Thenpingme\Tests;
 
 use Illuminate\Console\Scheduling\Schedule;
-use Thenpingme\Payload\ThenpingmePayload;
+use Thenpingme\Payload\TaskPayload;
 use Thenpingme\TaskIdentifier;
 use Thenpingme\Tests\Fixtures\SomeJob;
 
@@ -14,7 +14,7 @@ class TaskIdentifierTest extends TestCase
     {
         $task = $this->app->make(Schedule::class)->command('thenpingme:test');
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) {
             $this->assertEquals(TaskIdentifier::TYPE_COMMAND, $payload['type']);
         });
     }
@@ -24,7 +24,7 @@ class TaskIdentifierTest extends TestCase
     {
         $task = $this->app->make(Schedule::class)->exec('echo "testing"');
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) {
             $this->assertEquals(TaskIdentifier::TYPE_SHELL, $payload['type']);
         });
     }
@@ -36,7 +36,7 @@ class TaskIdentifierTest extends TestCase
             echo 'testing';
         });
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) {
             $this->assertEquals(TaskIdentifier::TYPE_CLOSURE, $payload['type']);
         });
 
@@ -44,7 +44,7 @@ class TaskIdentifierTest extends TestCase
             echo 'testing';
         })->description('some closure task');
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) {
             $this->assertEquals(TaskIdentifier::TYPE_CLOSURE, $payload['type']);
         });
     }
@@ -54,7 +54,7 @@ class TaskIdentifierTest extends TestCase
     {
         $task = $this->app->make(Schedule::class)->job(SomeJob::class);
 
-        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) {
+        tap(TaskPayload::make($task)->toArray(), function (array $payload) {
             $this->assertEquals(TaskIdentifier::TYPE_JOB, $payload['type']);
         });
     }

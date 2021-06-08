@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Payload;
 
 use Illuminate\Support\Carbon;
 
-class ScheduledTaskFinishedPayload extends ThenpingmePayload
+final class ScheduledTaskFinishedPayload extends ThenpingmePayload
 {
     public function toArray(): array
     {

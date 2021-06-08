@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Client\Client;
+use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Console\Commands\Concerns\FetchesTasks;
 use Thenpingme\Payload\SyncPayload;
 
@@ -17,11 +20,9 @@ class ThenpingmeSyncCommand extends Command
 
     protected $signature = 'thenpingme:sync';
 
-    /** @var \Thenpingme\Collections\ScheduledTaskCollection */
-    protected $scheduledTasks;
+    protected ?ScheduledTaskCollection $scheduledTasks = null;
 
-    /** @var \Illuminate\Contracts\Translation\Translator */
-    protected $translator;
+    protected Translator $translator;
 
     public function __construct(Translator $translator)
     {
@@ -30,7 +31,7 @@ class ThenpingmeSyncCommand extends Command
         $this->translator = $translator;
     }
 
-    public function handle()
+    public function handle(): int
     {
         if (! $this->prepareTasks()) {
             return 1;
@@ -43,6 +44,8 @@ class ThenpingmeSyncCommand extends Command
         });
 
         $this->info($this->translator->get('thenpingme::translations.successful_sync'));
+
+        return 0;
     }
 
     protected function syncTasks(): bool
@@ -51,9 +54,7 @@ class ThenpingmeSyncCommand extends Command
 
         app(Client::class)
             ->sync()
-            ->payload(
-                SyncPayload::make($this->scheduledTasks)->toArray()
-            )
+            ->payload(SyncPayload::make($this->scheduledTasks)->toArray())
             ->dispatch();
 
         return true;

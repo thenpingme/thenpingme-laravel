@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thenpingme\Payload;
 
 use Illuminate\Console\Events\ScheduledTaskFailed;
@@ -14,16 +16,21 @@ use Thenpingme\Facades\Thenpingme;
 
 abstract class ThenpingmePayload implements Arrayable
 {
+    /** @var mixed */
     protected $event;
 
-    protected $tasks;
-
+    /**
+     * @param  mixed  $event
+     */
     protected function __construct($event)
     {
         $this->event = $event;
     }
 
-    public static function fromEvent($event): ?self
+    /**
+     * @param  mixed  $event
+     */
+    public static function fromEvent($event): ?ThenpingmePayload
     {
         if ($event instanceof ScheduledTaskStarting) {
             return new ScheduledTaskStartingPayload($event);
@@ -42,11 +49,6 @@ abstract class ThenpingmePayload implements Arrayable
         }
 
         return null;
-    }
-
-    public static function fromTask($task): self
-    {
-        return TaskPayload::make($task);
     }
 
     public function fingerprint(): string
@@ -94,7 +96,7 @@ abstract class ThenpingmePayload implements Arrayable
         // I don't really know the best way to test this... but it should be fine.
         if (PHP_OS == 'Linux') {
             return trim(Arr::first(
-                explode(' ', tap(new Process(['hostname', '-I']), function ($process) {
+                explode(' ', tap(new Process(['hostname', '-I']), function (Process $process) {
                     $process->run();
                 })->getOutput())
             ));
