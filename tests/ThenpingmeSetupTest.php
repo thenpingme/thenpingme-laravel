@@ -1,225 +1,191 @@
 <?php
 
-namespace Thenpingme\Tests;
-
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
-use sixlive\DotenvEditor\DotenvEditor;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\ThenpingmePingJob;
 
-class ThenpingmeSetupTest extends TestCase
-{
-    /** @var \Illuminate\Contracts\Translation\Translator */
-    protected $translator;
+beforeEach(function () {
+    Bus::fake();
 
-    public function setUp(): void
-    {
-        parent::setUp();
+    $this->translator = $this->app->make(Translator::class);
 
-        Bus::fake();
+    config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
 
-        $this->translator = $this->app->make(Translator::class);
+    touch(base_path('.env.example'));
+    touch(base_path('.env'));
+});
 
-        config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
+afterEach(function () {
+    unlink(base_path('.env.example'));
+    unlink(base_path('.env'));
+});
 
-        touch(base_path('.env.example'));
-        touch(base_path('.env'));
-    }
+it('correctly sets environment variables', function () {
+    Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
+    Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
+    Thenpingme::shouldReceive('version')->once();
 
-    public function tearDown(): void
-    {
-        unlink(base_path('.env.example'));
-        unlink(base_path('.env'));
-    }
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
-    /** @test */
-    public function it_correctly_sets_environment_variables()
-    {
-        Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
-        Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
-        Thenpingme::shouldReceive('version')->once();
+    tap(loadEnv(base_path('.env')), function ($editor) {
+        $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $editor->getEnv('THENPINGME_PROJECT_ID'));
+        $this->assertEquals('this-is-the-signing-secret', $editor->getEnv('THENPINGME_SIGNING_KEY'));
+        $this->assertEquals('true', $editor->getEnv('THENPINGME_QUEUE_PING'));
+    });
 
-        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+    tap(loadEnv(base_path('.env.example')), function ($editor) {
+        $this->assertEquals('', $editor->getEnv('THENPINGME_PROJECT_ID'));
+        $this->assertEquals('', $editor->getEnv('THENPINGME_SIGNING_KEY'));
+        $this->assertEquals('true', $editor->getEnv('THENPINGME_QUEUE_PING'));
+    });
+});
 
-        tap($this->loadEnv(base_path('.env')), function ($editor) {
-            $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $editor->getEnv('THENPINGME_PROJECT_ID'));
-            $this->assertEquals('this-is-the-signing-secret', $editor->getEnv('THENPINGME_SIGNING_KEY'));
-            $this->assertEquals('true', $editor->getEnv('THENPINGME_QUEUE_PING'));
-        });
+it('sets up initial scheduled tasks', function () {
+    config(['thenpingme.queue_ping' => true]);
 
-        tap($this->loadEnv(base_path('.env.example')), function ($editor) {
-            $this->assertEquals('', $editor->getEnv('THENPINGME_PROJECT_ID'));
-            $this->assertEquals('', $editor->getEnv('THENPINGME_SIGNING_KEY'));
-            $this->assertEquals('true', $editor->getEnv('THENPINGME_QUEUE_PING'));
-        });
-    }
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('test:command')->hourly();
+    });
 
-    /** @test */
-    public function it_sets_up_initial_scheduled_tasks()
-    {
-        config(['thenpingme.queue_ping' => true]);
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
-        tap($this->app->make(Schedule::class), function ($schedule) {
-            $schedule->command('test:command')->hourly();
-        });
+    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+        $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
+        $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
+        $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
 
-        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+        $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
+        $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
 
-        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-            $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
-            $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
-            $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
+        return true;
+    });
 
-            $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
-            $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
+    $this->assertFalse(config('thenpingme.queue_ping'));
+});
 
-            return true;
-        });
+it('sets up initial scheduled tasks with explicit settings', function () {
+    config(['thenpingme.queue_ping' => true]);
 
-        $this->assertFalse(config('thenpingme.queue_ping'));
-    }
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('test:command')->hourly()->thenpingme([
+            'grace_period' => 2,
+            'allowed_run_time' => 2,
+            'notify_after_consecutive_alerts' => 3,
+        ]);
+    });
 
-    /** @test */
-    public function it_sets_up_initial_scheduled_tasks_with_explicit_settings()
-    {
-        config(['thenpingme.queue_ping' => true]);
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
-        tap($this->app->make(Schedule::class), function ($schedule) {
-            $schedule->command('test:command')->hourly()->thenpingme([
-                'grace_period' => 2,
-                'allowed_run_time' => 2,
-                'notify_after_consecutive_alerts' => 3,
-            ]);
-        });
+    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+        $this->assertEquals(2, $job->payload['tasks'][0]['grace_period']);
+        $this->assertEquals(2, $job->payload['tasks'][0]['allowed_run_time']);
+        $this->assertEquals(3, $job->payload['tasks'][0]['notify_after_consecutive_alerts']);
 
-        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+        return true;
+    });
 
-        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-            $this->assertEquals(2, $job->payload['tasks'][0]['grace_period']);
-            $this->assertEquals(2, $job->payload['tasks'][0]['allowed_run_time']);
-            $this->assertEquals(3, $job->payload['tasks'][0]['notify_after_consecutive_alerts']);
+    $this->assertFalse(config('thenpingme.queue_ping'));
+});
 
-            return true;
-        });
+it('sets up initial scheduled tasks with partial explicit settings', function () {
+    config(['thenpingme.queue_ping' => true]);
 
-        $this->assertFalse(config('thenpingme.queue_ping'));
-    }
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('test:command')->hourly()->thenpingme([
+            'notify_after_consecutive_alerts' => 3,
+        ]);
+    });
 
-    /** @test */
-    public function it_sets_up_initial_scheduled_tasks_with_partial_explicit_settings()
-    {
-        config(['thenpingme.queue_ping' => true]);
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
-        tap($this->app->make(Schedule::class), function ($schedule) {
-            $schedule->command('test:command')->hourly()->thenpingme([
-                'notify_after_consecutive_alerts' => 3,
-            ]);
-        });
+    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+        $this->assertNull($job->payload['tasks'][0]['grace_period']);
+        $this->assertNull($job->payload['tasks'][0]['allowed_run_time']);
+        $this->assertEquals(3, $job->payload['tasks'][0]['notify_after_consecutive_alerts']);
 
-        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+        return true;
+    });
 
-        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-            $this->assertNull($job->payload['tasks'][0]['grace_period']);
-            $this->assertNull($job->payload['tasks'][0]['allowed_run_time']);
-            $this->assertEquals(3, $job->payload['tasks'][0]['notify_after_consecutive_alerts']);
+    $this->assertFalse(config('thenpingme.queue_ping'));
+});
 
-            return true;
-        });
+it('handles missing environment file', function () {
+    unlink(base_path('.env'));
 
-        $this->assertFalse(config('thenpingme.queue_ping'));
-    }
+    Thenpingme::shouldReceive('generateSigningKey')->never();
+    Thenpingme::shouldReceive('scheduledTasks')->never();
 
-    /** @test */
-    public function it_handles_missing_environment_file()
-    {
-        unlink(base_path('.env'));
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
+        ->expectsOutput('THENPINGME_PROJECT_ID=aaa-bbbb-c1c1c1-ddd-ef1')
+        ->assertExitCode(1);
 
-        Thenpingme::shouldReceive('generateSigningKey')->never();
-        Thenpingme::shouldReceive('scheduledTasks')->never();
+    Bus::assertNotDispatched(ThenpingmePingJob::class);
 
-        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
-            ->expectsOutput('THENPINGME_PROJECT_ID=aaa-bbbb-c1c1c1-ddd-ef1')
-            ->assertExitCode(1);
+    touch(base_path('.env'));
+});
 
-        Bus::assertNotDispatched(ThenpingmePingJob::class);
+it('runs setup with tasks only', function () {
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('test:command')->hourly();
+    });
 
-        touch(base_path('.env'));
-    }
+    config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
 
-    /** @test */
-    public function it_runs_setup_with_tasks_only()
-    {
-        tap($this->app->make(Schedule::class), function ($schedule) {
-            $schedule->command('test:command')->hourly();
-        });
+    $this->artisan('thenpingme:setup --tasks-only');
 
-        config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
+    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+        $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
+        $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
+        $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
 
-        $this->artisan('thenpingme:setup --tasks-only');
+        $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
+        $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
 
-        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-            $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
-            $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
-            $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
+        return true;
+    });
+});
 
-            $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
-            $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
+it('runs setup with tasks only when env does not exist', function () {
+    unlink(base_path('.env'));
 
-            return true;
-        });
-    }
+    Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('secret');
+    Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
+    Thenpingme::shouldReceive('version')->andReturn('1.2.3');
 
-    /** @test */
-    public function it_runs_setup_with_tasks_only_when_env_does_not_exist()
-    {
-        unlink(base_path('.env'));
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('test:command')->hourly();
+    });
 
-        Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('secret');
-        Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection);
-        Thenpingme::shouldReceive('version')->andReturn('1.2.3');
+    config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
+    config()->offsetUnset('thenpingme.signing_key');
 
-        tap($this->app->make(Schedule::class), function ($schedule) {
-            $schedule->command('test:command')->hourly();
-        });
+    $this->artisan('thenpingme:setup --tasks-only')
+        ->expectsOutput($this->translator->get('thenpingme::translations.signing_key_environment'))
+        ->expectsOutput('THENPINGME_SIGNING_KEY=secret');
 
-        config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
-        config()->offsetUnset('thenpingme.signing_key');
+    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+        $this->assertEquals('1.2.3', $job->payload['thenpingme']['version']);
+        $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
+        $this->assertEquals('secret', $job->payload['project']['signing_key']);
+        $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
 
-        $this->artisan('thenpingme:setup --tasks-only')
-            ->expectsOutput($this->translator->get('thenpingme::translations.signing_key_environment'))
-            ->expectsOutput('THENPINGME_SIGNING_KEY=secret');
+        return true;
+    });
 
-        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-            $this->assertEquals('1.2.3', $job->payload['thenpingme']['version']);
-            $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
-            $this->assertEquals('secret', $job->payload['project']['signing_key']);
-            $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
+    touch(base_path('.env'));
+});
 
-            return true;
-        });
+it('exits if duplicate tasks are detected', function () {
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->job(SomeJob::class)->everyMinute();
+        $schedule->job(SomeJob::class)->everyMinute();
+    });
 
-        touch(base_path('.env'));
-    }
+    $this->artisan('thenpingme:setup')->assertExitCode(1);
 
-    /** @test */
-    public function it_exits_if_duplicate_tasks_are_detected()
-    {
-        tap($this->app->make(Schedule::class), function ($schedule) {
-            $schedule->job(SomeJob::class)->everyMinute();
-            $schedule->job(SomeJob::class)->everyMinute();
-        });
-
-        $this->artisan('thenpingme:setup')->assertExitCode(1);
-
-        Bus::assertNotDispatched(ThenpingmePingJob::class);
-    }
-
-    protected function loadEnv($file)
-    {
-        return tap(new DotenvEditor)->load($file);
-    }
-}
+    Bus::assertNotDispatched(ThenpingmePingJob::class);
+});
