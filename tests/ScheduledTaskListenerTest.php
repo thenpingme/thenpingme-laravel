@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
@@ -30,4 +31,5 @@ it('listens for scheduler events', function ($event, $args) {
     'scheduled task starting' => [ScheduledTaskStarting::class, []],
     'scheduled task finishing' => [ScheduledTaskFinished::class, [1]],
     'scheduled task skipped' => [ScheduledTaskSkipped::class, [1]],
+    'scheduled task failed' => [ScheduledTaskFailed::class, [new Exception('testing')]],
 ]);
