@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Queue;
 use Thenpingme\ThenpingmePingJob;
 
 it('listens for scheduler events', function ($event, $args) {
+    if (! class_exists($event)) {
+        $this->markTestSkipped("{$event} class does not exist in this version of Laravel");
+    }
+
     Config::set([
         'thenpingme.project_id' => 'abc123',
         'thenpingme.signing_key' => 'super-secret',
