@@ -223,11 +223,11 @@ it('generates a setup payload with explicit settings', function () {
         $scheduler
             ->command('thenpingme:first')
             ->description('This is the first task')
-            ->thenpingme([
-                'grace_period' => 2,
-                'allowed_run_time' => 2,
-                'notify_after_consecutive_alerts' => 3,
-            ]),
+            ->thenpingme(
+                grace_period: 2,
+                allowed_run_time: 2,
+                notify_after_consecutive_alerts: 3,
+            ),
     ]);
 
     expect(ThenpingmeSetupPayload::make($events, 'super-secret')->toArray())
@@ -258,9 +258,7 @@ it('generates a setup payload with partial explicit settings', function () {
         $scheduler
             ->command('thenpingme:first')
             ->description('This is the first task')
-            ->thenpingme([
-                'notify_after_consecutive_alerts' => 3,
-            ]),
+            ->thenpingme(notify_after_consecutive_alerts: 3),
     ]);
 
     expect(ThenpingmeSetupPayload::make($events, 'super-secret')->toArray())

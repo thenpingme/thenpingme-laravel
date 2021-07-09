@@ -8,8 +8,16 @@ class Event
 
     public function thenpingme(): callable
     {
-        return function (array $options) {
-            $this->thenpingmeOptions = $options;
+        return function (
+            ?int $grace_period = null,
+            ?int $allowed_run_time = null,
+            ?int $notify_after_consecutive_alerts = null
+        ) {
+            $this->thenpingmeOptions = [
+                'grace_period' => $grace_period,
+                'allowed_run_time' => $allowed_run_time,
+                'notify_after_consecutive_alerts' => $notify_after_consecutive_alerts,
+            ];
 
             return $this;
         };
