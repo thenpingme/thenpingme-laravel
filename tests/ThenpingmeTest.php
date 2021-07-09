@@ -12,10 +12,9 @@ it('determines non unique tasks', function () {
         $schedule->command('test:command')->hourly();
     });
 
-    tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
-        $this->assertCount(2, $tasks);
-        $this->assertNull($tasks[0]['extra']);
-    });
+    expect(Thenpingme::scheduledTasks()->collisions())
+        ->count()->toBe(2)
+        ->first()->extra->toBeNull();
 });
 
 it('determines non unique jobs', function () {
@@ -24,10 +23,9 @@ it('determines non unique jobs', function () {
         $schedule->job(SomeJob::class)->hourly();
     });
 
-    tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
-        $this->assertCount(2, $tasks);
-        $this->assertMatchesRegularExpression('/^Line [0-9]+ to [0-9]+ of/', $tasks[0]['extra']);
-    });
+    expect(Thenpingme::scheduledTasks()->collisions())
+        ->count()->toBe(2)
+        ->first()->extra->toMatch('/^Line [0-9]+ to [0-9]+ of/');
 });
 
 it('determines closures are non unique tasks', function () {
@@ -41,10 +39,9 @@ it('determines closures are non unique tasks', function () {
         })->everyMinute();
     });
 
-    tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
-        $this->assertCount(2, $tasks);
-        $this->assertMatchesRegularExpression('/^Line [0-9]+ to [0-9]+ of/', $tasks[0]['extra']);
-    });
+    expect(Thenpingme::scheduledTasks()->collisions())
+        ->count()->toBe(2)
+        ->first()->extra->toMatch('/^Line [0-9]+ to [0-9]+ of/');
 });
 
 it('determines called jobs are non unique tasks', function () {
@@ -53,10 +50,9 @@ it('determines called jobs are non unique tasks', function () {
         $schedule->call(new InvokableJob)->everyMinute();
     });
 
-    tap(Thenpingme::scheduledTasks()->collisions(), function ($tasks) {
-        $this->assertCount(2, $tasks);
-        $this->assertNull($tasks[0]['extra']);
-    });
+    expect(Thenpingme::scheduledTasks()->collisions())
+        ->count()->toBe(2)
+        ->first()->extra->toBeNull();
 });
 
 it('determines closures with unique descriptions are unique', function () {
@@ -89,8 +85,9 @@ it('can fingerprint a closure task', function () {
         })->everyMinute()->description('some task');
     });
 
-    expect(TaskPayload::make(Arr::first(Thenpingme::scheduledTasks()))->toArray()['mutex'])
-        ->toBe('thenpingme:'.sha1('* * * * *.some task'));
+    expect(TaskPayload::make(Arr::first(Thenpingme::scheduledTasks())))
+        ->toArray()
+        ->toHaveKey('mutex', 'thenpingme:'.sha1('* * * * *.some task'));
 });
 
 it('returns the current client version', function () {

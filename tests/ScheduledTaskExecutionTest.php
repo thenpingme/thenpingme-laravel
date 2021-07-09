@@ -1,7 +1,5 @@
 <?php
 
-namespace Thenpingme\Tests;
-
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
@@ -9,149 +7,133 @@ use Thenpingme\Tests\Fixtures\InvokableJob;
 use Thenpingme\Tests\Fixtures\SomeJob;
 use Thenpingme\ThenpingmePingJob;
 
-class ScheduledTaskExecutionTest extends TestCase
-{
-    public function setUp(): void
-    {
-        parent::setUp();
+beforeEach(function () {
+    Config::set([
+        'thenpingme.project_id' => 'abc123',
+        'thenpingme.signing_key' => 'super-secret',
+    ]);
 
-        Config::set([
-            'thenpingme.project_id' => 'abc123',
-            'thenpingme.signing_key' => 'super-secret',
-        ]);
+    Queue::fake();
+});
 
-        Queue::fake();
-    }
+it('keeps the same fingerprint across the full execution of a command', function () {
+    $this->app->make(Schedule::class)->command('thenpingme:testing');
 
-    /** @test */
-    public function it_keeps_the_same_fingerprint_across_the_full_execution_of_a_command()
-    {
-        $this->app->make(Schedule::class)->command('thenpingme:testing');
+    $this->artisan('schedule:run');
 
-        $this->artisan('schedule:run');
+    $fingerprint = null;
 
-        tap(null, function ($fingerprint) {
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskStarting') {
-                    $fingerprint = $job->payload['fingerprint'];
-                }
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskStarting') {
+            $fingerprint = $job->payload['fingerprint'];
+        }
 
-                return $job->payload['type'] == 'ScheduledTaskStarting';
-            });
+        return $job->payload['type'] == 'ScheduledTaskStarting';
+    });
 
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskFinished') {
-                    $this->assertEquals($fingerprint, $job->payload['fingerprint']);
-                }
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskFinished') {
+            expect($job->payload['fingerprint'])->toBe($fingerprint);
+        }
 
-                return $job->payload['type'] == 'ScheduledTaskFinished';
-            });
-        });
-    }
+        return $job->payload['type'] == 'ScheduledTaskFinished';
+    });
+});
 
-    /** @test */
-    public function it_keeps_the_same_fingerprint_across_the_full_execution_of_a_job()
-    {
-        $this->app->make(Schedule::class)->job(SomeJob::class);
+it('keeps the same fingerprint across the full execution of a job', function () {
+    $this->app->make(Schedule::class)->job(SomeJob::class);
 
-        $this->artisan('schedule:run');
+    $this->artisan('schedule:run');
 
-        tap(null, function ($fingerprint) {
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskStarting') {
-                    $fingerprint = $job->payload['fingerprint'];
-                }
+    $fingerprint = null;
 
-                return $job->payload['type'] == 'ScheduledTaskStarting';
-            });
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskStarting') {
+            $fingerprint = $job->payload['fingerprint'];
+        }
 
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskFinished') {
-                    $this->assertEquals($fingerprint, $job->payload['fingerprint']);
-                }
+        return $job->payload['type'] == 'ScheduledTaskStarting';
+    });
 
-                return $job->payload['type'] == 'ScheduledTaskFinished';
-            });
-        });
-    }
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskFinished') {
+            expect($job->payload['fingerprint'])->toBe($fingerprint);
+        }
 
-    /** @test */
-    public function it_keeps_the_same_fingerprint_across_the_full_execution_of_an_invokable_job()
-    {
-        $this->app->make(Schedule::class)->call(new InvokableJob);
+        return $job->payload['type'] == 'ScheduledTaskFinished';
+    });
+});
 
-        $this->artisan('schedule:run');
+it('keeps the same fingerprint across the full execution of an invokable job', function () {
+    $this->app->make(Schedule::class)->call(new InvokableJob);
 
-        tap(null, function ($fingerprint) {
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskStarting') {
-                    $fingerprint = $job->payload['fingerprint'];
-                }
+    $this->artisan('schedule:run');
 
-                return $job->payload['type'] == 'ScheduledTaskStarting';
-            });
+    $fingerprint = null;
 
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskFinished') {
-                    $this->assertEquals($fingerprint, $job->payload['fingerprint']);
-                }
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskStarting') {
+            $fingerprint = $job->payload['fingerprint'];
+        }
 
-                return $job->payload['type'] == 'ScheduledTaskFinished';
-            });
-        });
-    }
+        return $job->payload['type'] == 'ScheduledTaskStarting';
+    });
 
-    /** @test */
-    public function it_keeps_the_same_fingerprint_across_the_full_execution_of_a_shell_command()
-    {
-        $this->app->make(Schedule::class)->exec('echo "testing"');
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskFinished') {
+            expect($job->payload['fingerprint'])->toBe($fingerprint);
+        }
 
-        $this->artisan('schedule:run');
+        return $job->payload['type'] == 'ScheduledTaskFinished';
+    });
+});
 
-        tap(null, function ($fingerprint) {
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskStarting') {
-                    $fingerprint = $job->payload['fingerprint'];
-                }
+it('keeps the same fingerprint across the full execution of a shell command', function () {
+    $this->app->make(Schedule::class)->exec('echo "testing"');
 
-                return $job->payload['type'] == 'ScheduledTaskStarting';
-            });
+    $this->artisan('schedule:run');
 
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskFinished') {
-                    $this->assertEquals($fingerprint, $job->payload['fingerprint']);
-                }
+    $fingerprint = null;
 
-                return $job->payload['type'] == 'ScheduledTaskFinished';
-            });
-        });
-    }
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskStarting') {
+            $fingerprint = $job->payload['fingerprint'];
+        }
 
-    /** @test */
-    public function it_keeps_the_same_fingerprint_across_the_full_execution_of_a_closure()
-    {
-        $this->app->make(Schedule::class)->call(function () {
-            // we do nothing
-        });
+        return $job->payload['type'] == 'ScheduledTaskStarting';
+    });
 
-        $this->artisan('schedule:run');
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskFinished') {
+            expect($job->payload['fingerprint'])->toBe($fingerprint);
+        }
 
-        tap(null, function ($fingerprint) {
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskStarting') {
-                    $fingerprint = $job->payload['fingerprint'];
-                }
+        return $job->payload['type'] == 'ScheduledTaskFinished';
+    });
+});
 
-                return $job->payload['type'] == 'ScheduledTaskStarting';
-            });
+it('keeps the same fingerprint across the full execution of a closure', function () {
+    $this->app->make(Schedule::class)->call(function () {
+        // we do nothing
+    });
 
-            Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
-                if ($job->payload['type'] == 'ScheduledTaskFinished') {
-                    $this->assertEquals($fingerprint, $job->payload['fingerprint']);
-                }
+    $this->artisan('schedule:run');
 
-                return $job->payload['type'] == 'ScheduledTaskFinished';
-            });
-        });
-    }
-}
+    $fingerprint = null;
+
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use (&$fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskStarting') {
+            $fingerprint = $job->payload['fingerprint'];
+        }
+
+        return $job->payload['type'] == 'ScheduledTaskStarting';
+    });
+
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) use ($fingerprint) {
+        if ($job->payload['type'] == 'ScheduledTaskFinished') {
+            expect($job->payload['fingerprint'])->toBe($fingerprint);
+        }
+
+        return $job->payload['type'] == 'ScheduledTaskFinished';
+    });
+});

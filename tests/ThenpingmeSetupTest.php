@@ -32,15 +32,17 @@ it('correctly sets environment variables', function () {
     $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
     tap(loadEnv(base_path('.env')), function ($editor) {
-        $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $editor->getEnv('THENPINGME_PROJECT_ID'));
-        $this->assertEquals('this-is-the-signing-secret', $editor->getEnv('THENPINGME_SIGNING_KEY'));
-        $this->assertEquals('true', $editor->getEnv('THENPINGME_QUEUE_PING'));
+        expect($editor)
+            ->getEnv('THENPINGME_PROJECT_ID')->toBe('aaa-bbbb-c1c1c1-ddd-ef1')
+            ->getEnv('THENPINGME_SIGNING_KEY')->toBe('this-is-the-signing-secret')
+            ->getEnv('THENPINGME_QUEUE_PING')->toBe('true');
     });
 
     tap(loadEnv(base_path('.env.example')), function ($editor) {
-        $this->assertEquals('', $editor->getEnv('THENPINGME_PROJECT_ID'));
-        $this->assertEquals('', $editor->getEnv('THENPINGME_SIGNING_KEY'));
-        $this->assertEquals('true', $editor->getEnv('THENPINGME_QUEUE_PING'));
+        expect($editor)
+            ->getEnv('THENPINGME_PROJECT_ID')->toBeEmpty()
+            ->getEnv('THENPINGME_SIGNING_KEY')->toBeEmpty()
+            ->getEnv('THENPINGME_QUEUE_PING')->toBe('true');
     });
 });
 
@@ -54,12 +56,12 @@ it('sets up initial scheduled tasks', function () {
     $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
     Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-        $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
-        $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
-        $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
-
-        $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
-        $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
+        expect($job)
+            ->toHaveKey('payload.project.uuid', 'aaa-bbbb-c1c1c1-ddd-ef1')
+            ->toHaveKey('payload.project.signing_key', Config::get('thenpingme.signing_key'))
+            ->toHaveKey('payload.project.name', Config::get('app.name'))
+            ->toHaveKey('payload.tasks.0.command', 'test:command')
+            ->toHaveKey('payload.tasks.0.expression', '0 * * * *');
 
         return true;
     });
@@ -81,14 +83,15 @@ it('sets up initial scheduled tasks with explicit settings', function () {
     $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
     Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-        $this->assertEquals(2, $job->payload['tasks'][0]['grace_period']);
-        $this->assertEquals(2, $job->payload['tasks'][0]['allowed_run_time']);
-        $this->assertEquals(3, $job->payload['tasks'][0]['notify_after_consecutive_alerts']);
+        expect($job->payload['tasks'][0])
+            ->toHaveKey('grace_period', 2)
+            ->toHaveKey('allowed_run_time', 2)
+            ->toHaveKey('notify_after_consecutive_alerts', 3);
 
         return true;
     });
 
-    $this->assertFalse(config('thenpingme.queue_ping'));
+    expect(config('thenpingme.queue_ping'))->toBeFalse();
 });
 
 it('sets up initial scheduled tasks with partial explicit settings', function () {
@@ -103,9 +106,10 @@ it('sets up initial scheduled tasks with partial explicit settings', function ()
     $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
 
     Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-        $this->assertNull($job->payload['tasks'][0]['grace_period']);
-        $this->assertNull($job->payload['tasks'][0]['allowed_run_time']);
-        $this->assertEquals(3, $job->payload['tasks'][0]['notify_after_consecutive_alerts']);
+        expect($job->payload['tasks'][0])
+            ->toHaveKey('grace_period', null)
+            ->toHaveKey('allowed_run_time', null)
+            ->toHaveKey('notify_after_consecutive_alerts', 3);
 
         return true;
     });
@@ -119,7 +123,8 @@ it('handles missing environment file', function () {
     Thenpingme::shouldReceive('generateSigningKey')->never();
     Thenpingme::shouldReceive('scheduledTasks')->never();
 
-    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
+    $this
+        ->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
         ->expectsOutput('THENPINGME_PROJECT_ID=aaa-bbbb-c1c1c1-ddd-ef1')
         ->assertExitCode(1);
 
@@ -138,12 +143,12 @@ it('runs setup with tasks only', function () {
     $this->artisan('thenpingme:setup --tasks-only');
 
     Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-        $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
-        $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
-        $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
-
-        $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
-        $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
+        expect($job->payload)
+            ->toHaveKey('project.uuid', 'aaa-bbbb-c1c1c1-ddd-ef1')
+            ->toHaveKey('project.signing_key', Config::get('thenpingme.signing_key'))
+            ->toHaveKey('project.name', Config::get('app.name'))
+            ->toHaveKey('tasks.0.command', 'test:command')
+            ->toHaveKey('tasks.0.expression', '0 * * * *');
 
         return true;
     });
@@ -163,15 +168,17 @@ it('runs setup with tasks only when env does not exist', function () {
     config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
     config()->offsetUnset('thenpingme.signing_key');
 
-    $this->artisan('thenpingme:setup --tasks-only')
+    $this
+        ->artisan('thenpingme:setup --tasks-only')
         ->expectsOutput($this->translator->get('thenpingme::translations.signing_key_environment'))
         ->expectsOutput('THENPINGME_SIGNING_KEY=secret');
 
     Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-        $this->assertEquals('1.2.3', $job->payload['thenpingme']['version']);
-        $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
-        $this->assertEquals('secret', $job->payload['project']['signing_key']);
-        $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
+        expect($job->payload)
+            ->toHaveKey('thenpingme.version', '1.2.3')
+            ->toHaveKey('project.uuid', 'aaa-bbbb-c1c1c1-ddd-ef1')
+            ->toHaveKey('project.signing_key', 'secret')
+            ->toHaveKey('project.name', Config::get('app.name'));
 
         return true;
     });

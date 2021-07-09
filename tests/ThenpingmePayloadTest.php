@@ -297,7 +297,6 @@ it('generates the correct payload for a scheduled task starting', function () {
 
     expect($payload = ThenpingmePayload::fromEvent($event))
         ->toBeInstanceOf(ScheduledTaskStartingPayload::class)
-        ->toArray()
         ->toHaveKey('thenpingme.version', Thenpingme::version())
         ->toHaveKey('task.timezone', '+00:00')
         ->toHaveKey('fingerprint', $payload->fingerprint())
@@ -326,7 +325,6 @@ it('correctly identifies ip for a vapor app', function () {
     $_ENV['VAPOR_SSM_PATH'] = '/some/lambda/path';
 
     expect(ThenpingmePayload::fromEvent($event))
-        ->toArray()
         ->toHaveKey('ip', ThenpingmePayload::getIp(gethostname()));
 
     unset($_ENV['VAPOR_SSM_PATH']);
@@ -344,7 +342,6 @@ it('includes the release if configured to do so', function () {
     );
 
     expect(ThenpingmePayload::fromEvent($event))
-        ->toArray()
         ->toHaveKey('release', 'this is the release')
         ->toHaveKey('task.release', 'this is the release');
 });
@@ -359,7 +356,6 @@ it('generates the correct payload for a scheduled task finished', function () {
 
     expect($payload = ThenpingmePayload::fromEvent($event))
         ->toBeInstanceOf(ScheduledTaskFinishedPayload::class)
-        ->toArray()
         ->toHaveKey('fingerprint', $payload->fingerprint())
         ->toHaveKey('ip', '10.1.1.1')
         ->toHaveKey('hostname', gethostname())
@@ -381,7 +377,6 @@ it('generates the correct payload for a scheduled task skipped', function () {
 
     expect($payload = ThenpingmePayload::fromEvent($event))
         ->toBeInstanceOf(ScheduledTaskSkippedPayload::class)
-        ->toArray()
         ->toHaveKey('thenpingme.version', Thenpingme::version())
         ->toHaveKey('task.timezone', '+00:00')
         ->toHaveKey('fingerprint', $payload->fingerprint())
@@ -408,7 +403,6 @@ it('handles scheduled task specific timezones', function () {
 
     expect($payload = ThenpingmePayload::fromEvent($event))
         ->toBeInstanceOf(ScheduledTaskSkippedPayload::class)
-        ->toArray()
         ->toHaveKey('thenpingme.version', Thenpingme::version())
         ->toHaveKey('task.timezone', '+10:30')
         ->toHaveKey('fingerprint', $payload->fingerprint())
@@ -435,7 +429,6 @@ it('converts string timezones to utc offset', function () {
 
     expect($payload = ThenpingmePayload::fromEvent($event))
         ->toBeInstanceOf(ScheduledTaskSkippedPayload::class)
-        ->toArray()
         ->toHaveKey('thenpingme.version', Thenpingme::version())
         ->toHaveKey('task.timezone', '+10:30')
         ->toHaveKey('fingerprint', $payload->fingerprint())
