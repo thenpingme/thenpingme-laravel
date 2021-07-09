@@ -1,116 +1,77 @@
 <?php
 
-namespace Thenpingme\Tests;
-
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Bus;
 use Thenpingme\Client\Client;
 use Thenpingme\Exceptions\CouldNotSendPing;
 use Thenpingme\ThenpingmePingJob;
 
-class ThenpingmeClientTest extends TestCase
-{
-    /** @var \Illuminate\Contracts\Translation\Translator */
-    protected $translator;
+beforeEach(function () {
+    $this->translator = $this->app->make(Translator::class);
 
-    public function setUp(): void
-    {
-        parent::setUp();
+    config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
+});
 
-        $this->translator = $this->app->make(Translator::class);
+it('does not send a ping if thenpingme is disabled', function () {
+    Bus::fake();
 
-        config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
-    }
+    config(['thenpingme.enabled' => false]);
 
-    /** @test */
-    public function it_does_not_send_a_ping_if_thenpingme_is_disabled()
-    {
-        Bus::fake();
+    $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
 
-        config(['thenpingme.enabled' => false]);
+    Bus::assertNotDispatched(ThenpingmePingJob::class);
+});
 
-        $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
+it('does not send a ping if base url is missing', function () {
+    config(['thenpingme.api_url' => null]);
 
-        Bus::assertNotDispatched(ThenpingmePingJob::class);
-    }
+    $this->expectException(CouldNotSendPing::class);
+    $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_base_url'));
 
-    /** @test */
-    public function it_does_not_send_a_ping_if_base_url_is_missing()
-    {
-        config(['thenpingme.api_url' => null]);
+    $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
+});
 
-        $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_base_url'));
+it('does not send a ping if key is missing', function () {
+    config(['thenpingme.signing_key' => null]);
 
-        $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
-    }
+    $this->expectException(CouldNotSendPing::class);
+    $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_signing_secret'));
 
-    /** @test */
-    public function it_does_not_send_a_ping_if_key_is_missing()
-    {
-        config(['thenpingme.signing_key' => null]);
+    $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
+});
 
-        $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_signing_secret'));
+it('does not send a ping if endpoint is missing', function () {
+    $this->expectException(CouldNotSendPing::class);
+    $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_endpoint_url'));
 
-        $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
-    }
+    $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->dispatch();
+});
 
-    /** @test */
-    public function it_does_not_send_a_ping_if_endpoint_is_missing()
-    {
-        $this->expectException(CouldNotSendPing::class);
-        $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_endpoint_url'));
+it('sets defaults when initialising client', function () {
+    $client = $this->app->make(Client::class)->payload(['thenpingme' => 'test']);
 
-        $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->dispatch();
-    }
+    expect($this->app->make(Client::class)->payload(['thenpingme' => 'test']))
+        ->headers()
+        ->toHaveKey('Signature', '90b01e2e084d0df073d028a5c60a303618d5d56a194b08626f7236334f3345df');
+});
 
-    /** @test */
-    public function it_sets_defaults_when_initialising_client()
-    {
-        $client = $this->app->make(Client::class)->payload(['thenpingme' => 'test']);
+it('gets a setup client', function () {
+    expect($this->app->make(Client::class)->setup()->getUrl())
+        ->toBe('http://thenpingme.test/api/projects/abc123/setup');
+});
 
-        $this->assertEquals(
-            '90b01e2e084d0df073d028a5c60a303618d5d56a194b08626f7236334f3345df',
-            $client->headers()['Signature']
-        );
-    }
+it('gets a ping client', function () {
+    expect($this->app->make(Client::class)->ping()->getUrl())
+        ->toBe('http://thenpingme.test/api/projects/abc123/ping');
+});
 
-    /** @test */
-    public function it_gets_a_setup_client()
-    {
-        $this->assertEquals(
-            'http://thenpingme.test/api/projects/abc123/setup',
-            $this->app->make(Client::class)->setup()->getUrl()
-        );
-    }
+it('gets a sync client', function () {
+    expect($this->app->make(Client::class)->sync()->getUrl())
+        ->toBe('http://thenpingme.test/api/projects/abc123/sync');
+});
 
-    /** @test */
-    public function it_gets_a_ping_client()
-    {
-        $this->assertEquals(
-            'http://thenpingme.test/api/projects/abc123/ping',
-            $this->app->make(Client::class)->ping()->getUrl()
-        );
-    }
-
-    /** @test */
-    public function it_gets_a_sync_client()
-    {
-        $this->assertEquals(
-            'http://thenpingme.test/api/projects/abc123/sync',
-            $this->app->make(Client::class)->sync()->getUrl()
-        );
-    }
-
-    /** @test */
-    public function it_sets_the_signature_header()
-    {
-        $client = $this->app->make(Client::class)->useSecret('abc')->payload(['thenpingme' => 'test']);
-
-        $this->assertEquals(
-            ['Signature' => 'd276b8572f3ea342d7946fc8c100266ceb0ffaee9443e95bde3762d66adb2146'],
-            $client->headers()
-        );
-    }
-}
+it('sets the signature header', function () {
+    expect($this->app->make(Client::class)->useSecret('abc')->payload(['thenpingme' => 'test']))
+        ->headers()
+        ->toHaveKey('Signature', 'd276b8572f3ea342d7946fc8c100266ceb0ffaee9443e95bde3762d66adb2146');
+});
