@@ -29,27 +29,14 @@ abstract class ThenpingmePayload implements Arrayable
      */
     public static function fromEvent($event): ?ThenpingmePayload
     {
-        if ($event instanceof ScheduledTaskStarting) {
-            return new ScheduledTaskStartingPayload($event);
-        }
-
-        if ($event instanceof ScheduledTaskFinished) {
-            return new ScheduledTaskFinishedPayload($event);
-        }
-
-        if ($event instanceof ScheduledBackgroundTaskFinished) {
-            return new ScheduledBackgroundTaskFinishedPayload($event);
-        }
-
-        if ($event instanceof ScheduledTaskSkipped) {
-            return new ScheduledTaskSkippedPayload($event);
-        }
-
-        if ($event instanceof ScheduledTaskFailed) {
-            return new ScheduledTaskFailedPayload($event);
-        }
-
-        return null;
+        return match (true) {
+            $event instanceof ScheduledTaskStarting => new ScheduledTaskStartingPayload($event),
+            $event instanceof ScheduledTaskFinished => new ScheduledTaskFinishedPayload($event),
+            $event instanceof ScheduledBackgroundTaskFinished => new ScheduledBackgroundTaskFinishedPayload($event),
+            $event instanceof ScheduledTaskSkipped => new ScheduledTaskSkippedPayload($event),
+            $event instanceof ScheduledTaskFailed => new ScheduledTaskFailedPayload($event),
+            default => null,
+        };
     }
 
     public function fingerprint(): string
