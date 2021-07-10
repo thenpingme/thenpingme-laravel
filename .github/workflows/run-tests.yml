@@ -45,4 +45,4 @@ jobs:
                   command: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest --no-progress
 
             - name: Execute tests
-              run: vendor/bin/phpunit
+              run: vendor/bin/pest

@@ -1,7 +1,6 @@
 <?php
 
-namespace Thenpingme\Tests;
-
+use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
@@ -11,65 +10,30 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use Thenpingme\ThenpingmePingJob;
 
-class ScheduledTaskListenerTest extends TestCase
-{
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        Config::set([
-            'thenpingme.project_id' => 'abc123',
-            'thenpingme.signing_key' => 'super-secret',
-        ]);
-
-        Queue::fake();
+it('listens for scheduler events', function ($event, $args) {
+    if (! class_exists($event)) {
+        $this->markTestSkipped("{$event} class does not exist in this version of Laravel");
     }
 
-    /** @test */
-    public function it_listens_for_a_scheduled_task_starting()
-    {
-        $event = $this->app->make(Schedule::class)->command('thenpingme:testing');
+    Config::set([
+        'thenpingme.project_id' => 'abc123',
+        'thenpingme.signing_key' => 'super-secret',
+    ]);
 
-        tap($this->app->make(Dispatcher::class), function ($dispatcher) use ($event) {
-            $dispatcher->dispatch(new ScheduledTaskStarting($event));
-        });
+    Queue::fake();
 
-        Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
-            $this->assertEquals('https://thenping.me/api/projects/abc123/ping', $job->url);
+    $task = $this->app->make(Schedule::class)->command('thenpingme:testing');
 
-            return true;
-        });
-    }
+    tap($this->app->make(Dispatcher::class), fn ($d) => $d->dispatch(new $event($task, ...$args)));
 
-    /** @test */
-    public function it_listens_for_a_scheduled_task_finishing()
-    {
-        $event = $this->app->make(Schedule::class)->command('thenpingme:testing');
+    Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
+        expect($job->url)->toBe('https://thenping.me/api/projects/abc123/ping');
 
-        tap($this->app->make(Dispatcher::class), function ($dispatcher) use ($event) {
-            $dispatcher->dispatch(new ScheduledTaskFinished($event, 1));
-        });
-
-        Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
-            $this->assertEquals('https://thenping.me/api/projects/abc123/ping', $job->url);
-
-            return true;
-        });
-    }
-
-    /** @test */
-    public function it_listens_for_a_scheduled_task_skipped()
-    {
-        $event = $this->app->make(Schedule::class)->command('thenpingme:testing');
-
-        tap($this->app->make(Dispatcher::class), function ($dispatcher) use ($event) {
-            $dispatcher->dispatch(new ScheduledTaskSkipped($event, 1));
-        });
-
-        Queue::assertPushed(ThenpingmePingJob::class, function ($job) {
-            $this->assertEquals('https://thenping.me/api/projects/abc123/ping', $job->url);
-
-            return true;
-        });
-    }
-}
+        return true;
+    });
+})->with([
+    'scheduled task starting' => [ScheduledTaskStarting::class, []],
+    'scheduled task finished' => [ScheduledTaskFinished::class, [1]],
+    'scheduled task skipped' => [ScheduledTaskSkipped::class, [1]],
+    'scheduled task failed' => [ScheduledTaskFailed::class, [new Exception('testing')]],
+]);
