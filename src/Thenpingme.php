@@ -99,6 +99,6 @@ class Thenpingme
 
     public function version(): string
     {
-        return static::VERSION;
+        return self::VERSION;
     }
 }
