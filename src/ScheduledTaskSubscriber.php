@@ -33,25 +33,20 @@ class ScheduledTaskSubscriber
 
     public function subscribe(Dispatcher $events): void
     {
-        $events->listen([
+        $events->listen(
+            $this->supportedEvents(),
+            static::class.'@handleScheduledTaskEvent'
+        );
+    }
+
+    private function supportedEvents(): array
+    {
+        return array_filter([
             ScheduledTaskStarting::class,
             ScheduledTaskFinished::class,
             ScheduledTaskSkipped::class,
-        ], static::class.'@handleScheduledTaskEvent');
-
-        if (class_exists(ScheduledTaskFailed::class)) {
-            $events->listen(
-                [
-                    ScheduledTaskFailed::class,
-                ],
-                static::class.'@handleScheduledTaskEvent'
-            );
-        }
-
-        if (class_exists(ScheduledBackgroundTaskFinished::class)) {
-            $events->listen([
-                ScheduledBackgroundTaskFinished::class,
-            ], static::class.'@handleScheduledTaskEvent');
-        }
+            ScheduledTaskFailed::class,
+            ScheduledBackgroundTaskFinished::class,
+        ], fn ($class) => class_exists($class));
     }
 }
