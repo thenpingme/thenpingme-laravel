@@ -33,6 +33,8 @@ it('fetches tasks to be synced', function () {
         );
         Thenpingme::shouldReceive('translateExpression');
         Thenpingme::shouldReceive('version')->once();
+        Thenpingme::shouldReceive('defaults');
+        Thenpingme::shouldReceive('default');
     });
 
     $this
@@ -53,6 +55,8 @@ it('halts if duplicate tasks are encountered', function () {
         ]));
         Thenpingme::shouldReceive('fingerprintTask')->twice()->andReturn('the-fingerprint');
         Thenpingme::shouldReceive('translateExpression')->twice()->andReturn('Every minute');
+        Thenpingme::shouldReceive('defaults');
+        Thenpingme::shouldReceive('default');
     });
 
     $this

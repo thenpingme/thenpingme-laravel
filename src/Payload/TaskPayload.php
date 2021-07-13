@@ -42,10 +42,7 @@ final class TaskPayload
             'filtered' => $this->isFiltered(),
             /* @phpstan-ignore-next-line */
             'extra' => $this->schedulingEvent->extra ?? null,
-            'grace_period' => data_get($this->schedulingEvent, 'thenpingmeOptions.grace_period'),
-            'allowed_run_time' => data_get($this->schedulingEvent, 'thenpingmeOptions.allowed_run_time'),
-            'notify_after_consecutive_alerts' => data_get($this->schedulingEvent, 'thenpingmeOptions.notify_after_consecutive_alerts'),
-        ];
+        ]);
     }
 
     private function isFiltered(): bool
@@ -76,5 +73,14 @@ final class TaskPayload
             PHP_BINARY,
             'artisan',
         ], '', $this->schedulingEvent->command ?: ''));
+    }
+
+    private function settings(): array
+    {
+        return [
+            'grace_period' => data_get($this->schedulingEvent, 'thenpingmeOptions.grace_period') ?: Thenpingme::default('grace_period'),
+            'allowed_run_time' => data_get($this->schedulingEvent, 'thenpingmeOptions.allowed_run_time') ?: Thenpingme::default('allowed_run_time'),
+            'notify_after_consecutive_alerts' => data_get($this->schedulingEvent, 'thenpingmeOptions.notify_after_consecutive_alerts') ?: Thenpingme::default('notify_after_consecutive_alerts'),
+        ];
     }
 }
