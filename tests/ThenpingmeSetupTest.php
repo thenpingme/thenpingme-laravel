@@ -69,54 +69,6 @@ it('sets up initial scheduled tasks', function () {
     $this->assertFalse(config('thenpingme.queue_ping'));
 });
 
-it('sets up initial scheduled tasks with explicit settings', function () {
-    config(['thenpingme.queue_ping' => true]);
-
-    tap($this->app->make(Schedule::class), function ($schedule) {
-        $schedule->command('test:command')->hourly()->thenpingme(
-            grace_period: 2,
-            allowed_run_time: 2,
-            notify_after_consecutive_alerts: 3,
-        );
-    });
-
-    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
-
-    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-        expect($job->payload['tasks'][0])
-            ->toHaveKey('grace_period', 2)
-            ->toHaveKey('allowed_run_time', 2)
-            ->toHaveKey('notify_after_consecutive_alerts', 3);
-
-        return true;
-    });
-
-    expect(config('thenpingme.queue_ping'))->toBeFalse();
-});
-
-it('sets up initial scheduled tasks with partial explicit settings', function () {
-    config(['thenpingme.queue_ping' => true]);
-
-    tap($this->app->make(Schedule::class), function ($schedule) {
-        $schedule->command('test:command')->hourly()->thenpingme(
-            notify_after_consecutive_alerts: 3,
-        );
-    });
-
-    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
-
-    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
-        expect($job->payload['tasks'][0])
-            ->toHaveKey('grace_period', null)
-            ->toHaveKey('allowed_run_time', null)
-            ->toHaveKey('notify_after_consecutive_alerts', 3);
-
-        return true;
-    });
-
-    $this->assertFalse(config('thenpingme.queue_ping'));
-});
-
 it('handles missing environment file', function () {
     unlink(base_path('.env'));
 
