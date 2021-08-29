@@ -26,12 +26,12 @@ class ThenpingmePayloadTest extends TestCase
         parent::setUp();
 
         Config::set([
-            'app.name' => 'We changed the project name',
             'thenpingme.project_id' => 'abc123',
             'thenpingme.signing_key' => 'super-secret',
             'thenpingme.release' => 'this is the release',
         ]);
 
+        putenv('APP_NAME=We changed the project name');
         putenv('SERVER_ADDR=10.1.1.1');
     }
 
@@ -436,6 +436,8 @@ class ThenpingmePayloadTest extends TestCase
     /** @test */
     public function it_generates_a_sync_payload()
     {
+        config(['thenpingme.project_name' => 'Some other project name']);
+
         $schedule = $this->app->make(Schedule::class);
 
         $events = ScheduledTaskCollection::make([
@@ -449,7 +451,7 @@ class ThenpingmePayloadTest extends TestCase
                 ],
                 'project' => [
                     'uuid' => 'abc123',
-                    'name' => 'We changed the project name',
+                    'name' => 'Some other project name',
                     'release' => 'this is the release',
                     'timezone' => '+00:00',
                 ],

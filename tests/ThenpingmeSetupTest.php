@@ -72,7 +72,7 @@ class ThenpingmeSetupTest extends TestCase
         Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
             $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
             $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
-            $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
+            $this->assertEquals(Config::get('thenpingme.project_name'), $job->payload['project']['name']);
 
             $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
             $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
@@ -114,7 +114,7 @@ class ThenpingmeSetupTest extends TestCase
         Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
             $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
             $this->assertEquals(Config::get('thenpingme.signing_key'), $job->payload['project']['signing_key']);
-            $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
+            $this->assertEquals(Config::get('thenpingme.project_name'), $job->payload['project']['name']);
 
             $this->assertEquals('test:command', $job->payload['tasks'][0]['command']);
             $this->assertEquals('0 * * * *', $job->payload['tasks'][0]['expression']);
@@ -136,7 +136,10 @@ class ThenpingmeSetupTest extends TestCase
             $schedule->command('test:command')->hourly();
         });
 
-        config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
+        config([
+            'thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1',
+            'thenpingme.project_name' => 'thenping.me test',
+        ]);
         config()->offsetUnset('thenpingme.signing_key');
 
         $this->artisan('thenpingme:setup --tasks-only')
@@ -147,7 +150,7 @@ class ThenpingmeSetupTest extends TestCase
             $this->assertEquals('1.2.3', $job->payload['thenpingme']['version']);
             $this->assertEquals('aaa-bbbb-c1c1c1-ddd-ef1', $job->payload['project']['uuid']);
             $this->assertEquals('secret', $job->payload['project']['signing_key']);
-            $this->assertEquals(Config::get('app.name'), $job->payload['project']['name']);
+            $this->assertEquals('thenping.me test', $job->payload['project']['name']);
 
             return true;
         });
@@ -166,6 +169,24 @@ class ThenpingmeSetupTest extends TestCase
         $this->artisan('thenpingme:setup')->assertExitCode(1);
 
         Bus::assertNotDispatched(ThenpingmePingJob::class);
+    }
+
+    /** @test */
+    public function it_allows_overriding_the_project_name()
+    {
+        config(['thenpingme.project_name' => 'Not the app name']);
+
+        tap($this->app->make(Schedule::class), function ($schedule) {
+            $schedule->command('test:command')->hourly();
+        });
+
+        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+
+        Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+            $this->assertEquals('Not the app name', $job->payload['project']['name']);
+
+            return true;
+        });
     }
 
     protected function loadEnv($file)

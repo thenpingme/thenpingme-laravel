@@ -36,7 +36,7 @@ class ThenpingmeSetupPayload implements Arrayable
             ],
             'project' => array_filter([
                 'uuid' => Config::get('thenpingme.project_id'),
-                'name' => Config::get('app.name'),
+                'name' => Config::get('thenpingme.project_name'),
                 'signing_key' => $this->signingKey,
                 'release' => Config::get('thenpingme.release'),
                 'timezone' => Carbon::now()->timezone->toOffsetName(),
