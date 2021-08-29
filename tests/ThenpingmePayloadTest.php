@@ -329,7 +329,7 @@ it('correctly identifies ip for a vapor app', function () {
 });
 
 it('includes the release if configured to do so', function () {
-    config(['thenpingme.release' => 'this is the release']);
+    Config::set(['thenpingme.release' => 'this is the release']);
 
     $event = new ScheduledTaskStarting(
         $this->app->make(Schedule::class)
@@ -388,7 +388,7 @@ it('generates the correct payload for a scheduled task skipped', function () {
 it('handles scheduled task specific timezones', function () {
     Carbon::setTestNow('2019-10-11 00:00:00', 'UTC');
 
-    config(['app.schedule_timezone' => '+10:30']);
+    Config::set(['app.schedule_timezone' => '+10:30']);
 
     $event = new ScheduledTaskSkipped(
         $this
@@ -414,7 +414,7 @@ it('handles scheduled task specific timezones', function () {
 it('converts string timezones to utc offset', function () {
     Carbon::setTestNow('2019-10-11 00:00:00', 'UTC');
 
-    config(['app.schedule_timezone' => 'Australia/Adelaide']);
+    Config::set(['app.schedule_timezone' => 'Australia/Adelaide']);
 
     $event = new ScheduledTaskSkipped(
         $this
@@ -438,7 +438,7 @@ it('converts string timezones to utc offset', function () {
 });
 
 it('generates a sync payload', function () {
-    config(['thenpingme.project_name' => 'Some other project name']);
+    Config::set(['thenpingme.project_name' => 'Some other project name']);
 
     $schedule = $this->app->make(Schedule::class);
 

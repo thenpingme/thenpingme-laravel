@@ -13,7 +13,7 @@ beforeEach(function () {
 
     $this->translator = $this->app->make(Translator::class);
 
-    config([
+    Config::set([
         'thenpingme.project_name' => 'thenping.me test',
         'thenpingme.api_url' => 'http://thenpingme.test/api',
     ]);
@@ -50,7 +50,7 @@ it('correctly sets environment variables', function () {
 });
 
 it('sets up initial scheduled tasks', function () {
-    config(['thenpingme.queue_ping' => true]);
+    Config::set(['thenpingme.queue_ping' => true]);
 
     tap($this->app->make(Schedule::class), function ($schedule) {
         $schedule->command('test:command')->hourly();
@@ -69,11 +69,11 @@ it('sets up initial scheduled tasks', function () {
         return true;
     });
 
-    $this->assertFalse(config('thenpingme.queue_ping'));
+    $this->assertFalse(Config::get('thenpingme.queue_ping'));
 });
 
 it('sets up initial scheduled tasks with explicit settings', function () {
-    config(['thenpingme.queue_ping' => true]);
+    Config::set(['thenpingme.queue_ping' => true]);
 
     tap($this->app->make(Schedule::class), function ($schedule) {
         $schedule->command('test:command')->hourly()->thenpingme(
@@ -94,11 +94,11 @@ it('sets up initial scheduled tasks with explicit settings', function () {
         return true;
     });
 
-    expect(config('thenpingme.queue_ping'))->toBeFalse();
+    expect(Config::get('thenpingme.queue_ping'))->toBeFalse();
 });
 
 it('sets up initial scheduled tasks with partial explicit settings', function () {
-    config(['thenpingme.queue_ping' => true]);
+    Config::set(['thenpingme.queue_ping' => true]);
 
     tap($this->app->make(Schedule::class), function ($schedule) {
         $schedule->command('test:command')->hourly()->thenpingme(
@@ -117,7 +117,7 @@ it('sets up initial scheduled tasks with partial explicit settings', function ()
         return true;
     });
 
-    $this->assertFalse(config('thenpingme.queue_ping'));
+    $this->assertFalse(Config::get('thenpingme.queue_ping'));
 });
 
 it('handles missing environment file', function () {
@@ -141,7 +141,7 @@ it('runs setup with tasks only', function () {
         $schedule->command('test:command')->hourly();
     });
 
-    config([
+    Config::set([
         'thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1',
         'thenpingme.project_name' => 'Some other project name',
     ]);
@@ -171,12 +171,12 @@ it('runs setup with tasks only when env does not exist', function () {
         $schedule->command('test:command')->hourly();
     });
 
-    config([
+    Config::set([
         'thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1',
         'thenpingme.project_name' => 'thenping.me test',
     ]);
 
-    config()->offsetUnset('thenpingme.signing_key');
+    Config::offsetUnset('thenpingme.signing_key');
 
     $this
         ->artisan('thenpingme:setup --tasks-only')
@@ -208,7 +208,7 @@ it('exits if duplicate tasks are detected', function () {
 });
 
 it('allows overriding the project name', function () {
-    config(['thenpingme.project_name' => 'Not the app name']);
+    Config::set(['thenpingme.project_name' => 'Not the app name']);
 
     tap($this->app->make(Schedule::class), function ($schedule) {
         $schedule->command('test:command')->hourly();

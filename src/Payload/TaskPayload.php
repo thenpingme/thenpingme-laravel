@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Thenpingme\Payload;
 
 use Illuminate\Console\Scheduling\Event;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 use ReflectionClass;
 use Thenpingme\Facades\Thenpingme;
@@ -23,7 +24,7 @@ final class TaskPayload
     {
         return [
             'timezone' => Date::now($this->schedulingEvent->timezone)->getOffsetString(),
-            'release' => config('thenpingme.release'),
+            'release' => Config::get('thenpingme.release'),
             'type' => (new TaskIdentifier)($this->schedulingEvent),
             'expression' => $this->schedulingEvent->expression,
             'command' => $this->sanitisedCommand(),

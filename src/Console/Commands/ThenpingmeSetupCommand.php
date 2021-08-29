@@ -168,7 +168,7 @@ class ThenpingmeSetupCommand extends Command
 
     protected function setupInitialTasks(): bool
     {
-        config(['thenpingme.queue_ping' => false]);
+        Config::set(['thenpingme.queue_ping' => false]);
 
         app(Client::class)
             ->setup()

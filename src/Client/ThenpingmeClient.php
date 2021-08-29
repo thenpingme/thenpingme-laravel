@@ -53,7 +53,7 @@ final class ThenpingmeClient implements Client
 
     public function baseUrl(): ?string
     {
-        return config('thenpingme.api_url');
+        return Config::get('thenpingme.api_url');
     }
 
     public function getUrl(): ?string
@@ -63,7 +63,7 @@ final class ThenpingmeClient implements Client
 
     public function dispatch(): void
     {
-        if (! config('thenpingme.enabled')) {
+        if (! Config::get('thenpingme.enabled')) {
             return;
         }
 
@@ -77,10 +77,10 @@ final class ThenpingmeClient implements Client
 
         $this->pingJob->headers = $this->headers();
 
-        config('thenpingme.queue_ping')
+        Config::get('thenpingme.queue_ping')
             ? dispatch($this->pingJob)
-                ->onConnection(config('thenpingme.queue_connection'))
-                ->onQueue(config('thenpingme.queue_name'))
+                ->onConnection(Config::get('thenpingme.queue_connection'))
+                ->onQueue(Config::get('thenpingme.queue_name'))
             : dispatch_sync($this->pingJob);
     }
 

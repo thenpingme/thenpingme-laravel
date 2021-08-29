@@ -2,6 +2,7 @@
 
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Config;
 use Thenpingme\Client\Client;
 use Thenpingme\Exceptions\CouldNotSendPing;
 use Thenpingme\ThenpingmePingJob;
@@ -9,13 +10,13 @@ use Thenpingme\ThenpingmePingJob;
 beforeEach(function () {
     $this->translator = $this->app->make(Translator::class);
 
-    config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
+    Config::set(['thenpingme.api_url' => 'http://thenpingme.test/api']);
 });
 
 it('does not send a ping if thenpingme is disabled', function () {
     Bus::fake();
 
-    config(['thenpingme.enabled' => false]);
+    Config::set(['thenpingme.enabled' => false]);
 
     $this->app->make(Client::class)->payload(['thenpingme' => 'test'])->ping()->dispatch();
 
@@ -23,7 +24,7 @@ it('does not send a ping if thenpingme is disabled', function () {
 });
 
 it('does not send a ping if base url is missing', function () {
-    config(['thenpingme.api_url' => null]);
+    Config::set(['thenpingme.api_url' => null]);
 
     $this->expectException(CouldNotSendPing::class);
     $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_base_url'));
@@ -32,7 +33,7 @@ it('does not send a ping if base url is missing', function () {
 });
 
 it('does not send a ping if key is missing', function () {
-    config(['thenpingme.signing_key' => null]);
+    Config::set(['thenpingme.signing_key' => null]);
 
     $this->expectException(CouldNotSendPing::class);
     $this->expectExceptionMessage($this->translator->get('thenpingme::translations.missing_signing_secret'));

@@ -3,6 +3,7 @@
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
@@ -11,13 +12,13 @@ use Thenpingme\ThenpingmePingJob;
 beforeEach(function () {
     $this->translator = $this->app->make(Translator::class);
 
-    config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
+    Config::set(['thenpingme.api_url' => 'http://thenpingme.test/api']);
 });
 
 it('fetches tasks to be synced', function () {
     Bus::fake();
 
-    config(['thenpingme.queue_ping' => true]);
+    Config::set(['thenpingme.queue_ping' => true]);
 
     tap($this->app->make(Schedule::class), function ($schedule) {
         Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection([
@@ -41,7 +42,7 @@ it('fetches tasks to be synced', function () {
 
     Bus::assertDispatched(ThenpingmePingJob::class);
 
-    expect(config('thenpingme.queue_ping'))->toBeFalse();
+    expect(Config::get('thenpingme.queue_ping'))->toBeFalse();
 });
 
 it('halts if duplicate tasks are encountered', function () {
