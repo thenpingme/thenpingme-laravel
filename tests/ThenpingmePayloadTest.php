@@ -19,12 +19,12 @@ use Thenpingme\TaskIdentifier;
 
 beforeEach(function () {
     Config::set([
-        'app.name' => 'We changed the project name',
         'thenpingme.project_id' => 'abc123',
         'thenpingme.signing_key' => 'super-secret',
         'thenpingme.release' => 'this is the release',
     ]);
 
+    putenv('APP_NAME=We changed the project name');
     putenv('SERVER_ADDR=10.1.1.1');
 });
 
@@ -438,6 +438,8 @@ it('converts string timezones to utc offset', function () {
 });
 
 it('generates a sync payload', function () {
+    config(['thenpingme.project_name' => 'Some other project name']);
+
     $schedule = $this->app->make(Schedule::class);
 
     $events = ScheduledTaskCollection::make([
@@ -451,7 +453,7 @@ it('generates a sync payload', function () {
             ],
             'project' => [
                 'uuid' => 'abc123',
-                'name' => 'We changed the project name',
+                'name' => 'Some other project name',
                 'release' => 'this is the release',
                 'timezone' => '+00:00',
             ],

@@ -71,7 +71,7 @@ abstract class ThenpingmePayload implements Arrayable
             'environment' => app()->environment(),
             'project' => array_filter([
                 'uuid' => config('thenpingme.project_id'),
-                'name' => config('app.name'),
+                'name' => config('thenpingme.project_name'),
                 'release' => config('thenpingme.release'),
                 'timezone' => Carbon::now()->timezone->toOffsetName(),
             ]),
