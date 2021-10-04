@@ -13,7 +13,7 @@ beforeEach(function () {
     Bus::fake();
 
     Config::set([
-        'app.name' => 'We changed the project name',
+        'thenpingme.project_name' => 'We changed the project name',
         'thenpingme.project_id' => 'abc123',
         'thenpingme.signing_key' => 'super-secret',
         'thenpingme.release' => 'this is the release',
@@ -68,8 +68,8 @@ it('sets up initial scheduled tasks with partial explicit settings', function ()
 
     Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
         expect($job->payload['tasks'][0])
-            ->toHaveKey('grace_period', null)
-            ->toHaveKey('allowed_run_time', null)
+            ->toHaveKey('grace_period', 1)
+            ->toHaveKey('allowed_run_time', 1)
             ->toHaveKey('notify_after_consecutive_alerts', 3);
 
         return true;
@@ -136,8 +136,8 @@ it('generates a setup payload with partial explicit settings', function () {
             ],
             'tasks' => [
                 [
-                    'grace_period' => null,
-                    'allowed_run_time' => null,
+                    'grace_period' => 1,
+                    'allowed_run_time' => 1,
                     'notify_after_consecutive_alerts' => 3,
                 ],
             ],
@@ -145,11 +145,11 @@ it('generates a setup payload with partial explicit settings', function () {
 });
 
 it('can specify a set of setting defaults', function () {
-    Thenpingme::defaults(
-        grace_period: 5,
-        allowed_run_time: 8,
-        notify_after_consecutive_alerts: 3,
-    );
+    config(['thenpingme.settings' => [
+        'grace_period' => 5,
+        'allowed_run_time' => 8,
+        'notify_after_consecutive_alerts' => 3,
+    ]]);
 
     $task = $this->app->make(Schedule::class)->command('thenpingme:defaults')->description('Using defaults');
 
@@ -164,11 +164,11 @@ it('can specify a set of setting defaults', function () {
 });
 
 it('can override default settings', function () {
-    Thenpingme::defaults(
-        grace_period: 5,
-        allowed_run_time: 8,
-        notify_after_consecutive_alerts: 3,
-    );
+    config(['thenpingme.settings' => [
+        'grace_period' => 5,
+        'allowed_run_time' => 8,
+        'notify_after_consecutive_alerts' => 3,
+    ]]);
 
     $task = $this->app->make(Schedule::class)->command('thenpingme:defaults')->description('Using defaults')->thenpingme(
         grace_period: 2

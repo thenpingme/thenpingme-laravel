@@ -19,32 +19,9 @@ class Thenpingme
 {
     public const VERSION = '3.0.0';
 
-    public static array $defaultSettings = [];
-
     public function generateSigningKey(): string
     {
         return Str::random(512);
-    }
-
-    public static function defaults(
-        ?int $grace_period = null,
-        ?int $allowed_run_time = null,
-        ?int $notify_after_consecutive_alerts = null
-    ) {
-        if (func_num_args() === 0) {
-            return static::$defaultSettings;
-        }
-
-        static::$defaultSettings = [
-            'grace_period' => $grace_period,
-            'allowed_run_time' => $allowed_run_time,
-            'notify_after_consecutive_alerts' => $notify_after_consecutive_alerts,
-        ];
-    }
-
-    public static function default(string $setting): mixed
-    {
-        return data_get(static::$defaultSettings, $setting);
     }
 
     public function scheduledTasks(): ScheduledTaskCollection
