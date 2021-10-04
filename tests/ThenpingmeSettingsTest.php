@@ -209,3 +209,25 @@ it('can override default settings', function () {
             'notify_after_consecutive_alerts' => 2,
         ]);
 });
+
+it('accounts for missing thenpingme settings', function () {
+    config([
+        'thenpingme.queue_ping' => true,
+        'thenpingme.settings' => [],
+    ]);
+
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('test:command')->hourly();
+    });
+
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+
+    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+        expect($job->payload['tasks'][0])
+            ->toHaveKey('grace_period', Thenpingme::gracePeriod())
+            ->toHaveKey('allowed_run_time', Thenpingme::allowedRunTime())
+            ->toHaveKey('notify_after_consecutive_alerts', Thenpingme::notifyAfterConsecutiveAlerts());
+
+        return true;
+    });
+});

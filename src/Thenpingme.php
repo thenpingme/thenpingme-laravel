@@ -17,7 +17,29 @@ use Thenpingme\Collections\ScheduledTaskCollection;
 
 class Thenpingme
 {
+    /** @var string */
     public const VERSION = '3.0.0';
+
+    /**
+     * The default grace period, in minutes.
+     *
+     * @var int
+     */
+    public const DEFAULT_GRACE_PERIOD = 1;
+
+    /**
+     * The default allowed run time, in minutes.
+     *
+     * @var int
+     */
+    public const DEFAULT_ALLOWED_RUN_TIME = 1;
+
+    /**
+     * The default number of consecutive alerts.
+     *
+     * @var int
+     */
+    public const DEFAULT_NOTIFY_AFTER_CONSECUTIVE_ALERTS = 1;
 
     public function generateSigningKey(): string
     {
@@ -100,5 +122,20 @@ class Thenpingme
     public function version(): string
     {
         return static::VERSION;
+    }
+
+    public function gracePeriod(): int
+    {
+        return static::DEFAULT_GRACE_PERIOD;
+    }
+
+    public function allowedRunTime(): int
+    {
+        return static::DEFAULT_ALLOWED_RUN_TIME;
+    }
+
+    public function notifyAfterConsecutiveAlerts(): int
+    {
+        return static::DEFAULT_NOTIFY_AFTER_CONSECUTIVE_ALERTS;
     }
 }
