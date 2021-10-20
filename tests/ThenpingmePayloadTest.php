@@ -500,4 +500,27 @@ class ThenpingmePayloadTest extends TestCase
             $this->assertNull(ThenpingmePayload::getIp($host));
         }
     }
+
+    /** @test */
+    public function it_sets_a_file_reference_for_closure_tasks()
+    {
+        $task = $this->app->make(Schedule::class)->call(function () {
+            echo 'anonymous';
+        });
+
+        // This is janky; don't put anything before here without updating 
+        // the start variable, otherwise the test assertion will fail.
+        $start = __LINE__ - 6;
+        $end = $start + 2;
+
+        tap(ThenpingmePayload::fromTask($task)->toArray(), function ($payload) use ($start, $end) {
+            Assert::assertArraySubset([
+                'command' => __CLASS__.":{$start} to {$end}",
+                'extra' => [
+                    'file' => __CLASS__,
+                    'line' => "{$start} to {$end}",
+                ],
+            ], $payload);
+        });
+    }
 }

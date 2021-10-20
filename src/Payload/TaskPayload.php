@@ -11,9 +11,13 @@ class TaskPayload extends ThenpingmePayload
 {
     public $task;
 
+    public $taskType;
+
     protected function __construct($task)
     {
         $this->task = $task;
+
+        $this->taskType = (new TaskIdentifier)->__invoke($this->task);
     }
 
     public static function make($task): self
@@ -23,10 +27,12 @@ class TaskPayload extends ThenpingmePayload
 
     public function toArray(): array
     {
+        $fingerprint = Thenpingme::fingerprintTask($this->task);
+
         return [
             'timezone' => Date::now($this->task->timezone)->getOffsetString(),
             'release' => config('thenpingme.release'),
-            'type' => (new TaskIdentifier)($this->task),
+            'type' => $this->taskType,
             'expression' => $this->task->expression,
             'command' => $this->sanitisedCommand(),
             'maintenance' => $this->task->evenInMaintenanceMode,
@@ -34,7 +40,7 @@ class TaskPayload extends ThenpingmePayload
             'on_one_server' => $this->task->onOneServer,
             'run_in_background' => $this->task->runInBackground,
             'description' => $this->task->description,
-            'mutex' => Thenpingme::fingerprintTask($this->task),
+            'mutex' => $fingerprint,
             'filtered' => $this->isFiltered(),
             'extra' => $this->task->extra ?? null,
         ];
@@ -52,6 +58,16 @@ class TaskPayload extends ThenpingmePayload
 
     private function sanitisedCommand(): string
     {
+        if ($this->taskType === TaskIdentifier::TYPE_CLOSURE &&
+            blank($this->task->command) &&
+            blank($this->task->description)
+        ) {
+            return vsprintf('%s:%s', [
+                data_get($this->task, 'extra.file'),
+                data_get($this->task, 'extra.line'),
+            ]);
+        }
+
         return trim(str_replace([
             "'",
             '"',
