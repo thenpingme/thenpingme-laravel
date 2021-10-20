@@ -499,3 +499,19 @@ it('identifies ip address', function () {
         expect(ThenpingmePayload::getIp($host))->toBeNull();
     }
 });
+
+it('sets a file reference for closure tasks', function () {
+    $task = $this->app->make(Schedule::class)->call(function () {
+        echo 'anonymous';
+    });
+
+    // This is janky; don't put anything before here without updating
+    // the start variable, otherwise the test assertion will fail.
+    $start = __LINE__ - 6;
+    $end = $start + 2;
+
+    expect(TaskPayload::make($task))
+        ->toHaveKey('command', static::class.":{$start} to {$end}")
+        ->toHaveKey('extra.file', static::class)
+        ->toHaveKey('extra.line', "{$start} to {$end}");
+});
