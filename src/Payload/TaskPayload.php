@@ -27,7 +27,7 @@ final class TaskPayload
     {
         $fingerprint = Thenpingme::fingerprintTask($this->schedulingEvent);
 
-        return [
+        return array_merge($this->settings(), [
             'timezone' => Date::now($this->schedulingEvent->timezone)->getOffsetString(),
             'release' => Config::get('thenpingme.release'),
             'type' => $this->taskType,

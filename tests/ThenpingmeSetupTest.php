@@ -110,8 +110,8 @@ it('sets up initial scheduled tasks with partial explicit settings', function ()
 
     Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
         expect($job->payload['tasks'][0])
-            ->toHaveKey('grace_period', null)
-            ->toHaveKey('allowed_run_time', null)
+            ->toHaveKey('grace_period', 1)
+            ->toHaveKey('allowed_run_time', 1)
             ->toHaveKey('notify_after_consecutive_alerts', 3);
 
         return true;
