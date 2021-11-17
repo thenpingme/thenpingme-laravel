@@ -18,7 +18,7 @@
     "require": {
         "php": "^8.0",
         "laravel/framework": "^8.36",
-        "lorisleiva/cron-translator": "^0.1.1",
+        "lorisleiva/cron-translator": "^0.3.0",
         "nesbot/carbon": "^2.33",
         "nunomaduro/laravel-console-task": "^1.5",
         "sixlive/dotenv-editor": "^1.2",
