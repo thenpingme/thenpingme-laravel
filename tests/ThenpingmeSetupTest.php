@@ -222,3 +222,24 @@ it('allows overriding the project name', function () {
         return true;
     });
 });
+
+it('handles_thenpingme_being_enabled_or_disabled', function () {
+    config(['thenpingme.enabled' => false]);
+
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('test:command')->hourly();
+    });
+
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
+        ->expectsOutput($this->translator->get('thenpingme::translations.disabled'))
+        ->assertExitCode(1);
+
+    Bus::assertNotDispatched(ThenpingmePingJob::class);
+
+    config(['thenpingme.enabled' => true]);
+
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
+        ->assertExitCode(0);
+
+    Bus::assertDispatched(ThenpingmePingJob::class);
+});

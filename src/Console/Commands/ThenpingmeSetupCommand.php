@@ -42,6 +42,12 @@ class ThenpingmeSetupCommand extends Command
     {
         $this->schedule = $schedule;
 
+        if ($this->thenpingmeDisabled()) {
+            $this->error($this->translator->get('thenpingme::translations.disabled'));
+
+            return 1;
+        }
+
         if (! $this->canBeSetup()) {
             $this->error($this->translator->get('thenpingme::translations.env_missing'));
             $this->info('    php artisan thenpingme:setup --tasks-only');
@@ -87,6 +93,11 @@ class ThenpingmeSetupCommand extends Command
         }
 
         return 0;
+    }
+
+    protected function thenpingmeDisabled(): bool
+    {
+        return Config::get('thenpingme.enabled') === false;
     }
 
     protected function canBeSetup(): bool
