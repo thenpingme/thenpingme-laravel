@@ -3,6 +3,7 @@
 namespace Thenpingme\Client;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Thenpingme\Exceptions\CouldNotSendPing;
 use Thenpingme\Signer\ThenpingmeSigner;
 use Thenpingme\ThenpingmePingJob;
@@ -61,6 +62,8 @@ class ThenpingmeClient implements Client
     public function dispatch(): void
     {
         if (! config('thenpingme.enabled')) {
+            Log::warning(__('thenpingme::translations.disabled'));
+
             return;
         }
 
