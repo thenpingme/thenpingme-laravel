@@ -11,10 +11,7 @@ use Thenpingme\Payload\TaskPayload;
 
 class ScheduledTaskCollection extends Collection
 {
-    /**
-     * @return ScheduledTaskCollection
-     */
-    public function collisions()
+    public function collisions(): ScheduledTaskCollection
     {
         return static::make($this
             ->map(function (Event $task) {
