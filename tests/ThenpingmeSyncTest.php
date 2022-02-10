@@ -1,75 +1,62 @@
 <?php
 
-namespace Thenpingme\Tests;
-
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\ThenpingmePingJob;
 
-class ThenpingmeSyncTest extends TestCase
-{
-    /** @var \Illuminate\Contracts\Translation\Translator */
-    protected $translator;
+beforeEach(function () {
+    $this->translator = $this->app->make(Translator::class);
 
-    public function setUp(): void
-    {
-        parent::setUp();
+    Config::set(['thenpingme.api_url' => 'http://thenpingme.test/api']);
+});
 
-        $this->translator = $this->app->make(Translator::class);
+it('fetches tasks to be synced', function () {
+    Bus::fake();
 
-        config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
-    }
+    Config::set(['thenpingme.queue_ping' => true]);
 
-    /** @test */
-    public function it_fetches_tasks_to_be_synced()
-    {
-        Bus::fake();
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection([
+            $schedule->command('thenpingme:first')->description('This is the first task'),
+            $schedule->command('thenpingme:second')->description('This is the second task'),
+        ]));
+        Thenpingme::shouldReceive('fingerprintTask')->times(4)->andReturn(
+            Str::random(16),
+            Str::random(16),
+            Str::random(16),
+            Str::random(16)
+        );
+        Thenpingme::shouldReceive('translateExpression');
+        Thenpingme::shouldReceive('version')->once();
+    });
 
-        config(['thenpingme.queue_ping' => true]);
+    $this
+        ->artisan('thenpingme:sync')
+        ->expectsOutput($this->translator->get('thenpingme::translations.successful_sync'))
+        ->assertExitCode(0);
 
-        tap($this->app->make(Schedule::class), function ($schedule) {
-            Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection([
-                $schedule->command('thenpingme:first')->description('This is the first task'),
-                $schedule->command('thenpingme:second')->description('This is the second task'),
-            ]));
-            Thenpingme::shouldReceive('fingerprintTask')->times(4)->andReturn(
-                Str::random(16),
-                Str::random(16),
-                Str::random(16),
-                Str::random(16)
-            );
-            Thenpingme::shouldReceive('translateExpression');
-            Thenpingme::shouldReceive('version')->once();
-        });
+    Bus::assertDispatched(ThenpingmePingJob::class);
 
-        $this
-            ->artisan('thenpingme:sync')
-            ->expectsOutput($this->translator->get('thenpingme::translations.successful_sync'))
-            ->assertExitCode(0);
+    expect(Config::get('thenpingme.queue_ping'))->toBeFalse();
+});
 
-        Bus::assertDispatched(ThenpingmePingJob::class);
+it('halts if duplicate tasks are encountered', function () {
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection([
+            $schedule->command('thenpingme:first')->everyMinute()->description('This is the first task'),
+            $schedule->command('thenpingme:first')->everyMinute()->description('This is the first task'),
+        ]));
+        Thenpingme::shouldReceive('fingerprintTask')->twice()->andReturn('the-fingerprint');
+        Thenpingme::shouldReceive('translateExpression')->twice()->andReturn('Every minute');
+    });
 
-        $this->assertFalse(config('thenpingme.queue_ping'));
-    }
-
-    /** @test */
-    public function it_halts_if_duplicate_tasks_are_encountered()
-    {
-        tap($this->app->make(Schedule::class), function ($schedule) {
-            Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection([
-                $schedule->command('thenpingme:first')->everyMinute()->description('This is the first task'),
-                $schedule->command('thenpingme:first')->everyMinute()->description('This is the first task'),
-            ]));
-            Thenpingme::shouldReceive('fingerprintTask')->twice()->andReturn('the-fingerprint');
-            Thenpingme::shouldReceive('translateExpression')->twice()->andReturn('Every minute');
-        });
-
-        $this->artisan('thenpingme:sync')
-            ->expectsOutput($this->translator->get('thenpingme::translations.indistinguishable_tasks'))
-            ->assertExitCode(1);
-    }
-}
+    $this
+        ->artisan('thenpingme:sync')
+        ->expectsOutput($this->translator->get('thenpingme::translations.indistinguishable_tasks'))
+        ->assertExitCode(1);
+});

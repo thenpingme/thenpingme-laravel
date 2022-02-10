@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Thenpingme;
 
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Contracts\Foundation\Application;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -13,6 +14,7 @@ use Thenpingme\Console\Commands\ThenpingmeScheduleListCommand;
 use Thenpingme\Console\Commands\ThenpingmeSetupCommand;
 use Thenpingme\Console\Commands\ThenpingmeSyncCommand;
 use Thenpingme\Console\Commands\ThenpingmeVerifyCommand;
+use Thenpingme\Scheduling\Event as ThenpingmeEvent;
 use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
 
@@ -52,5 +54,7 @@ class ThenpingmeServiceProvider extends PackageServiceProvider
         $this->app->singleton(Client::class, function (Application $app): Client {
             return $app->make(ThenpingmeClient::class);
         });
+
+        Event::mixin(new ThenpingmeEvent);
     }
 }

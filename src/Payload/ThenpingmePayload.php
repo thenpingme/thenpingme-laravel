@@ -11,6 +11,7 @@ use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\Process\Process;
 use Thenpingme\Facades\Thenpingme;
 
@@ -50,7 +51,7 @@ abstract class ThenpingmePayload implements Arrayable
     public function fingerprint(): string
     {
         return sha1(vsprintf('%s.%s.%s.%s.%s', [
-            config('thenpingme.project_id'),
+            Config::get('thenpingme.project_id'),
             Thenpingme::fingerprintTask($this->event->task),
             getmypid(),
             spl_object_id($this->event->task),
@@ -64,15 +65,15 @@ abstract class ThenpingmePayload implements Arrayable
             'thenpingme' => [
                 'version' => Thenpingme::version(),
             ],
-            'release' => config('thenpingme.release'),
+            'release' => Config::get('thenpingme.release'),
             'fingerprint' => $this->fingerprint(),
             'hostname' => $hostname = gethostname(),
             'ip' => static::getIp($hostname),
             'environment' => app()->environment(),
             'project' => array_filter([
-                'uuid' => config('thenpingme.project_id'),
-                'name' => config('app.name'),
-                'release' => config('thenpingme.release'),
+                'uuid' => Config::get('thenpingme.project_id'),
+                'name' => Config::get('thenpingme.project_name'),
+                'release' => Config::get('thenpingme.release'),
                 'timezone' => Carbon::now()->timezone->toOffsetName(),
             ]),
         ]);

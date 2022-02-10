@@ -34,4 +34,6 @@ return [
 
     'duplicate_jobs' => 'Job-based tasks should set a description, or run on a unique schedule.',
     'duplicate_closures' => 'Closure-based tasks should set a description to ensure uniqueness.',
+
+    'disabled' => 'thenping.me is disabled. Please check the `thenpingme.enabled` config option and `THENPINGME_ENABLED` environment variable and try again.',
 ];

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Thenpingme\Client;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Thenpingme\Exceptions\CouldNotSendPing;
 use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
@@ -53,7 +54,7 @@ final class ThenpingmeClient implements Client
 
     public function baseUrl(): ?string
     {
-        return config('thenpingme.api_url');
+        return Config::get('thenpingme.api_url');
     }
 
     public function getUrl(): ?string
@@ -63,7 +64,9 @@ final class ThenpingmeClient implements Client
 
     public function dispatch(): void
     {
-        if (! config('thenpingme.enabled')) {
+        if (! Config::get('thenpingme.enabled')) {
+            Log::warning(__('thenpingme::translations.disabled'));
+
             return;
         }
 
@@ -77,10 +80,10 @@ final class ThenpingmeClient implements Client
 
         $this->pingJob->headers = $this->headers();
 
-        config('thenpingme.queue_ping')
+        Config::get('thenpingme.queue_ping')
             ? dispatch($this->pingJob)
-                ->onConnection(config('thenpingme.queue_connection'))
-                ->onQueue(config('thenpingme.queue_name'))
+                ->onConnection(Config::get('thenpingme.queue_connection'))
+                ->onQueue(Config::get('thenpingme.queue_name'))
             : dispatch_sync($this->pingJob);
     }
 
