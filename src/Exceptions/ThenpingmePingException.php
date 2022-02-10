@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Config;
 
 final class ThenpingmePingException extends Exception
 {
-    public function report()
+    public function report(): void
     {
         logger()->error($this->message);
     }
 
-    public static function couldNotPing($status, $body)
+    public static function couldNotPing($status, $body): ThenpingmePingException
     {
         return new self(app('translator')->get('thenpingme::translations.could_not_ping', [
             'url' => parse_url(Config::get('thenpingme.api_url'), PHP_URL_HOST),
