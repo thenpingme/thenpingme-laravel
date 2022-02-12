@@ -31,7 +31,7 @@ final class SyncPayload implements Arrayable
                 'uuid' => Config::get('thenpingme.project_id'),
                 'name' => Config::get('thenpingme.project_name'),
                 'release' => Config::get('thenpingme.release'),
-                'timezone' => Carbon::now()->timezone->toOffsetName(),
+                'timezone' => Carbon::now()->getTimezone()->toOffsetName(),
             ]),
             'tasks' => array_reduce($this->tasks->toArray(), function (array $tasks, Event $task) {
                 $tasks[] = Arr::except(TaskPayload::make($task)->toArray(), ['extra']);

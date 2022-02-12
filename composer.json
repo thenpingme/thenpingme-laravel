@@ -1,76 +1,76 @@
 {
-    "name": "thenpingme/laravel",
-    "type": "library",
-    "description": "Zero config scheduled task monitoring for Laravel",
-    "keywords": [
-        "thenpingme",
-        "laravel"
-    ],
-    "homepage": "https://github.com/thenpingme/laravel",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Michael Dyrynda",
-            "email": "michael@dyrynda.com.au",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": "^8.0",
-        "laravel/framework": "^9.0",
-        "lorisleiva/cron-translator": "^0.3",
-        "nesbot/carbon": "^2.33",
-        "nunomaduro/laravel-console-task": "^1.5",
-        "sixlive/dotenv-editor": "^1.2",
-        "spatie/laravel-package-tools": "^1.9"
-    },
-    "require-dev": {
-        "ergebnis/composer-normalize": "^2.6",
-        "friendsofphp/php-cs-fixer": "^3.0",
-        "mockery/mockery": "^1.4.2",
-        "nunomaduro/larastan": "^0.7.6",
-        "orchestra/testbench": "^7.0",
-        "pestphp/pest": "^1.17",
-        "pestphp/pest-plugin-parallel": "^0.3.0",
-        "rector/rector": "^0.11"
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "composer/package-versions-deprecated": true,
-            "ergebnis/composer-normalize": true,
-            "pestphp/pest-plugin": true
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "4.x-dev"
-        },
-        "laravel": {
-            "providers": [
-                "Thenpingme\\ThenpingmeServiceProvider"
-            ],
-            "aliases": {
-                "Laravel": "Thenpingme\\Facades\\Thenpingme"
-            }
-        }
-    },
-    "autoload": {
-        "psr-4": {
-            "Thenpingme\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Thenpingme\\Tests\\": "tests"
-        }
-    },
-    "scripts": {
-        "cs": "vendor/bin/php-cs-fixer fix --config=./.php-cs-fixer.dist.php",
-        "normalise": "@composer normalize --indent-style space --indent-size 2 --ansi",
-        "rector": "vendor/bin/rector process src --ansi",
-        "stan": "vendor/bin/phpstan --ansi",
-        "test": "vendor/bin/pest --parallel",
-        "test-coverage": "vendor/bin/pest --parallel --coverage-html coverage"
+  "name": "thenpingme/laravel",
+  "description": "Zero config scheduled task monitoring for Laravel",
+  "license": "MIT",
+  "type": "library",
+  "keywords": [
+    "thenpingme",
+    "laravel"
+  ],
+  "authors": [
+    {
+      "name": "Michael Dyrynda",
+      "email": "michael@dyrynda.com.au",
+      "role": "Developer"
     }
+  ],
+  "homepage": "https://github.com/thenpingme/laravel",
+  "require": {
+    "php": "^8.0",
+    "laravel/framework": "^9.0",
+    "lorisleiva/cron-translator": "^0.3",
+    "nesbot/carbon": "^2.53.1",
+    "nunomaduro/laravel-console-task": "^1.7",
+    "sixlive/dotenv-editor": "^2.0",
+    "spatie/laravel-package-tools": "^1.11"
+  },
+  "require-dev": {
+    "ergebnis/composer-normalize": "^2.23",
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "mockery/mockery": "^1.4.2",
+    "nunomaduro/larastan": "^2.0",
+    "orchestra/testbench": "^7.0",
+    "pestphp/pest": "^1.17",
+    "pestphp/pest-plugin-parallel": "^0.3.0",
+    "rector/rector": "^0.12"
+  },
+  "autoload": {
+    "psr-4": {
+      "Thenpingme\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Thenpingme\\Tests\\": "tests"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/package-versions-deprecated": true,
+      "ergebnis/composer-normalize": true,
+      "pestphp/pest-plugin": true
+    },
+    "sort-packages": true
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "4.x-dev"
+    },
+    "laravel": {
+      "aliases": {
+        "Laravel": "Thenpingme\\Facades\\Thenpingme"
+      },
+      "providers": [
+        "Thenpingme\\ThenpingmeServiceProvider"
+      ]
+    }
+  },
+  "scripts": {
+    "cs": "vendor/bin/php-cs-fixer fix --config=./.php-cs-fixer.dist.php",
+    "normalise": "@composer normalize --indent-style space --indent-size 2 --ansi",
+    "rector": "vendor/bin/rector process src --ansi",
+    "stan": "vendor/bin/phpstan --ansi",
+    "test": "vendor/bin/pest --parallel",
+    "test-coverage": "vendor/bin/pest --parallel --coverage-html coverage"
+  }
 }

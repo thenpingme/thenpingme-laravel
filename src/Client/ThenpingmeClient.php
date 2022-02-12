@@ -87,10 +87,7 @@ final class ThenpingmeClient implements Client
             : dispatch_sync($this->pingJob);
     }
 
-    /**
-     * @return Client
-     */
-    public function endpoint(string $url)
+    public function endpoint(string $url): static
     {
         if (is_null($baseUrl = $this->baseUrl())) {
             throw CouldNotSendPing::missingBaseUrl();
@@ -115,17 +112,14 @@ final class ThenpingmeClient implements Client
         ];
     }
 
-    public function payload(array $payload): Client
+    public function payload(array $payload): static
     {
         $this->payload = $this->pingJob->payload = $payload;
 
         return $this;
     }
 
-    /**
-     * @return Client
-     */
-    public function useSecret(?string $secret)
+    public function useSecret(?string $secret): static
     {
         $this->secret = $secret;
 

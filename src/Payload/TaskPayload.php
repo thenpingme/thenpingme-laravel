@@ -50,12 +50,12 @@ final class TaskPayload
 
     private function isFiltered(): bool
     {
-        return with(new ReflectionClass($this->schedulingEvent), function (ReflectionClass $class) {
-            return ! empty(array_merge(
-                tap($class->getProperty('filters'))->setAccessible(true)->getValue($this->schedulingEvent),
-                tap($class->getProperty('rejects'))->setAccessible(true)->getValue($this->schedulingEvent)
-            ));
-        });
+        $class = new ReflectionClass($this->schedulingEvent);
+
+        return ! empty(array_merge(
+            tap($class->getProperty('filters'))->setAccessible(true)->getValue($this->schedulingEvent),
+            tap($class->getProperty('rejects'))->setAccessible(true)->getValue($this->schedulingEvent)
+        ));
     }
 
     private function sanitisedCommand(): string
