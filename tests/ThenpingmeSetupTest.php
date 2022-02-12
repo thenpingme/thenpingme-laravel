@@ -13,7 +13,10 @@ beforeEach(function () {
 
     $this->translator = $this->app->make(Translator::class);
 
-    config(['thenpingme.api_url' => 'http://thenpingme.test/api']);
+    Config::set([
+        'thenpingme.project_name' => 'thenping.me test',
+        'thenpingme.api_url' => 'http://thenpingme.test/api',
+    ]);
 
     touch(base_path('.env.example'));
     touch(base_path('.env'));
@@ -47,7 +50,7 @@ it('correctly sets environment variables', function () {
 });
 
 it('sets up initial scheduled tasks', function () {
-    config(['thenpingme.queue_ping' => true]);
+    Config::set(['thenpingme.queue_ping' => true]);
 
     tap($this->app->make(Schedule::class), function ($schedule) {
         $schedule->command('test:command')->hourly();
@@ -59,18 +62,18 @@ it('sets up initial scheduled tasks', function () {
         expect($job)
             ->toHaveKey('payload.project.uuid', 'aaa-bbbb-c1c1c1-ddd-ef1')
             ->toHaveKey('payload.project.signing_key', Config::get('thenpingme.signing_key'))
-            ->toHaveKey('payload.project.name', Config::get('app.name'))
+            ->toHaveKey('payload.project.name', Config::get('thenpingme.project_name'))
             ->toHaveKey('payload.tasks.0.command', 'test:command')
             ->toHaveKey('payload.tasks.0.expression', '0 * * * *');
 
         return true;
     });
 
-    $this->assertFalse(config('thenpingme.queue_ping'));
+    $this->assertFalse(Config::get('thenpingme.queue_ping'));
 });
 
 it('sets up initial scheduled tasks with explicit settings', function () {
-    config(['thenpingme.queue_ping' => true]);
+    Config::set(['thenpingme.queue_ping' => true]);
 
     tap($this->app->make(Schedule::class), function ($schedule) {
         $schedule->command('test:command')->hourly()->thenpingme(
@@ -91,11 +94,11 @@ it('sets up initial scheduled tasks with explicit settings', function () {
         return true;
     });
 
-    expect(config('thenpingme.queue_ping'))->toBeFalse();
+    expect(Config::get('thenpingme.queue_ping'))->toBeFalse();
 });
 
 it('sets up initial scheduled tasks with partial explicit settings', function () {
-    config(['thenpingme.queue_ping' => true]);
+    Config::set(['thenpingme.queue_ping' => true]);
 
     tap($this->app->make(Schedule::class), function ($schedule) {
         $schedule->command('test:command')->hourly()->thenpingme(
@@ -114,7 +117,7 @@ it('sets up initial scheduled tasks with partial explicit settings', function ()
         return true;
     });
 
-    $this->assertFalse(config('thenpingme.queue_ping'));
+    $this->assertFalse(Config::get('thenpingme.queue_ping'));
 });
 
 it('handles missing environment file', function () {
@@ -138,7 +141,10 @@ it('runs setup with tasks only', function () {
         $schedule->command('test:command')->hourly();
     });
 
-    config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
+    Config::set([
+        'thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1',
+        'thenpingme.project_name' => 'Some other project name',
+    ]);
 
     $this->artisan('thenpingme:setup --tasks-only');
 
@@ -146,7 +152,7 @@ it('runs setup with tasks only', function () {
         expect($job->payload)
             ->toHaveKey('project.uuid', 'aaa-bbbb-c1c1c1-ddd-ef1')
             ->toHaveKey('project.signing_key', Config::get('thenpingme.signing_key'))
-            ->toHaveKey('project.name', Config::get('app.name'))
+            ->toHaveKey('project.name', 'Some other project name')
             ->toHaveKey('tasks.0.command', 'test:command')
             ->toHaveKey('tasks.0.expression', '0 * * * *');
 
@@ -165,8 +171,12 @@ it('runs setup with tasks only when env does not exist', function () {
         $schedule->command('test:command')->hourly();
     });
 
-    config(['thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1']);
-    config()->offsetUnset('thenpingme.signing_key');
+    Config::set([
+        'thenpingme.project_id' => 'aaa-bbbb-c1c1c1-ddd-ef1',
+        'thenpingme.project_name' => 'thenping.me test',
+    ]);
+
+    Config::offsetUnset('thenpingme.signing_key');
 
     $this
         ->artisan('thenpingme:setup --tasks-only')
@@ -178,7 +188,7 @@ it('runs setup with tasks only when env does not exist', function () {
             ->toHaveKey('thenpingme.version', '1.2.3')
             ->toHaveKey('project.uuid', 'aaa-bbbb-c1c1c1-ddd-ef1')
             ->toHaveKey('project.signing_key', 'secret')
-            ->toHaveKey('project.name', Config::get('app.name'));
+            ->toHaveKey('project.name', 'thenping.me test');
 
         return true;
     });
@@ -195,4 +205,41 @@ it('exits if duplicate tasks are detected', function () {
     $this->artisan('thenpingme:setup')->assertExitCode(1);
 
     Bus::assertNotDispatched(ThenpingmePingJob::class);
+});
+
+it('allows overriding the project name', function () {
+    Config::set(['thenpingme.project_name' => 'Not the app name']);
+
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('test:command')->hourly();
+    });
+
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1');
+
+    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+        expect($job->payload)->toHaveKey('project.name', 'Not the app name');
+
+        return true;
+    });
+});
+
+it('handles_thenpingme_being_enabled_or_disabled', function () {
+    config(['thenpingme.enabled' => false]);
+
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('test:command')->hourly();
+    });
+
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
+        ->expectsOutput($this->translator->get('thenpingme::translations.disabled'))
+        ->assertExitCode(1);
+
+    Bus::assertNotDispatched(ThenpingmePingJob::class);
+
+    config(['thenpingme.enabled' => true]);
+
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
+        ->assertExitCode(0);
+
+    Bus::assertDispatched(ThenpingmePingJob::class);
 });

@@ -10,7 +10,8 @@ thenping.me is a hands-free scheduled task monitoring application for your Larav
 
 You need to have a [thenping.me](https://thenping.me) account in order to make use of the monitoring aspect, however, you are free to use the list command to identify your application's scheduled tasks.
 
-* If using Laravel ^7.0, use version 2.0.0
+* If using Laravel ^7.0|^8.0, use version ^2.0
+* If using Laravel ^9.0, use version ^3.0
 * Support for `ScheduledTaskFailed` is available since 2.1.0
 * Version 1.3.0 is the first public-release of this companion package.
 

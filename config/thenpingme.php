@@ -6,6 +6,8 @@ return [
 
     'project_id' => env('THENPINGME_PROJECT_ID'),
 
+    'project_name' => env('THENPINGME_PROJECT_NAME') ?: env('APP_NAME'),
+
     'signing_key' => env('THENPINGME_SIGNING_KEY'),
 
     'queue_ping' => env('THENPINGME_QUEUE_PING', true),

@@ -19,12 +19,12 @@ use Thenpingme\TaskIdentifier;
 
 beforeEach(function () {
     Config::set([
-        'app.name' => 'We changed the project name',
         'thenpingme.project_id' => 'abc123',
         'thenpingme.signing_key' => 'super-secret',
         'thenpingme.release' => 'this is the release',
     ]);
 
+    putenv('APP_NAME=We changed the project name');
     putenv('SERVER_ADDR=10.1.1.1');
 });
 
@@ -329,7 +329,7 @@ it('correctly identifies ip for a vapor app', function () {
 });
 
 it('includes the release if configured to do so', function () {
-    config(['thenpingme.release' => 'this is the release']);
+    Config::set(['thenpingme.release' => 'this is the release']);
 
     $event = new ScheduledTaskStarting(
         $this->app->make(Schedule::class)
@@ -388,7 +388,7 @@ it('generates the correct payload for a scheduled task skipped', function () {
 it('handles scheduled task specific timezones', function () {
     Carbon::setTestNow('2019-10-11 00:00:00', 'UTC');
 
-    config(['app.schedule_timezone' => '+10:30']);
+    Config::set(['app.schedule_timezone' => '+10:30']);
 
     $event = new ScheduledTaskSkipped(
         $this
@@ -414,7 +414,7 @@ it('handles scheduled task specific timezones', function () {
 it('converts string timezones to utc offset', function () {
     Carbon::setTestNow('2019-10-11 00:00:00', 'UTC');
 
-    config(['app.schedule_timezone' => 'Australia/Adelaide']);
+    Config::set(['app.schedule_timezone' => 'Australia/Adelaide']);
 
     $event = new ScheduledTaskSkipped(
         $this
@@ -438,6 +438,8 @@ it('converts string timezones to utc offset', function () {
 });
 
 it('generates a sync payload', function () {
+    Config::set(['thenpingme.project_name' => 'Some other project name']);
+
     $schedule = $this->app->make(Schedule::class);
 
     $events = ScheduledTaskCollection::make([
@@ -451,7 +453,7 @@ it('generates a sync payload', function () {
             ],
             'project' => [
                 'uuid' => 'abc123',
-                'name' => 'We changed the project name',
+                'name' => 'Some other project name',
                 'release' => 'this is the release',
                 'timezone' => '+00:00',
             ],
@@ -496,4 +498,20 @@ it('identifies ip address', function () {
     } else {
         expect(ThenpingmePayload::getIp($host))->toBeNull();
     }
+});
+
+it('sets a file reference for closure tasks', function () {
+    $task = $this->app->make(Schedule::class)->call(function () {
+        echo 'anonymous';
+    });
+
+    // This is janky; don't put anything before here without updating
+    // the start variable, otherwise the test assertion will fail.
+    $start = __LINE__ - 6;
+    $end = $start + 2;
+
+    expect(TaskPayload::make($task))
+        ->toHaveKey('command', static::class.":{$start} to {$end}")
+        ->toHaveKey('extra.file', static::class)
+        ->toHaveKey('extra.line', "{$start} to {$end}");
 });

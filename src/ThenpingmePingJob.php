@@ -40,8 +40,8 @@ class ThenpingmePingJob implements ShouldQueue
         } catch (Throwable $e) {
             if ($e instanceof RequestException) {
                 logger('Could not reach '.parse_url($this->url, PHP_URL_HOST), [
-                    'status' => $e->response->status() ?? null,
-                    'response' => $e->response->json('message') ?? null,
+                    'status' => $e->response->status(),
+                    'response' => $e->response->json('message'),
                 ]);
             }
         }
