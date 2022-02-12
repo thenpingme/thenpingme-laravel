@@ -64,7 +64,7 @@ abstract class ThenpingmePayload implements Arrayable
                 'uuid' => Config::get('thenpingme.project_id'),
                 'name' => Config::get('thenpingme.project_name'),
                 'release' => Config::get('thenpingme.release'),
-                'timezone' => Carbon::now()->timezone->toOffsetName(),
+                'timezone' => Carbon::now()->getTimezone()->toOffsetName(),
             ]),
         ]);
     }
