@@ -13,12 +13,12 @@ class ScheduledTaskCollection extends Collection
 {
     public function collisions(): ScheduledTaskCollection
     {
-        return static::make($this
+        return ScheduledTaskCollection::make($this
             ->map(function (Event $task) {
                 return TaskPayload::make($task)->toArray();
             })
             ->groupBy('mutex')
-            ->filter(function (ScheduledTaskCollection $group) {
+            ->filter(function (Collection $group): bool {
                 return $group->count() > 1;
             })
             ->flatten(1)
@@ -44,7 +44,7 @@ class ScheduledTaskCollection extends Collection
             ->groupBy(function (array $task) {
                 return $task['expression'].$task['interval'].$task['description'];
             })
-            ->filter(function (ScheduledTaskCollection $group) {
+            ->filter(function (Collection $group): bool {
                 return $group->count() > 1;
             })
             ->isNotEmpty();
@@ -57,7 +57,7 @@ class ScheduledTaskCollection extends Collection
             ->groupBy(function (array $task) {
                 return $task['expression'].$task['interval'].$task['description'];
             })
-            ->filter(function (ScheduledTaskCollection $group) {
+            ->filter(function (Collection $group): bool {
                 return $group->count() > 1;
             })
             ->isNotEmpty();
