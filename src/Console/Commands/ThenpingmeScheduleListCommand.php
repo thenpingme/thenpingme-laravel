@@ -59,8 +59,8 @@ class ThenpingmeScheduleListCommand extends Command
                         $command = $task['command'] ?: $task['description'],
                         Thenpingme::translateExpression($task['expression']),
                         $task['description'] !== $command ? $task['description'] : null,
-                        (new CronExpression($task['expression']))->getPreviousRunDate(Carbon::now()),
-                        (new CronExpression($task['expression']))->getNextRunDate(Carbon::now()),
+                        (new CronExpression($task['expression']))->getPreviousRunDate(Carbon::now())->format('Y-m-d H:i:s'),
+                        (new CronExpression($task['expression']))->getNextRunDate(Carbon::now())->format('Y-m-d H:i:s'),
                     ];
                 })
         );
