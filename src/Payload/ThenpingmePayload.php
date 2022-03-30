@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Thenpingme\Payload;
 
+use Illuminate\Console\Events\ScheduledBackgroundTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
@@ -29,23 +30,14 @@ abstract class ThenpingmePayload implements Arrayable
      */
     public static function fromEvent($event): ?ThenpingmePayload
     {
-        if ($event instanceof ScheduledTaskStarting) {
-            return new ScheduledTaskStartingPayload($event);
-        }
-
-        if ($event instanceof ScheduledTaskFinished) {
-            return new ScheduledTaskFinishedPayload($event);
-        }
-
-        if ($event instanceof ScheduledTaskSkipped) {
-            return new ScheduledTaskSkippedPayload($event);
-        }
-
-        if ($event instanceof ScheduledTaskFailed) {
-            return new ScheduledTaskFailedPayload($event);
-        }
-
-        return null;
+        return match (true) {
+            $event instanceof ScheduledTaskStarting => new ScheduledTaskStartingPayload($event),
+            $event instanceof ScheduledTaskFinished => new ScheduledTaskFinishedPayload($event),
+            $event instanceof ScheduledBackgroundTaskFinished => new ScheduledBackgroundTaskFinishedPayload($event),
+            $event instanceof ScheduledTaskSkipped => new ScheduledTaskSkippedPayload($event),
+            $event instanceof ScheduledTaskFailed => new ScheduledTaskFailedPayload($event),
+            default => null,
+        };
     }
 
     public function fingerprint(): string
