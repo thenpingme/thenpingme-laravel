@@ -224,9 +224,9 @@ it('accounts for missing thenpingme settings', function () {
 
     Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
         expect($job->payload['tasks'][0])
-            ->toHaveKey('grace_period', Thenpingme::gracePeriod())
-            ->toHaveKey('allowed_run_time', Thenpingme::allowedRunTime())
-            ->toHaveKey('notify_after_consecutive_alerts', Thenpingme::notifyAfterConsecutiveAlerts());
+            ->not->toHaveKey('grace_period')
+            ->not->toHaveKey('allowed_run_time')
+            ->not->toHaveKey('notify_after_consecutive_alerts');
 
         return true;
     });

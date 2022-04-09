@@ -77,10 +77,10 @@ final class TaskPayload
 
     private function settings(): array
     {
-        return [
-            'grace_period' => data_get($this->schedulingEvent, 'thenpingmeOptions.grace_period') ?: Config::get('thenpingme.settings.grace_period') ?: Thenpingme::gracePeriod(),
-            'allowed_run_time' => data_get($this->schedulingEvent, 'thenpingmeOptions.allowed_run_time') ?: Config::get('thenpingme.settings.allowed_run_time') ?: Thenpingme::allowedRunTime(),
-            'notify_after_consecutive_alerts' => data_get($this->schedulingEvent, 'thenpingmeOptions.notify_after_consecutive_alerts') ?: Config::get('thenpingme.settings.notify_after_consecutive_alerts') ?: Thenpingme::notifyAfterConsecutiveAlerts(),
-        ];
+        return array_filter([
+            'grace_period' => data_get($this->schedulingEvent, 'thenpingmeOptions.grace_period') ?: Config::get('thenpingme.settings.grace_period'),
+            'allowed_run_time' => data_get($this->schedulingEvent, 'thenpingmeOptions.allowed_run_time') ?: Config::get('thenpingme.settings.allowed_run_time'),
+            'notify_after_consecutive_alerts' => data_get($this->schedulingEvent, 'thenpingmeOptions.notify_after_consecutive_alerts') ?: Config::get('thenpingme.settings.notify_after_consecutive_alerts'),
+        ]);
     }
 }
