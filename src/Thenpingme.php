@@ -18,7 +18,7 @@ use Thenpingme\Collections\ScheduledTaskCollection;
 class Thenpingme
 {
     /** @var string */
-    public const VERSION = '3.0.0';
+    public const VERSION = '3.0.1';
 
     /**
      * The default grace period, in minutes.
