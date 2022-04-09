@@ -3,9 +3,11 @@
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Facades\Thenpingme;
 use Thenpingme\Payload\ScheduledTaskFinishedPayload;
@@ -514,4 +516,17 @@ it('sets a file reference for closure tasks', function () {
         ->toHaveKey('command', static::class.":{$start} to {$end}")
         ->toHaveKey('extra.file', static::class)
         ->toHaveKey('extra.line', "{$start} to {$end}");
+});
+
+it('can mark tasks to be skipped for sync', function () {
+    $scheduler = $this->app->make(Schedule::class);
+
+    $events = ScheduledTaskCollection::make([
+        $scheduler->command('thenpingme:first')->everyMinute(),
+        $scheduler->command('thenpingme:second')->everyFiveMinutes()->thenpingme(skip: true),
+    ]);
+
+    expect($events)
+        ->contains(fn (Event $event) => Str::of($event->command)->endsWith('thenpingme:second'))
+        ->toBeFalse();
 });

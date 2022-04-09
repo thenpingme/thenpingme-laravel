@@ -223,7 +223,7 @@ it('allows overriding the project name', function () {
     });
 });
 
-it('handles_thenpingme_being_enabled_or_disabled', function () {
+it('handles thenpingme being enabled or disabled', function () {
     config(['thenpingme.enabled' => false]);
 
     tap($this->app->make(Schedule::class), function ($schedule) {
@@ -242,4 +242,23 @@ it('handles_thenpingme_being_enabled_or_disabled', function () {
         ->assertExitCode(0);
 
     Bus::assertDispatched(ThenpingmePingJob::class);
+});
+
+it('handles tasks that are marked as skipped', function () {
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('first:command')->hourly();
+        $schedule->command('second:command')->everyMinute()->thenpingme(skip: true);
+        $schedule->command('third:command')->everyMinute()->thenpingme(skip: false);
+    });
+
+    $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')->assertExitCode(0);
+
+    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+        expect($job->payload['tasks'])
+            ->toHaveLength(2)
+            ->toHaveKey('0.command', 'first:command')
+            ->toHaveKey('1.command', 'third:command');
+
+        return true;
+    });
 });
