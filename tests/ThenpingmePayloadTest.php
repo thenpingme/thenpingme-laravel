@@ -196,9 +196,9 @@ it('generates a setup payload', function () {
                     'run_in_background' => false,
                     'description' => 'This is the first task',
                     'mutex' => Thenpingme::fingerprintTask($events[0]),
-                    'grace_period' => null,
-                    'allowed_run_time' => null,
-                    'notify_after_consecutive_alerts' => null,
+                    'grace_period' => 1,
+                    'allowed_run_time' => 1,
+                    'notify_after_consecutive_alerts' => 1,
                 ],
                 [
                     'type' => TaskIdentifier::TYPE_COMMAND,
@@ -210,75 +210,9 @@ it('generates a setup payload', function () {
                     'run_in_background' => false,
                     'description' => 'This is the second task',
                     'mutex' => Thenpingme::fingerprintTask($events[1]),
-                    'grace_period' => null,
-                    'allowed_run_time' => null,
-                    'notify_after_consecutive_alerts' => null,
-                ],
-            ],
-        ]);
-});
-
-it('generates a setup payload with explicit settings', function () {
-    $scheduler = $this->app->make(Schedule::class);
-
-    $events = ScheduledTaskCollection::make([
-        $scheduler
-            ->command('thenpingme:first')
-            ->description('This is the first task')
-            ->thenpingme(
-                grace_period: 2,
-                allowed_run_time: 2,
-                notify_after_consecutive_alerts: 3,
-            ),
-    ]);
-
-    expect(ThenpingmeSetupPayload::make($events, 'super-secret')->toArray())
-        ->toMatchSubset([
-            'thenpingme' => [
-                'version' => Thenpingme::version(),
-            ],
-            'project' => [
-                'uuid' => 'abc123',
-                'name' => 'We changed the project name',
-                'signing_key' => 'super-secret',
-                'timezone' => '+00:00',
-            ],
-            'tasks' => [
-                [
-                    'grace_period' => 2,
-                    'allowed_run_time' => 2,
-                    'notify_after_consecutive_alerts' => 3,
-                ],
-            ],
-        ]);
-});
-
-it('generates a setup payload with partial explicit settings', function () {
-    $scheduler = $this->app->make(Schedule::class);
-
-    $events = ScheduledTaskCollection::make([
-        $scheduler
-            ->command('thenpingme:first')
-            ->description('This is the first task')
-            ->thenpingme(notify_after_consecutive_alerts: 3),
-    ]);
-
-    expect(ThenpingmeSetupPayload::make($events, 'super-secret')->toArray())
-        ->toMatchSubset([
-            'thenpingme' => [
-                'version' => Thenpingme::version(),
-            ],
-            'project' => [
-                'uuid' => 'abc123',
-                'name' => 'We changed the project name',
-                'signing_key' => 'super-secret',
-                'timezone' => '+00:00',
-            ],
-            'tasks' => [
-                [
-                    'grace_period' => null,
-                    'allowed_run_time' => null,
-                    'notify_after_consecutive_alerts' => 3,
+                    'grace_period' => 1,
+                    'allowed_run_time' => 1,
+                    'notify_after_consecutive_alerts' => 1,
                 ],
             ],
         ]);
