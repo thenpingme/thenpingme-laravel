@@ -27,7 +27,7 @@ final class TaskPayload
     {
         $fingerprint = Thenpingme::fingerprintTask($this->schedulingEvent);
 
-        return [
+        return array_merge($this->settings(), [
             'timezone' => Date::now($this->schedulingEvent->timezone)->getOffsetString(),
             'release' => Config::get('thenpingme.release'),
             'type' => $this->taskType,
@@ -42,10 +42,7 @@ final class TaskPayload
             'filtered' => $this->isFiltered(),
             /* @phpstan-ignore-next-line */
             'extra' => $this->schedulingEvent->extra ?? null,
-            'grace_period' => data_get($this->schedulingEvent, 'thenpingmeOptions.grace_period'),
-            'allowed_run_time' => data_get($this->schedulingEvent, 'thenpingmeOptions.allowed_run_time'),
-            'notify_after_consecutive_alerts' => data_get($this->schedulingEvent, 'thenpingmeOptions.notify_after_consecutive_alerts'),
-        ];
+        ]);
     }
 
     private function isFiltered(): bool
@@ -76,5 +73,14 @@ final class TaskPayload
             PHP_BINARY,
             'artisan',
         ], '', $this->schedulingEvent->command ?: ''));
+    }
+
+    private function settings(): array
+    {
+        return array_filter([
+            'grace_period' => data_get($this->schedulingEvent, 'thenpingmeOptions.grace_period') ?: Config::get('thenpingme.settings.grace_period'),
+            'allowed_run_time' => data_get($this->schedulingEvent, 'thenpingmeOptions.allowed_run_time') ?: Config::get('thenpingme.settings.allowed_run_time'),
+            'notify_after_consecutive_alerts' => data_get($this->schedulingEvent, 'thenpingmeOptions.notify_after_consecutive_alerts') ?: Config::get('thenpingme.settings.notify_after_consecutive_alerts'),
+        ]);
     }
 }
