@@ -60,3 +60,24 @@ it('halts if duplicate tasks are encountered', function () {
         ->expectsOutput($this->translator->get('thenpingme::translations.indistinguishable_tasks'))
         ->assertExitCode(1);
 });
+
+it('handles tasks that are marked as skipped', function () {
+    Bus::fake();
+
+    tap($this->app->make(Schedule::class), function ($schedule) {
+        $schedule->command('first:command')->hourly();
+        $schedule->command('second:command')->everyMinute()->thenpingme(skip: true);
+        $schedule->command('third:command')->everyMinute()->thenpingme(skip: false);
+    });
+
+    $this->artisan('thenpingme:sync')->assertExitCode(0);
+
+    Bus::assertDispatched(ThenpingmePingJob::class, function ($job) {
+        expect($job->payload['tasks'])
+            ->toHaveLength(2)
+            ->toHaveKey('0.command', 'first:command')
+            ->toHaveKey('1.command', 'third:command');
+
+        return true;
+    });
+});
