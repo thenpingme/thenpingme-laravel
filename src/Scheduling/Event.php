@@ -24,6 +24,7 @@ class Event
             ];
 
             if (! is_null($output)) {
+                /* @phpstan-ignore-next-line */
                 $this->ensureOutputIsBeingCaptured();
             }
 
