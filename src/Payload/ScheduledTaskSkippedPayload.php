@@ -14,6 +14,7 @@ final class ScheduledTaskSkippedPayload extends ThenpingmePayload
             'type' => class_basename($this->event),
             'time' => Carbon::now()->toIso8601String(),
             'task' => TaskPayload::make($this->event->task)->toArray(),
+            'output' => $this->getOutput()->toString(),
         ]);
     }
 }

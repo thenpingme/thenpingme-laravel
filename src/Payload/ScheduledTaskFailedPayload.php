@@ -17,6 +17,7 @@ final class ScheduledTaskFailedPayload extends ThenpingmePayload
             'exit_code' => $this->event->task->exitCode,
             'memory' => memory_get_usage(true),
             'task' => TaskPayload::make($this->event->task)->toArray(),
+            'output' => $this->getOutput()->toString(),
         ]);
     }
 }

@@ -12,8 +12,10 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Stringable;
 use Symfony\Component\Process\Process;
-use Thenpingme\Facades\Thenpingme;
+use Thenpingme\Facades\Thenpingme as ThenpingmeFacade;
+use Thenpingme\Thenpingme;
 
 abstract class ThenpingmePayload implements Arrayable
 {
@@ -42,7 +44,7 @@ abstract class ThenpingmePayload implements Arrayable
     {
         return sha1(vsprintf('%s.%s.%s.%s.%s', [
             Config::get('thenpingme.project_id'),
-            Thenpingme::fingerprintTask($this->event->task),
+            ThenpingmeFacade::fingerprintTask($this->event->task),
             getmypid(),
             spl_object_id($this->event->task),
             spl_object_hash($this->event->task),
@@ -53,7 +55,7 @@ abstract class ThenpingmePayload implements Arrayable
     {
         return array_filter([
             'thenpingme' => [
-                'version' => Thenpingme::version(),
+                'version' => ThenpingmeFacade::version(),
             ],
             'release' => Config::get('thenpingme.release'),
             'fingerprint' => $this->fingerprint(),
@@ -94,5 +96,29 @@ abstract class ThenpingmePayload implements Arrayable
         }
 
         return null;
+    }
+
+    protected function getOutput(): Stringable
+    {
+        if (is_null($this->event->task->thenpingmeOptions['output'] ?? null)) {
+            return new Stringable;
+        }
+
+        $output = function (): Stringable {
+            if (! is_null($this->event->task->output) && is_file($this->event->task->output)) {
+                $contents = file_get_contents($this->event->task->output);
+            }
+
+            return new Stringable($contents ?? '');
+        };
+
+        $storeOutput = $this->event->task->thenpingmeOptions['output'];
+
+        return match(true) {
+            $storeOutput === Thenpingme::STORE_OUTPUT => $output(),
+            $storeOutput === Thenpingme::STORE_OUTPUT_ON_SUCCESS && $this->event->task->exitCode === 0 => $output(),
+            $storeOutput === Thenpingme::STORE_OUTPUT_ON_FAILURE && $this->event->task->exitCode !== 0 => $output(),
+            default => new Stringable,
+        };
     }
 }
