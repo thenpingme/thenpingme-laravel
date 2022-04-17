@@ -104,24 +104,25 @@ abstract class ThenpingmePayload implements Arrayable
 
     protected function getOutput(): Stringable
     {
-        if (is_null($this->event->task->thenpingmeOptions['output'] ?? null)) {
+        $storeOutput = data_get($this->event, 'task.thenpingmeOptions.output');
+        $exitCode = data_get($this->event, 'task.exitCode');
+
+        if (is_null($storeOutput) || class_basename($this->event) === 'ScheduledTaskStarting') {
             return new Stringable;
         }
 
         $output = function (): Stringable {
-            if (! is_null($this->event->task->output) && is_file($this->event->task->output)) {
-                $contents = file_get_contents($this->event->task->output);
+            if (! is_null($path = data_get($this->event, 'task.output')) && is_file($path)) {
+                $contents = file_get_contents($path);
             }
 
             return new Stringable($contents ?? '');
         };
 
-        $storeOutput = $this->event->task->thenpingmeOptions['output'];
-
         return match(true) {
             $storeOutput === Thenpingme::STORE_OUTPUT => $output(),
-            $storeOutput === Thenpingme::STORE_OUTPUT_ON_SUCCESS && $this->event->task->exitCode === 0 => $output(),
-            $storeOutput === Thenpingme::STORE_OUTPUT_ON_FAILURE && $this->event->task->exitCode !== 0 => $output(),
+            (($storeOutput === Thenpingme::STORE_OUTPUT_ON_SUCCESS) && ($exitCode === 0)) => $output(),
+            (($storeOutput === Thenpingme::STORE_OUTPUT_ON_FAILURE) && ($exitCode !== 0)) => $output(),
             default => new Stringable,
         };
     }
