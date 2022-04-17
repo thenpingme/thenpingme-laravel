@@ -35,8 +35,8 @@ it('logs scheduled task output', function (int $outputType, string $output) {
             && Arr::get($job->payload, 'output') === $output;
     });
 })->with([
-    'All output' => [Thenpingme::STORE_OUTPUT, "some output\n"],
-    'Success output' => [Thenpingme::STORE_OUTPUT_ON_SUCCESS, "some output\n"],
+    'All output' => [Thenpingme::STORE_OUTPUT, 'some output'],
+    'Success output' => [Thenpingme::STORE_OUTPUT_ON_SUCCESS, 'some output'],
 ]);
 
 it('logs failure output', function () {
@@ -93,5 +93,39 @@ it('does not log task output unless configured to do so', function () {
     Queue::assertPushed(function (ThenpingmePingJob $job) {
         return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
             && Arr::has($job->payload, 'output') === false;
+    });
+});
+
+it('does not log output if it is configured not to and there is no output', function () {
+    Event::listen(ScheduledTaskFinished::class, function (ScheduledTaskFinished $event) {
+        expect($event->task->output)->not->toBe('/dev/null');
+    });
+
+    $this->app->make(Schedule::class)->exec("echo ''")->thenpingme(
+        output: Thenpingme::STORE_OUTPUT | Thenpingme::STORE_OUTPUT_IF_PRESENT
+    );
+
+    $this->artisan('schedule:run');
+
+    Queue::assertPushed(function (ThenpingmePingJob $job) {
+        return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
+            && Arr::has($job->payload, 'output') === false;
+    });
+});
+
+it('does log output if it is configured not to and there is output', function () {
+    Event::listen(ScheduledTaskFinished::class, function (ScheduledTaskFinished $event) {
+        expect($event->task->output)->not->toBe('/dev/null');
+    });
+
+    $this->app->make(Schedule::class)->exec("echo 'some output'")->thenpingme(
+        output: Thenpingme::STORE_OUTPUT | Thenpingme::STORE_OUTPUT_IF_PRESENT
+    );
+
+    $this->artisan('schedule:run');
+
+    Queue::assertPushed(function (ThenpingmePingJob $job) {
+        return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
+            && Arr::get($job->payload, 'output') === 'some output';
     });
 });

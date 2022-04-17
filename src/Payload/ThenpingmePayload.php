@@ -53,8 +53,8 @@ abstract class ThenpingmePayload implements Arrayable
 
     public function toArray(): array
     {
-        return array_filter(
-            array_merge([
+        return array_merge(
+            array_filter([
                 'thenpingme' => [
                     'version' => ThenpingmeFacade::version(),
                 ],
@@ -68,11 +68,27 @@ abstract class ThenpingmePayload implements Arrayable
                     'name' => Config::get('thenpingme.project_name'),
                     'release' => Config::get('thenpingme.release'),
                     'timezone' => Carbon::now()->getTimezone()->toOffsetName(),
-                ]),
-        ], ! is_null(data_get($this->event, 'task.thenpingmeOptions.output'))
+            ]),
+        ]),
+            $this->shouldLogOutput()
             ? ['output' => $this->getOutput()->toString()]
-            : [])
+            : []
         );
+    }
+
+    protected function shouldLogOutput(): bool
+    {
+        if (is_null($output = data_get($this->event, 'task.thenpingmeOptions.output'))) {
+            return false;
+        }
+
+        if ((($output & Thenpingme::STORE_OUTPUT_IF_PRESENT) === Thenpingme::STORE_OUTPUT_IF_PRESENT)) {
+            if ($this->getOutput()->isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static function getIp(string $hostname): ?string
@@ -113,16 +129,16 @@ abstract class ThenpingmePayload implements Arrayable
 
         $output = function (): Stringable {
             if (! is_null($path = data_get($this->event, 'task.output')) && is_file($path)) {
-                $contents = file_get_contents($path);
+                $contents = trim(file_get_contents($path));
             }
 
             return new Stringable($contents ?? '');
         };
 
         return match(true) {
-            $storeOutput === Thenpingme::STORE_OUTPUT => $output(),
-            (($storeOutput === Thenpingme::STORE_OUTPUT_ON_SUCCESS) && ($exitCode === 0)) => $output(),
-            (($storeOutput === Thenpingme::STORE_OUTPUT_ON_FAILURE) && ($exitCode !== 0)) => $output(),
+            (($storeOutput & Thenpingme::STORE_OUTPUT) === Thenpingme::STORE_OUTPUT) => $output(),
+            ((($storeOutput & Thenpingme::STORE_OUTPUT_ON_SUCCESS) === Thenpingme::STORE_OUTPUT_ON_SUCCESS) && ($exitCode === 0)) => $output(),
+            ((($storeOutput & Thenpingme::STORE_OUTPUT_ON_FAILURE) === Thenpingme::STORE_OUTPUT_ON_FAILURE) && ($exitCode !== 0)) => $output(),
             default => new Stringable,
         };
     }
