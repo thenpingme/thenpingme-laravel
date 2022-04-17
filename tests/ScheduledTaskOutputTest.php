@@ -53,6 +53,8 @@ it('logs failure output', function () {
     $this->artisan('schedule:run');
 
     Queue::assertPushed(function (ThenpingmePingJob $job) {
+        dump(Arr::get($job->payload, 'output'));
+
         return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
             && Arr::has($job->payload, 'output')
             && Str::of(Arr::get($job->payload, 'output'))->contains('somecommandthatdoesnotexist: command not found')
@@ -73,6 +75,7 @@ it('only logs failure output if configured to do so', function (int $outputType,
 
     Queue::assertPushed(function (ThenpingmePingJob $job) use ($expected) {
         $output = Arr::get($job->payload, 'output');
+        dump($output);
 
         return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
             && blank($expected) ? $output === $expected : Str::of($output)->contains($expected)
