@@ -53,22 +53,26 @@ abstract class ThenpingmePayload implements Arrayable
 
     public function toArray(): array
     {
-        return array_filter([
-            'thenpingme' => [
-                'version' => ThenpingmeFacade::version(),
-            ],
-            'release' => Config::get('thenpingme.release'),
-            'fingerprint' => $this->fingerprint(),
-            'hostname' => $hostname = gethostname(),
-            'ip' => static::getIp($hostname),
-            'environment' => app()->environment(),
-            'project' => array_filter([
-                'uuid' => Config::get('thenpingme.project_id'),
-                'name' => Config::get('thenpingme.project_name'),
+        return array_filter(
+            array_merge([
+                'thenpingme' => [
+                    'version' => ThenpingmeFacade::version(),
+                ],
                 'release' => Config::get('thenpingme.release'),
-                'timezone' => Carbon::now()->getTimezone()->toOffsetName(),
-            ]),
-        ]);
+                'fingerprint' => $this->fingerprint(),
+                'hostname' => $hostname = gethostname(),
+                'ip' => static::getIp($hostname),
+                'environment' => app()->environment(),
+                'project' => array_filter([
+                    'uuid' => Config::get('thenpingme.project_id'),
+                    'name' => Config::get('thenpingme.project_name'),
+                    'release' => Config::get('thenpingme.release'),
+                    'timezone' => Carbon::now()->getTimezone()->toOffsetName(),
+                ]),
+        ], ! is_null(data_get($this->event, 'task.thenpingmeOptions.output'))
+            ? ['output' => $this->getOutput()->toString()]
+            : [])
+        );
     }
 
     public static function getIp(string $hostname): ?string
