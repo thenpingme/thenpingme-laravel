@@ -23,6 +23,9 @@ class Event
                 'output' => $output,
             ];
 
+            // If output is configured to any non-null value we need to ensure that
+            // output is being captured irrespective of the selected level as we
+            // don't know the status of the task until execution is finished.
             if (! is_null($output)) {
                 /* @phpstan-ignore-next-line */
                 $this->ensureOutputIsBeingCaptured();
