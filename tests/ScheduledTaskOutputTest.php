@@ -32,7 +32,6 @@ it('logs scheduled task output', function (int $outputType, string $output) {
 
     Queue::assertPushed(function (ThenpingmePingJob $job) use ($output) {
         return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
-            && Arr::has($job->payload, 'output')
             && Arr::get($job->payload, 'output') === $output;
     });
 })->with([
@@ -53,7 +52,6 @@ it('logs failure output', function () {
 
     Queue::assertPushed(function (ThenpingmePingJob $job) {
         return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
-            && Arr::has($job->payload, 'output')
             && Str::of(Arr::get($job->payload, 'output'))->isNotEmpty()
             && Arr::get($job->payload, 'exit_code') !== 1;
     });
