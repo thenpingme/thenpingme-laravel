@@ -38,7 +38,6 @@ it('logs scheduled task output', function (int $outputType, string $output) {
 })->with([
     'All output' => [Thenpingme::STORE_OUTPUT, "some output\n"],
     'Success output' => [Thenpingme::STORE_OUTPUT_ON_SUCCESS, "some output\n"],
-    'Failure output' => [Thenpingme::STORE_OUTPUT_ON_FAILURE, ''],
 ]);
 
 it('logs failure output', function () {
