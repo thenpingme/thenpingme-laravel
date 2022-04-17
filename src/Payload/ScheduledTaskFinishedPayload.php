@@ -10,14 +10,19 @@ final class ScheduledTaskFinishedPayload extends ThenpingmePayload
 {
     public function toArray(): array
     {
-        return array_merge(parent::toArray(), [
+        return array_merge(
+            parent::toArray(),
+            [
             'type' => class_basename($this->event),
             'time' => Carbon::now()->toIso8601String(),
             'runtime' => $this->event->runtime,
             'exit_code' => $this->event->task->exitCode,
             'memory' => memory_get_usage(true),
             'task' => TaskPayload::make($this->event->task)->toArray(),
-            'output' => $this->getOutput()->toString(),
-        ]);
+        ],
+            ! is_null(data_get($this->event, 'task.thenpingmeOptions.output'))
+            ? ['output' => $this->getOutput()->toString()]
+            : []
+        );
     }
 }
