@@ -55,12 +55,12 @@ it('logs failure output', function () {
     Queue::assertPushed(function (ThenpingmePingJob $job) {
         return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
             && Arr::has($job->payload, 'output')
-            && Str::of(Arr::get($job->payload, 'output'))->contains('command not found')
+            && Str::of(Arr::get($job->payload, 'output'))->isNotEmpty()
             && Arr::get($job->payload, 'exit_code') !== 1;
     });
 });
 
-it('only logs failure output if configured to do so', function (int $outputType, string $expected) {
+it('only logs failure output if configured to do so', function (int $outputType, bool $expectsOutput) {
     Event::listen(ScheduledTaskFinished::class, function (ScheduledTaskFinished $event) {
         expect($event->task->output)->not->toBe('/dev/null');
     });
@@ -71,17 +71,17 @@ it('only logs failure output if configured to do so', function (int $outputType,
 
     $this->artisan('schedule:run');
 
-    Queue::assertPushed(function (ThenpingmePingJob $job) use ($expected) {
+    Queue::assertPushed(function (ThenpingmePingJob $job) use ($expectsOutput) {
         $output = Arr::get($job->payload, 'output');
 
         return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
-            && blank($expected) ? $output === $expected : Str::of($output)->contains($expected)
+            && $expectsOutput ? ! blank($output) : blank($output)
             && Arr::get($job->payload, 'exit_code') !== 0;
     });
 })->with([
-    'All output' => [Thenpingme::STORE_OUTPUT, 'command not found'],
-    'Success output' => [Thenpingme::STORE_OUTPUT_ON_SUCCESS, ''],
-    'Failure output' => [Thenpingme::STORE_OUTPUT_ON_FAILURE, 'command not found'],
+    'All output' => [Thenpingme::STORE_OUTPUT, true],
+    'Success output' => [Thenpingme::STORE_OUTPUT_ON_SUCCESS, false],
+    'Failure output' => [Thenpingme::STORE_OUTPUT_ON_FAILURE, true],
 ]);
 
 it('does not log task output unless configured to do so', function () {
