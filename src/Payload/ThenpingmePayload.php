@@ -114,8 +114,6 @@ abstract class ThenpingmePayload implements Arrayable
 
         $storeOutput = $this->event->task->thenpingmeOptions['output'];
 
-        dump($output());
-
         return match(true) {
             $storeOutput === Thenpingme::STORE_OUTPUT => $output(),
             $storeOutput === Thenpingme::STORE_OUTPUT_ON_SUCCESS && $this->event->task->exitCode === 0 => $output(),
