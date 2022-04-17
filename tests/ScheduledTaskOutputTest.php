@@ -53,11 +53,9 @@ it('logs failure output', function () {
     $this->artisan('schedule:run');
 
     Queue::assertPushed(function (ThenpingmePingJob $job) {
-        dump(Arr::get($job->payload, 'output'));
-
         return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
             && Arr::has($job->payload, 'output')
-            && Str::of(Arr::get($job->payload, 'output'))->contains('somecommandthatdoesnotexist: command not found')
+            && Str::of(Arr::get($job->payload, 'output'))->contains('command not found')
             && Arr::get($job->payload, 'exit_code') !== 1;
     });
 });
@@ -75,16 +73,15 @@ it('only logs failure output if configured to do so', function (int $outputType,
 
     Queue::assertPushed(function (ThenpingmePingJob $job) use ($expected) {
         $output = Arr::get($job->payload, 'output');
-        dump($output);
 
         return Arr::get($job->payload, 'type') === 'ScheduledTaskFinished'
             && blank($expected) ? $output === $expected : Str::of($output)->contains($expected)
             && Arr::get($job->payload, 'exit_code') !== 0;
     });
 })->with([
-    'All output' => [Thenpingme::STORE_OUTPUT, 'somecommandthatdoesnotexist: command not found'],
+    'All output' => [Thenpingme::STORE_OUTPUT, 'command not found'],
     'Success output' => [Thenpingme::STORE_OUTPUT_ON_SUCCESS, ''],
-    'Failure output' => [Thenpingme::STORE_OUTPUT_ON_FAILURE, 'somecommandthatdoesnotexist: command not found'],
+    'Failure output' => [Thenpingme::STORE_OUTPUT_ON_FAILURE, 'command not found'],
 ]);
 
 it('does not log task output unless configured to do so', function () {
