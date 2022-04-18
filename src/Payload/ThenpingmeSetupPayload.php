@@ -16,9 +16,10 @@ final class ThenpingmeSetupPayload implements Arrayable
 {
     use Makeable;
 
-    protected function __construct(private ScheduledTaskCollection $tasks, private ?string $signingKey = null)
-    {
-    }
+    protected function __construct(
+        private ScheduledTaskCollection $tasks,
+        private ?string $signingKey = null
+    ) { }
 
     public function toArray(): array
     {
