@@ -18,7 +18,7 @@ final class TaskIdentifier
 
     public const TYPE_SHELL = 'shell';
 
-    public function __invoke(Event $task)
+    public function __invoke(Event $task): string
     {
         if ($task instanceof CallbackEvent) {
             if (Str::of($task->command)->isEmpty() && $task->description && class_exists($task->description)) {
