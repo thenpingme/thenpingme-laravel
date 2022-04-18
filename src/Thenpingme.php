@@ -20,6 +20,18 @@ class Thenpingme
     /** @var string */
     public const VERSION = '4.x-dev';
 
+    /** @var int */
+    public const STORE_OUTPUT = 1;
+
+    /** @var int */
+    public const STORE_OUTPUT_ON_SUCCESS = 2;
+
+    /** @var int */
+    public const STORE_OUTPUT_ON_FAILURE = 4;
+
+    /** @var int */
+    public const STORE_OUTPUT_IF_PRESENT = 8;
+
     public function generateSigningKey(): string
     {
         return Str::random(512);

@@ -12,8 +12,10 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Stringable;
 use Symfony\Component\Process\Process;
-use Thenpingme\Facades\Thenpingme;
+use Thenpingme\Facades\Thenpingme as ThenpingmeFacade;
+use Thenpingme\Thenpingme;
 
 abstract class ThenpingmePayload implements Arrayable
 {
@@ -42,7 +44,7 @@ abstract class ThenpingmePayload implements Arrayable
     {
         return sha1(vsprintf('%s.%s.%s.%s.%s', [
             Config::get('thenpingme.project_id'),
-            Thenpingme::fingerprintTask($this->event->task),
+            ThenpingmeFacade::fingerprintTask($this->event->task),
             getmypid(),
             spl_object_id($this->event->task),
             spl_object_hash($this->event->task),
@@ -51,22 +53,36 @@ abstract class ThenpingmePayload implements Arrayable
 
     public function toArray(): array
     {
-        return array_filter([
-            'thenpingme' => [
-                'version' => Thenpingme::version(),
-            ],
-            'release' => Config::get('thenpingme.release'),
-            'fingerprint' => $this->fingerprint(),
-            'hostname' => $hostname = gethostname(),
-            'ip' => static::getIp($hostname),
-            'environment' => app()->environment(),
-            'project' => array_filter([
-                'uuid' => Config::get('thenpingme.project_id'),
-                'name' => Config::get('thenpingme.project_name'),
+        return array_merge(
+            array_filter([
+                'thenpingme' => [
+                    'version' => ThenpingmeFacade::version(),
+                ],
                 'release' => Config::get('thenpingme.release'),
-                'timezone' => Carbon::now()->getTimezone()->toOffsetName(),
+                'fingerprint' => $this->fingerprint(),
+                'hostname' => $hostname = gethostname(),
+                'ip' => static::getIp($hostname),
+                'environment' => app()->environment(),
+                'project' => array_filter([
+                    'uuid' => Config::get('thenpingme.project_id'),
+                    'name' => Config::get('thenpingme.project_name'),
+                    'release' => Config::get('thenpingme.release'),
+                    'timezone' => Carbon::now()->getTimezone()->toOffsetName(),
             ]),
-        ]);
+        ]),
+            $this->shouldLogOutput()
+            ? ['output' => $this->getOutput()->toString()]
+            : []
+        );
+    }
+
+    protected function shouldLogOutput(): bool
+    {
+        if (is_null($output = data_get($this->event, 'task.thenpingmeOptions.output'))) {
+            return false;
+        }
+
+        return ! (($output & Thenpingme::STORE_OUTPUT_IF_PRESENT) === Thenpingme::STORE_OUTPUT_IF_PRESENT && $this->getOutput()->isEmpty());
     }
 
     public static function getIp(string $hostname): ?string
@@ -94,5 +110,30 @@ abstract class ThenpingmePayload implements Arrayable
         }
 
         return null;
+    }
+
+    protected function getOutput(): Stringable
+    {
+        $storeOutput = data_get($this->event, 'task.thenpingmeOptions.output');
+        $exitCode = data_get($this->event, 'task.exitCode');
+
+        if (is_null($storeOutput) || class_basename($this->event) === 'ScheduledTaskStarting') {
+            return new Stringable;
+        }
+
+        $output = function (): Stringable {
+            if (! is_null($path = data_get($this->event, 'task.output')) && is_file($path)) {
+                $contents = trim(file_get_contents($path));
+            }
+
+            return new Stringable($contents ?? '');
+        };
+
+        return match(true) {
+            (($storeOutput & Thenpingme::STORE_OUTPUT) === Thenpingme::STORE_OUTPUT) => $output(),
+            ((($storeOutput & Thenpingme::STORE_OUTPUT_ON_SUCCESS) === Thenpingme::STORE_OUTPUT_ON_SUCCESS) && ($exitCode === 0)) => $output(),
+            ((($storeOutput & Thenpingme::STORE_OUTPUT_ON_FAILURE) === Thenpingme::STORE_OUTPUT_ON_FAILURE) && ($exitCode !== 0)) => $output(),
+            default => new Stringable,
+        };
     }
 }

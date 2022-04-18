@@ -93,3 +93,8 @@ it('can fingerprint a closure task', function () {
 it('returns the current client version', function () {
     expect(Thenpingme::version())->not->toBeNull();
 });
+
+it('handles an invalid cron expression', function () {
+    expect(Thenpingme::translateExpression('not a cron expression'))
+        ->toBe('not a cron expression');
+});
