@@ -22,39 +22,29 @@ class ScheduledTaskCollection extends Collection
     public function collisions(): ScheduledTaskCollection
     {
         return ScheduledTaskCollection::make($this
-            ->map(function (Event $task) {
-                return TaskPayload::make($task)->toArray();
-            })
+            ->map(fn (Event $task) => TaskPayload::make($task)->toArray())
             ->groupBy('mutex')
-            ->filter(function (Collection $group): bool {
-                return $group->count() > 1;
-            })
+            ->filter(fn (Collection $group): bool => $group->count() > 1)
             ->flatten(1)
-            ->map(function (array $task) {
-                return [
-                    'mutex' => $task['mutex'],
-                    'type' => $task['type'],
-                    'command' => $command = $task['command'] ?: $task['description'],
-                    'expression' => $task['expression'],
-                    'interval' => Thenpingme::translateExpression($task['expression']),
-                    'description' => $task['description'] !== $command ? $task['description'] : null,
-                    'extra' => $task['type'] == 'closure' && isset($task['extra'])
-                        ? sprintf('Line %s of %s', $task['extra']['line'], $task['extra']['file'])
-                        : null,
-                ];
-            }));
+            ->map(fn (array $task) => [
+                'mutex' => $task['mutex'],
+                'type' => $task['type'],
+                'command' => $command = $task['command'] ?: $task['description'],
+                'expression' => $task['expression'],
+                'interval' => Thenpingme::translateExpression($task['expression']),
+                'description' => $task['description'] !== $command ? $task['description'] : null,
+                'extra' => $task['type'] == 'closure' && isset($task['extra'])
+                    ? sprintf('Line %s of %s', $task['extra']['line'], $task['extra']['file'])
+                    : null,
+            ]));
     }
 
     public function hasNonUniqueJobs(): bool
     {
         return $this
             ->where('type', 'job')
-            ->groupBy(function (array $task) {
-                return $task['expression'].$task['interval'].$task['description'];
-            })
-            ->filter(function (Collection $group): bool {
-                return $group->count() > 1;
-            })
+            ->groupBy(fn (array $task) => $task['expression'].$task['interval'].$task['description'])
+            ->filter(fn (Collection $group): bool => $group->count() > 1)
             ->isNotEmpty();
     }
 
@@ -62,12 +52,8 @@ class ScheduledTaskCollection extends Collection
     {
         return $this
             ->where('type', 'closure')
-            ->groupBy(function (array $task) {
-                return $task['expression'].$task['interval'].$task['description'];
-            })
-            ->filter(function (Collection $group): bool {
-                return $group->count() > 1;
-            })
+            ->groupBy(fn (array $task) => $task['expression'].$task['interval'].$task['description'])
+            ->filter(fn (Collection $group): bool => $group->count() > 1)
             ->isNotEmpty();
     }
 }
