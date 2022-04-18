@@ -81,7 +81,8 @@ abstract class ThenpingmePayload implements Arrayable
         if (is_null($output = data_get($this->event, 'task.thenpingmeOptions.output'))) {
             return false;
         }
-        return !(($output & Thenpingme::STORE_OUTPUT_IF_PRESENT) === Thenpingme::STORE_OUTPUT_IF_PRESENT && $this->getOutput()->isEmpty());
+
+        return ! (($output & Thenpingme::STORE_OUTPUT_IF_PRESENT) === Thenpingme::STORE_OUTPUT_IF_PRESENT && $this->getOutput()->isEmpty());
     }
 
     public static function getIp(string $hostname): ?string
