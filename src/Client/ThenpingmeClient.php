@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Thenpingme\Exceptions\CouldNotSendPing;
 use Thenpingme\Signer\Signer;
 use Thenpingme\Signer\ThenpingmeSigner;
+use Thenpingme\Thenpingme;
 use Thenpingme\ThenpingmePingJob;
 
 final class ThenpingmeClient implements Client
@@ -109,6 +110,7 @@ final class ThenpingmeClient implements Client
 
         return [
             'Signature' => $this->signer->calculateSignature($this->payload, $this->secret),
+            'User-Agent' => 'thenping.me/'.Thenpingme::VERSION,
         ];
     }
 
