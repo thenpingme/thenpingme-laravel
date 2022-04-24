@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
 use Thenpingme\Client\Client;
 use Thenpingme\Exceptions\CouldNotSendPing;
+use Thenpingme\Thenpingme;
 use Thenpingme\ThenpingmePingJob;
 
 beforeEach(function () {
@@ -49,11 +50,12 @@ it('does not send a ping if endpoint is missing', function () {
 });
 
 it('sets defaults when initialising client', function () {
-    $client = $this->app->make(Client::class)->payload(['thenpingme' => 'test']);
+    $this->app->make(Client::class)->payload(['thenpingme' => 'test']);
 
     expect($this->app->make(Client::class)->payload(['thenpingme' => 'test']))
         ->headers()
-        ->toHaveKey('Signature', '90b01e2e084d0df073d028a5c60a303618d5d56a194b08626f7236334f3345df');
+        ->toHaveKey('Signature', '90b01e2e084d0df073d028a5c60a303618d5d56a194b08626f7236334f3345df')
+        ->toHaveKey('User-Agent', 'thenping.me/'.Thenpingme::VERSION);
 });
 
 it('gets a setup client', function () {
