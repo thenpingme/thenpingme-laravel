@@ -87,6 +87,13 @@ class ThenpingmeSetupCommand extends Command
             });
         }
 
+        if (trim($this->config->get('thenpingme.project_name')) === '') {
+            $this->error($this->translator->get('thenpingme::translations.project_name_not_set'));
+            $this->info('    php artisan thenpingme:setup --tasks-only');
+
+            return 1;
+        }
+
         $this->task(
             $this->translator->get('thenpingme::translations.initial_setup', [
                 'url' => parse_url($this->config->get('thenpingme.api_url'), PHP_URL_HOST),

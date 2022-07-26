@@ -212,6 +212,21 @@ class ThenpingmeSetupTest extends TestCase
         Bus::assertDispatched(ThenpingmePingJob::class);
     }
 
+    /** @test */
+    public function it_handles_checking_for_project_name()
+    {
+        config(['thenpingme.project_name' => null]);
+
+        Thenpingme::shouldReceive('generateSigningKey')->once()->andReturn('this-is-the-signing-secret');
+        Thenpingme::shouldReceive('scheduledTasks')->andReturn(new ScheduledTaskCollection());
+
+        $this->artisan('thenpingme:setup aaa-bbbb-c1c1c1-ddd-ef1')
+            ->expectsOutput($this->translator->get('thenpingme::translations.project_name_not_set'))
+            ->assertExitCode(1);
+
+        Bus::assertNotDispatched(ThenpingmePingJob::class);
+    }
+
     protected function loadEnv($file)
     {
         return tap(new DotenvEditor)->load($file);
