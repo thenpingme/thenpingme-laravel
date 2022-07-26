@@ -33,7 +33,11 @@
         "vimeo/psalm": "^3.13|^4.0"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "pestphp/pest-plugin": true
+        }
     },
     "extra": {
         "branch-alias": {
