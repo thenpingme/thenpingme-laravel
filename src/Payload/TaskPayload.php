@@ -40,7 +40,6 @@ final class TaskPayload
             'description' => $this->schedulingEvent->description,
             'mutex' => $fingerprint,
             'filtered' => $this->isFiltered(),
-            /* @phpstan-ignore-next-line */
             'extra' => $this->schedulingEvent->extra ?? null,
         ]);
     }

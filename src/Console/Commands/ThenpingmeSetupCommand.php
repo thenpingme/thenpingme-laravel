@@ -6,9 +6,9 @@ namespace Thenpingme\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use sixlive\DotenvEditor\DotenvEditor;
 use Thenpingme\Client\Client;
@@ -27,15 +27,22 @@ class ThenpingmeSetupCommand extends Command
     protected $signature = 'thenpingme:setup {project_id?  : The UUID of the thenping.me project you are setting up}
                                              {--tasks-only : Only send your application tasks to thenping.me}';
 
+    protected Repository $config;
+
     protected ?Schedule $schedule = null;
 
     protected ?ScheduledTaskCollection $scheduledTasks = null;
 
     protected string $signingKey = '';
 
-    public function __construct(protected Translator $translator)
+    protected Translator $translator;
+
+    public function __construct(Translator $translator, Repository $config)
     {
         parent::__construct();
+
+        $this->translator = $translator;
+        $this->config = $config;
     }
 
     public function handle(Schedule $schedule): int
@@ -78,9 +85,16 @@ class ThenpingmeSetupCommand extends Command
             });
         }
 
+        if (trim($this->config->get('thenpingme.project_name') ?: '') === '') {
+            $this->error($this->translator->get('thenpingme::translations.project_name_not_set'));
+            $this->info('    php artisan thenpingme:setup --tasks-only');
+
+            return 1;
+        }
+
         $this->task(
             $this->translator->get('thenpingme::translations.initial_setup', [
-                'url' => parse_url(Config::get('thenpingme.api_url'), PHP_URL_HOST),
+                'url' => parse_url($this->config->get('thenpingme.api_url'), PHP_URL_HOST),
             ]),
             function () {
                 return $this->setupInitialTasks();
@@ -97,12 +111,12 @@ class ThenpingmeSetupCommand extends Command
 
     protected function thenpingmeDisabled(): bool
     {
-        return Config::get('thenpingme.enabled') === false;
+        return $this->config->get('thenpingme.enabled') === false;
     }
 
     protected function canBeSetup(): bool
     {
-        if ($this->option('tasks-only') && Config::get('thenpingme.project_id')) {
+        if ($this->option('tasks-only') && $this->config->get('thenpingme.project_id')) {
             return true;
         }
 
@@ -112,7 +126,7 @@ class ThenpingmeSetupCommand extends Command
     protected function envExists(): bool
     {
         try {
-            tap(new DotenvEditor)->load(base_path('.env'));
+            tap(new DotenvEditor())->load(base_path('.env'));
 
             return true;
         } catch (InvalidArgumentException) {
@@ -122,7 +136,7 @@ class ThenpingmeSetupCommand extends Command
 
     protected function writeEnvFile(): bool
     {
-        tap(new DotenvEditor, function ($editor) {
+        tap(new DotenvEditor(), function ($editor) {
             $editor->load(base_path('.env'));
             $editor->set('THENPINGME_PROJECT_ID', $this->argument('project_id'));
             $editor->set('THENPINGME_SIGNING_KEY', $this->signingKey);
@@ -130,7 +144,7 @@ class ThenpingmeSetupCommand extends Command
             $editor->save();
         });
 
-        Config::set([
+        $this->config->set([
             'thenpingme.project_id' => $this->argument('project_id'),
             'thenpingme.signing_key' => $this->signingKey,
         ]);
@@ -145,7 +159,7 @@ class ThenpingmeSetupCommand extends Command
     protected function writeExampleEnvFile(): bool
     {
         try {
-            tap(new DotenvEditor, function ($editor) {
+            tap(new DotenvEditor(), function ($editor) {
                 $editor->load(base_path('.env.example'));
                 $editor->set('THENPINGME_PROJECT_ID', '');
                 $editor->set('THENPINGME_SIGNING_KEY', '');
@@ -179,15 +193,15 @@ class ThenpingmeSetupCommand extends Command
 
     protected function setupInitialTasks(): bool
     {
-        Config::set(['thenpingme.queue_ping' => false]);
+        $this->config->set(['thenpingme.queue_ping' => false]);
 
         app(Client::class)
             ->setup()
-            ->useSecret($this->option('tasks-only') ? Config::get('thenpingme.project_id') : $this->argument('project_id'))
+            ->useSecret($this->option('tasks-only') ? $this->config->get('thenpingme.project_id') : $this->argument('project_id'))
             ->payload(
                 ThenpingmeSetupPayload::make(
                     Thenpingme::scheduledTasks(),
-                    Config::get('thenpingme.signing_key') ?: $this->signingKey
+                    $this->config->get('thenpingme.signing_key') ?: $this->signingKey
                 )->toArray()
             )
             ->dispatch();
