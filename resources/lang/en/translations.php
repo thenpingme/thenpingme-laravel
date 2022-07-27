@@ -18,6 +18,8 @@ return [
 
     'invalid_signer' => ':concrete does not implement :contract',
 
+    'project_name_not_set' => 'A non-empty project name is required. Please check config/thenpingme.php and the corresponding environment variables, then run:',
+
     'env_missing' => 'The .env file is missing. Please add the following lines to your configuration, then run:',
 
     'signing_key_environment' => 'The .env file is missing. Please add the following lines to your configuration',
