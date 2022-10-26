@@ -66,7 +66,7 @@ final class ThenpingmeClient implements Client
     public function dispatch(): void
     {
         if (! Config::get('thenpingme.enabled')) {
-            Log::warning(__('thenpingme::translations.disabled'));
+            Log::debug(__('thenpingme::translations.disabled'));
 
             return;
         }
