@@ -29,7 +29,7 @@
     "friendsofphp/php-cs-fixer": "^3.0",
     "mockery/mockery": "^1.4.2",
     "nikic/php-parser": "^4.15",
-    "nunomaduro/larastan": "^2.0",
+    "nunomaduro/larastan": "^2.3",
     "orchestra/testbench": "^7.0",
     "pestphp/pest": "^1.17",
     "pestphp/pest-plugin-parallel": "^0.3.0",
