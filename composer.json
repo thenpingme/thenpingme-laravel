@@ -17,7 +17,7 @@
   "homepage": "https://github.com/thenpingme/laravel",
   "require": {
     "php": "^8.0",
-    "laravel/framework": "^9.45",
+    "laravel/framework": "^9.45||^10.0",
     "lorisleiva/cron-translator": "^0.3",
     "nesbot/carbon": "^2.62",
     "nunomaduro/laravel-console-task": "^1.7",
@@ -30,7 +30,7 @@
     "mockery/mockery": "^1.4.2",
     "nikic/php-parser": "^4.15",
     "nunomaduro/larastan": "^2.3",
-    "orchestra/testbench": "^7.0",
+    "orchestra/testbench": "^7.0||^8.0",
     "pestphp/pest": "^1.17",
     "pestphp/pest-plugin-parallel": "^0.3.0",
     "rector/rector": "^0.12"
