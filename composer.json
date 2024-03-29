@@ -20,7 +20,7 @@
     "laravel/framework": "^9.45||^10.0||^11.0",
     "lorisleiva/cron-translator": "^0.3",
     "nesbot/carbon": "^2.62",
-    "nunomaduro/laravel-console-task": "^1.7",
+    "nunomaduro/laravel-console-task": "dev-l11-compatibility",
     "sixlive/dotenv-editor": "^2.0",
     "spatie/laravel-package-tools": "^1.11"
   },
@@ -66,6 +66,12 @@
       ]
     }
   },
+  "repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/laravel-shift/laravel-console-task.git"
+    }
+  ],
   "scripts": {
     "cs": "vendor/bin/php-cs-fixer fix --config=./.php-cs-fixer.dist.php",
     "normalise": "@composer normalize --indent-style space --indent-size 2 --ansi",
