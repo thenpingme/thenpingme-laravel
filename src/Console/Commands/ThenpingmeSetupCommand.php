@@ -35,7 +35,7 @@ class ThenpingmeSetupCommand extends Command
 
     protected string $signingKey = '';
 
-    /** @var \Illuminate\Contracts\Translation\Translator */
+    /** @var Translator */
     protected $translator;
 
     public function __construct(Translator $translator, Repository $config)
