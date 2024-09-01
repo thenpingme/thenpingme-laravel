@@ -25,9 +25,14 @@ class ThenpingmeVerifyCommand extends Command
         if (($collisions = Thenpingme::scheduledTasks()->collisions())->isNotEmpty()) {
             $this->table(
                 ['Type', 'Command', 'Expression', 'Interval', 'Description', 'Extra'],
-                $collisions->map(function (array $task): array {
-                    return Arr::only($task, ['type', 'command', 'expression', 'interval', 'description', 'extra']);
-                })
+                $collisions->map(fn (array $task): array => Arr::only($task, [
+                    'type',
+                    'command',
+                    'expression',
+                    'interval',
+                    'description',
+                    'extra',
+                ]))
             );
 
             $this->error($this->translator->get('thenpingme::translations.indistinguishable_tasks'));

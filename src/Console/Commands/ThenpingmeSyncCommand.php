@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Thenpingme\Console\Commands;
 
+use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Translation\Translator;
-use Illuminate\Support\Facades\Config;
 use Thenpingme\Client\Client;
 use Thenpingme\Collections\ScheduledTaskCollection;
 use Thenpingme\Console\Commands\Concerns\FetchesTasks;
@@ -22,8 +22,10 @@ class ThenpingmeSyncCommand extends Command
 
     protected ?ScheduledTaskCollection $scheduledTasks = null;
 
-    public function __construct(protected Translator $translator)
-    {
+    public function __construct(
+        protected Translator $translator,
+        protected Repository $config,
+    ) {
         parent::__construct();
     }
 
@@ -34,10 +36,8 @@ class ThenpingmeSyncCommand extends Command
         }
 
         $this->task($this->translator->get('thenpingme::translations.syncing_tasks', [
-            'url' => parse_url(Config::get('thenpingme.api_url'), PHP_URL_HOST),
-        ]), function () {
-            return $this->syncTasks();
-        });
+            'url' => parse_url((string) $this->config->get('thenpingme.api_url'), PHP_URL_HOST),
+        ]), fn () => $this->syncTasks());
 
         $this->info($this->translator->get('thenpingme::translations.successful_sync'));
 
@@ -46,7 +46,7 @@ class ThenpingmeSyncCommand extends Command
 
     protected function syncTasks(): bool
     {
-        Config::set(['thenpingme.queue_ping' => false]);
+        $this->config->set(['thenpingme.queue_ping' => false]);
 
         app(Client::class)
             ->sync()
