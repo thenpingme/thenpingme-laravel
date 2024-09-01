@@ -18,7 +18,7 @@ use Thenpingme\Collections\ScheduledTaskCollection;
 class Thenpingme
 {
     /** @var string */
-    public const VERSION = '4.x-dev';
+    public const VERSION = '3.6.0';
 
     /** @var int */
     public const STORE_OUTPUT = 1;
