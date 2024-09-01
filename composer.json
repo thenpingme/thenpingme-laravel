@@ -18,6 +18,7 @@
   "require": {
     "php": "^8.0",
     "laravel/framework": "^9.45||^10.0||^11.0",
+    "laravel/pint": "1.17.2",
     "lorisleiva/cron-translator": "^0.3",
     "nesbot/carbon": "^2.62",
     "nunomaduro/laravel-console-task": "^1.9",
@@ -26,7 +27,6 @@
   },
   "require-dev": {
     "ergebnis/composer-normalize": "^2.23",
-    "friendsofphp/php-cs-fixer": "^3.0",
     "mockery/mockery": "^1.4.2",
     "nikic/php-parser": "^4.15",
     "nunomaduro/larastan": "^2.3",
@@ -67,7 +67,7 @@
     }
   },
   "scripts": {
-    "cs": "vendor/bin/php-cs-fixer fix --config=./.php-cs-fixer.dist.php",
+    "cs": "vendor/bin/pint",
     "normalise": "@composer normalize --indent-style space --indent-size 2 --ansi",
     "rector": "vendor/bin/rector process src --ansi",
     "stan": "vendor/bin/phpstan --ansi",

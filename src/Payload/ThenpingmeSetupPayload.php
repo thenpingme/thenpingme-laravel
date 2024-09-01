@@ -19,7 +19,7 @@ final class ThenpingmeSetupPayload implements Arrayable
     protected function __construct(
         private ScheduledTaskCollection $tasks,
         private ?string $signingKey = null
-    ) { }
+    ) {}
 
     public function toArray(): array
     {
