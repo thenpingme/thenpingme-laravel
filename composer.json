@@ -29,7 +29,7 @@
     "ergebnis/composer-normalize": "^2.23",
     "mockery/mockery": "^1.4.2",
     "nikic/php-parser": "^4.15",
-    "nunomaduro/larastan": "^2.3",
+    "larastan/larastan": "^2.3",
     "orchestra/testbench": "^7.0||^8.0||^9.0",
     "pestphp/pest": "^1.17",
     "pestphp/pest-plugin-parallel": "^0.3.0",
