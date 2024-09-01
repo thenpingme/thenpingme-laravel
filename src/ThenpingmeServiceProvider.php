@@ -43,17 +43,17 @@ class ThenpingmeServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->singleton('thenpingme', function () {
-            return new Thenpingme;
-        });
+        $this->app->singleton('thenpingme', fn () => new Thenpingme);
 
-        $this->app->singleton(Signer::class, function (Application $app): ThenpingmeSigner {
-            return $app->make(ThenpingmeSigner::class);
-        });
+        $this->app->singleton(
+            Signer::class,
+            fn (Application $app): ThenpingmeSigner => $app->make(ThenpingmeSigner::class),
+        );
 
-        $this->app->singleton(Client::class, function (Application $app): Client {
-            return $app->make(ThenpingmeClient::class);
-        });
+        $this->app->singleton(
+            Client::class,
+            fn (Application $app): Client => $app->make(ThenpingmeClient::class),
+        );
 
         Event::mixin(new ThenpingmeEvent);
     }

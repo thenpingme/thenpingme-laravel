@@ -27,23 +27,17 @@ class ThenpingmeSetupCommand extends Command
     protected $signature = 'thenpingme:setup {project_id?  : The UUID of the thenping.me project you are setting up}
                                              {--tasks-only : Only send your application tasks to thenping.me}';
 
-    protected Repository $config;
-
-    protected Schedule $schedule;
+    protected ?Schedule $schedule = null;
 
     protected ?ScheduledTaskCollection $scheduledTasks = null;
 
     protected string $signingKey = '';
 
-    /** @var Translator */
-    protected $translator;
-
-    public function __construct(Translator $translator, Repository $config)
-    {
+    public function __construct(
+        protected Translator $translator,
+        protected Repository $config,
+    ) {
         parent::__construct();
-
-        $this->translator = $translator;
-        $this->config = $config;
     }
 
     public function handle(Schedule $schedule): int
@@ -68,25 +62,29 @@ class ThenpingmeSetupCommand extends Command
             return 1;
         }
 
-        $this->task($this->translator->get('thenpingme::translations.setup.signing_key'), function () {
-            return $this->generateSigningKey();
-        });
+        $this->task($this->translator->get(
+            'thenpingme::translations.setup.signing_key'),
+            fn () => $this->generateSigningKey()
+        );
 
         if (! $this->option('tasks-only')) {
-            $this->task($this->translator->get('thenpingme::translations.setup.write_env'), function () {
-                return $this->writeEnvFile();
-            });
+            $this->task($this->translator->get(
+                'thenpingme::translations.setup.write_env'),
+                fn () => $this->writeEnvFile()
+            );
 
-            $this->task($this->translator->get('thenpingme::translations.setup.write_env_example'), function () {
-                return $this->writeExampleEnvFile();
-            });
+            $this->task($this->translator->get(
+                'thenpingme::translations.setup.write_env_example'),
+                fn () => $this->writeExampleEnvFile()
+            );
 
-            $this->task($this->translator->get('thenpingme::translations.setup.publish_config'), function () {
-                return $this->publishConfig();
-            });
+            $this->task($this->translator->get(
+                'thenpingme::translations.setup.publish_config'),
+                fn () => $this->publishConfig()
+            );
         }
 
-        if (trim($this->config->get('thenpingme.project_name') ?: '') === '') {
+        if (trim((string) ($this->config->get('thenpingme.project_name') ?: '')) === '') {
             $this->error($this->translator->get('thenpingme::translations.project_name_not_set'));
             $this->info('    php artisan thenpingme:setup --tasks-only');
 
@@ -95,11 +93,9 @@ class ThenpingmeSetupCommand extends Command
 
         $this->task(
             $this->translator->get('thenpingme::translations.initial_setup', [
-                'url' => parse_url($this->config->get('thenpingme.api_url'), PHP_URL_HOST),
+                'url' => parse_url((string) $this->config->get('thenpingme.api_url'), PHP_URL_HOST),
             ]),
-            function () {
-                return $this->setupInitialTasks();
-            }
+            fn () => $this->setupInitialTasks()
         );
 
         if (! $this->envExists()) {

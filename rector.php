@@ -2,22 +2,18 @@
 
 declare(strict_types=1);
 
-use Rector\Core\Configuration\Option;
-use Rector\Core\ValueObject\PhpVersion;
-use Rector\Php74\Rector\Property\TypedPropertyRector;
+use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\SetList;
-use Rector\TypeDeclaration\Rector\FunctionLike\ReturnTypeDeclarationRector;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Rector\ValueObject\PhpVersion;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $containerConfigurator->import(SetList::CODE_QUALITY);
-    $containerConfigurator->import(SetList::PHP_80);
-
-    $parameters = $containerConfigurator->parameters();
-    $parameters->set(Option::PHP_VERSION_FEATURES, PhpVersion::PHP_80);
-    $parameters->set(Option::AUTO_IMPORT_NAMES, true);
-
-    $services = $containerConfigurator->services();
-    $services->set(TypedPropertyRector::class);
-    $services->set(ReturnTypeDeclarationRector::class);
-};
+return RectorConfig::configure()
+    ->withPaths([
+        __DIR__.'/src',
+        __DIR__.'/tests',
+    ])
+    ->withPhpVersion(PhpVersion::PHP_82)
+    ->withPhpSets(php82: true)
+    ->withSets([
+        SetList::CODE_QUALITY,
+    ])
+    ->withImportNames();

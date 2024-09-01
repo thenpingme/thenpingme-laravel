@@ -18,7 +18,7 @@ use Thenpingme\Collections\ScheduledTaskCollection;
 class Thenpingme
 {
     /** @var string */
-    public const VERSION = '3.6.0';
+    public const VERSION = '4.x-dev';
 
     /** @var int */
     public const STORE_OUTPUT = 1;
@@ -39,18 +39,13 @@ class Thenpingme
 
     public function scheduledTasks(): ScheduledTaskCollection
     {
-        return with(app(Schedule::class), function (Schedule $scheduler) {
-            return ScheduledTaskCollection::make($scheduler->events())
-                ->filter(function (Event $event) {
-                    return App::environment($event->environments)
-                        || empty($event->environments);
-                })
-                ->transform(function (Event $event) {
-                    $this->fingerprintTask($event);
+        return with(app(Schedule::class), fn (Schedule $scheduler) => ScheduledTaskCollection::make($scheduler->events())
+            ->filter(fn (Event $event) => App::environment($event->environments) || empty($event->environments))
+            ->transform(function (Event $event) {
+                $this->fingerprintTask($event);
 
-                    return $event;
-                });
-        });
+                return $event;
+            }));
     }
 
     public function translateExpression(string $expression): string

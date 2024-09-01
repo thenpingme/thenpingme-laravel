@@ -10,17 +10,18 @@
 | need to change it using the "uses()" function to bind a different classes or traits.
 |
 */
-
 use Illuminate\Testing\Assert;
 use sixlive\DotenvEditor\DotenvEditor;
+use Thenpingme\Tests\TestCase;
 
-uses(Thenpingme\Tests\TestCase::class)->in(__DIR__);
+uses(TestCase::class)->in(__DIR__);
 
 function loadEnv(string $file): DotenvEditor
 {
     return tap(new DotenvEditor)->load($file);
 }
 
-expect()->extend('toMatchSubset', function (array $subset) {
-    return Assert::assertArraySubset($subset, $this->value);
-});
+expect()->extend(
+    'toMatchSubset',
+    fn (array $subset) => Assert::assertArraySubset($subset, $this->value)
+);
