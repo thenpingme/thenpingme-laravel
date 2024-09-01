@@ -25,7 +25,7 @@ it('determines non unique jobs', function () {
 
     expect(Thenpingme::scheduledTasks()->collisions())
         ->count()->toBe(2)
-        ->first()->extra->toMatch('/^Line [0-9]+ to [0-9]+ of/');
+        ->first()->extra->toMatch('/^Line \d+ to \d+ of/');
 });
 
 it('determines closures are non unique tasks', function () {
@@ -41,7 +41,7 @@ it('determines closures are non unique tasks', function () {
 
     expect(Thenpingme::scheduledTasks()->collisions())
         ->count()->toBe(2)
-        ->first()->extra->toMatch('/^Line [0-9]+ to [0-9]+ of/');
+        ->first()->extra->toMatch('/^Line \d+ to \d+ of/');
 });
 
 it('determines called jobs are non unique tasks', function () {

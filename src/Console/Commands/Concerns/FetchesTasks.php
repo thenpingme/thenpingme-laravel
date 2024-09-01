@@ -16,9 +16,13 @@ trait FetchesTasks
         if (($collisions = $this->scheduledTasks->collisions())->isNotEmpty()) {
             $this->table(
                 ['Type', 'Expression', 'Interval', 'Description', 'Extra'],
-                $collisions->map(function ($task) {
-                    return Arr::only($task, ['type', 'expression', 'interval', 'description', 'extra']);
-                })
+                $collisions->map(fn ($task) => Arr::only($task, [
+                    'type',
+                    'expression',
+                    'interval',
+                    'description',
+                    'extra',
+                ]))
             );
 
             $this->error($this->translator->get('thenpingme::translations.indistinguishable_tasks'));

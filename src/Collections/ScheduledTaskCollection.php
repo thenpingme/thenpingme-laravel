@@ -13,10 +13,10 @@ class ScheduledTaskCollection extends Collection
 {
     public function __construct($items = [])
     {
-        parent::__construct(array_filter($this->getArrayableItems($items), function ($event) {
-            return ! isset($event->thenpingmeOptions)
-                || $event->thenpingmeOptions['skip'] === false;
-        }));
+        parent::__construct(array_filter(
+            $this->getArrayableItems($items),
+            fn ($event) => ! isset($event->thenpingmeOptions) || $event->thenpingmeOptions['skip'] === false)
+        );
     }
 
     public function collisions(): ScheduledTaskCollection

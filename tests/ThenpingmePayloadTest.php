@@ -53,9 +53,7 @@ it('determines if a task is filtered', function () {
     $task = $this->app->make(Schedule::class)
         ->command('thenpingme:filtered')
         ->description('This is the description')
-        ->when(function () {
-            return false;
-        });
+        ->when(fn () => false);
 
     expect(TaskPayload::make($task)->toArray())
         ->toMatchSubset([
@@ -101,9 +99,7 @@ it('determines if a task is filtered by skip', function () {
         ->command('thenpingme:filtered')
         ->hourly()
         ->description('This is the description')
-        ->skip(function () {
-            return true;
-        });
+        ->skip(fn () => true);
 
     expect(TaskPayload::make($task)->toArray())
         ->toMatchSubset([
@@ -219,7 +215,7 @@ it('generates a setup payload', function () {
 });
 
 it('generates the correct payload for a scheduled task starting', function () {
-    Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
+    Carbon::setTestNow('2019-10-11 20:58:00 UTC');
 
     $event = new ScheduledTaskStarting(
         $this->app->make(Schedule::class)
@@ -246,7 +242,7 @@ it('generates the correct payload for a scheduled task starting', function () {
 });
 
 it('correctly identifies ip for a vapor app', function () {
-    Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
+    Carbon::setTestNow('2019-10-11 20:58:00 UTC');
 
     $event = new ScheduledTaskStarting(
         $this->app->make(Schedule::class)
@@ -281,7 +277,7 @@ it('includes the release if configured to do so', function () {
 });
 
 it('generates the correct payload for a scheduled task finished', function () {
-    Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
+    Carbon::setTestNow('2019-10-11 20:58:00 UTC');
 
     $event = new ScheduledTaskFinished(
         $this->app->make(Schedule::class)->command('thenpingme:first')->description('This is the first task'),
@@ -302,7 +298,7 @@ it('generates the correct payload for a scheduled task finished', function () {
 });
 
 it('generates the correct payload for a scheduled task skipped', function () {
-    Carbon::setTestNow('2019-10-11 20:58:00', 'UTC');
+    Carbon::setTestNow('2019-10-11 20:58:00 UTC');
 
     $event = new ScheduledTaskSkipped(
         $this->app->make(Schedule::class)->command('thenpingme:first')->description('This is the first task'),
@@ -322,7 +318,7 @@ it('generates the correct payload for a scheduled task skipped', function () {
 });
 
 it('handles scheduled task specific timezones', function () {
-    Carbon::setTestNow('2019-10-11 00:00:00', 'UTC');
+    Carbon::setTestNow('2019-10-11 00:00:00 UTC');
 
     Config::set(['app.schedule_timezone' => '+10:30']);
 
@@ -348,7 +344,7 @@ it('handles scheduled task specific timezones', function () {
 });
 
 it('converts string timezones to utc offset', function () {
-    Carbon::setTestNow('2019-10-11 00:00:00', 'UTC');
+    Carbon::setTestNow('2019-10-11 00:00:00 UTC');
 
     Config::set(['app.schedule_timezone' => 'Australia/Adelaide']);
 
@@ -426,7 +422,7 @@ it('identifies ip address', function () {
     putenv('SERVER_ADDR');
 
     // Fallback
-    if (PHP_OS == 'Linux') {
+    if (PHP_OS === 'Linux') {
         // The only way to really test this works would be to duplicate the hostname
         // lookup that is executed in ThenpingmePayload, which is also pointless.
     } elseif (($ip = gethostbyname($host)) !== '127.0.0.1') {

@@ -14,12 +14,9 @@ use Thenpingme\Payload\ThenpingmePayload;
 
 class ScheduledTaskSubscriber
 {
-    public function __construct(private Client $thenpingme) {}
+    public function __construct(private readonly Client $thenpingme) {}
 
-    /**
-     * @param  mixed  $event
-     */
-    public function handleScheduledTaskEvent($event): void
+    public function handleScheduledTaskEvent(mixed $event): void
     {
         $this
             ->thenpingme

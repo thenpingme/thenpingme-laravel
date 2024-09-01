@@ -19,15 +19,9 @@ use Thenpingme\Thenpingme;
 
 abstract class ThenpingmePayload implements Arrayable
 {
-    /**
-     * @param  mixed  $event
-     */
-    protected function __construct(protected $event) {}
+    protected function __construct(protected mixed $event) {}
 
-    /**
-     * @param  mixed  $event
-     */
-    public static function fromEvent($event): ?ThenpingmePayload
+    public static function fromEvent(mixed $event): ?ThenpingmePayload
     {
         return match (true) {
             $event instanceof ScheduledTaskStarting => new ScheduledTaskStartingPayload($event),
@@ -95,9 +89,9 @@ abstract class ThenpingmePayload implements Arrayable
         }
 
         // I don't really know the best way to test this... but it should be fine.
-        if (PHP_OS == 'Linux') {
-            return trim(Arr::first(
-                explode(' ', tap(new Process(['hostname', '-I']), function (Process $process) {
+        if (PHP_OS === 'Linux') {
+            return trim((string) Arr::first(
+                explode(' ', (string) tap(new Process(['hostname', '-I']), function (Process $process) {
                     $process->run();
                 })->getOutput())
             ));
