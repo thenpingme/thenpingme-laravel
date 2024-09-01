@@ -22,9 +22,7 @@ abstract class ThenpingmePayload implements Arrayable
     /**
      * @param  mixed  $event
      */
-    protected function __construct(protected $event)
-    {
-    }
+    protected function __construct(protected $event) {}
 
     /**
      * @param  mixed  $event
@@ -68,8 +66,8 @@ abstract class ThenpingmePayload implements Arrayable
                     'name' => Config::get('thenpingme.project_name'),
                     'release' => Config::get('thenpingme.release'),
                     'timezone' => Carbon::now()->getTimezone()->toOffsetName(),
+                ]),
             ]),
-        ]),
             $this->shouldLogOutput()
             ? ['output' => $this->getOutput()->toString()]
             : []
@@ -129,7 +127,7 @@ abstract class ThenpingmePayload implements Arrayable
             return new Stringable($contents ?? '');
         };
 
-        return match(true) {
+        return match (true) {
             (($storeOutput & Thenpingme::STORE_OUTPUT) === Thenpingme::STORE_OUTPUT) => $output(),
             ((($storeOutput & Thenpingme::STORE_OUTPUT_ON_SUCCESS) === Thenpingme::STORE_OUTPUT_ON_SUCCESS) && ($exitCode === 0)) => $output(),
             ((($storeOutput & Thenpingme::STORE_OUTPUT_ON_FAILURE) === Thenpingme::STORE_OUTPUT_ON_FAILURE) && ($exitCode !== 0)) => $output(),

@@ -27,22 +27,17 @@ class ThenpingmeSetupCommand extends Command
     protected $signature = 'thenpingme:setup {project_id?  : The UUID of the thenping.me project you are setting up}
                                              {--tasks-only : Only send your application tasks to thenping.me}';
 
-    protected Repository $config;
-
     protected ?Schedule $schedule = null;
 
     protected ?ScheduledTaskCollection $scheduledTasks = null;
 
     protected string $signingKey = '';
 
-    protected Translator $translator;
-
-    public function __construct(Translator $translator, Repository $config)
-    {
+    public function __construct(
+        protected Translator $translator,
+        protected Repository $config,
+    ) {
         parent::__construct();
-
-        $this->translator = $translator;
-        $this->config = $config;
     }
 
     public function handle(Schedule $schedule): int
@@ -126,7 +121,7 @@ class ThenpingmeSetupCommand extends Command
     protected function envExists(): bool
     {
         try {
-            tap(new DotenvEditor())->load(base_path('.env'));
+            tap(new DotenvEditor)->load(base_path('.env'));
 
             return true;
         } catch (InvalidArgumentException) {
@@ -136,7 +131,7 @@ class ThenpingmeSetupCommand extends Command
 
     protected function writeEnvFile(): bool
     {
-        tap(new DotenvEditor(), function ($editor) {
+        tap(new DotenvEditor, function ($editor) {
             $editor->load(base_path('.env'));
             $editor->set('THENPINGME_PROJECT_ID', $this->argument('project_id'));
             $editor->set('THENPINGME_SIGNING_KEY', $this->signingKey);
@@ -159,7 +154,7 @@ class ThenpingmeSetupCommand extends Command
     protected function writeExampleEnvFile(): bool
     {
         try {
-            tap(new DotenvEditor(), function ($editor) {
+            tap(new DotenvEditor, function ($editor) {
                 $editor->load(base_path('.env.example'));
                 $editor->set('THENPINGME_PROJECT_ID', '');
                 $editor->set('THENPINGME_SIGNING_KEY', '');

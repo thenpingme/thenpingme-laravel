@@ -14,9 +14,7 @@ use Thenpingme\Payload\ThenpingmePayload;
 
 class ScheduledTaskSubscriber
 {
-    public function __construct(private Client $thenpingme)
-    {
-    }
+    public function __construct(private Client $thenpingme) {}
 
     /**
      * @param  mixed  $event

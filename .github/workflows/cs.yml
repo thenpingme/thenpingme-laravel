@@ -1,22 +1,28 @@
-name: Check & fix styling
+name: Validate code style
 
 on: [push]
 
 jobs:
-  php-cs-fixer:
-    runs-on: ubuntu-latest
+ lint:
+   runs-on: ubuntu-latest
+   strategy:
+     fail-fast: true
+     matrix:
+       php: [8.3]
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v4
 
-      - name: Run PHP CS Fixer
-        uses: docker://oskarstark/php-cs-fixer-ga
+     - name: Setup PHP
+       uses: shivammathur/setup-php@v2
+       with:
+         php-version: ${{ matrix.php }}
+         extensions: json, dom, curl, libxml, mbstring
+         coverage: none
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Fix styling
+     - name: Install Pint
+       run: composer global require laravel/pint=1.17.2
 
+     - name: Run Pint
+       run: pint --test
