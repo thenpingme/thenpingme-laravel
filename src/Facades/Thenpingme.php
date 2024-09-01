@@ -6,6 +6,9 @@ namespace Thenpingme\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
+/**
+ * @mixin \Thenpingme\Thenpingme
+ */
 class Thenpingme extends Facade
 {
     protected static function getFacadeAccessor(): string
